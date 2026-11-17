@@ -1,0 +1,88 @@
+class_name DiceView
+extends Control
+## The dice (UI_UX_DESIGN_SYSTEM §7.3): shows a face; roll() spins and wobbles
+## for at least DICE_MIN_MS and settles on the value. `active` draws the
+## mango halo of the local player's turn (the dice pad).
+
+signal tapped
+
+var value := 6
+var active := false:
+	set(v):
+		active = v
+		queue_redraw()
+var tappable := false
+
+var _faces: Array[Texture2D] = []
+var _spin := 0.0
+var _rolling := false
+var _pulse := 0.0
+var _pulse_tween: Tween
+
+
+func _ready() -> void:
+	for i in range(1, 7):
+		_faces.append(load("res://assets/dice/dice_%d.svg" % i))
+	mouse_filter = Control.MOUSE_FILTER_STOP
+	pivot_offset = size * 0.5
+	resized.connect(func() -> void: pivot_offset = size * 0.5)
+
+
+func set_active(on: bool) -> void:
+	active = on
+	tappable = on
+	if _pulse_tween != null:
+		_pulse_tween.kill()
+	if on and not Settings.get_value("reduced_motion"):
+		_pulse_tween = create_tween().set_loops()
+		_pulse_tween.tween_method(func(v: float) -> void:
+			_pulse = v
+			queue_redraw(), 0.0, TAU, 1.4)
+	queue_redraw()
+
+
+func _draw() -> void:
+	var r := Rect2(Vector2.ZERO, size)
+	if active:
+		var p := 0.5 + 0.5 * sin(_pulse)
+		var box := StyleBoxFlat.new()
+		box.bg_color = Color(1.0, 0.76, 0.35, 0.18 + 0.1 * p)
+		box.border_color = Color(1.0, 0.76, 0.35, 0.65)
+		box.set_border_width_all(4)
+		box.set_corner_radius_all(int(size.x * 0.3))
+		box.shadow_color = Color(1.0, 0.6, 0.12, 0.35 + 0.15 * p)
+		box.shadow_size = int(20 + 10 * p)
+		box.anti_aliasing = true
+		draw_style_box(box, r)
+	var face_size := size * 0.72
+	var center := size * 0.5
+	draw_set_transform(center, _spin, Vector2.ONE)
+	draw_texture_rect(_faces[clampi(value, 1, 6) - 1], Rect2(-face_size * 0.5, face_size), false)
+	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+
+
+## Spins with random faces, then shows `result`. Duration in seconds.
+func roll(result: int, duration: float) -> void:
+	_rolling = true
+	var t := create_tween()
+	var rng := RandomNumberGenerator.new()
+	t.tween_method(func(k: float) -> void:
+		_spin = sin(k * TAU * 2.0) * 0.35 * (1.0 - k)
+		if int(k * 10) != int((k - 0.02) * 10):
+			value = rng.randi_range(1, 6)
+		queue_redraw(), 0.0, 1.0, duration)
+	await t.finished
+	value = result
+	_spin = 0.0
+	_rolling = false
+	queue_redraw()
+	var bounce := create_tween()
+	bounce.tween_property(self, "scale", Vector2(1.12, 1.12), 0.08)
+	bounce.tween_property(self, "scale", Vector2.ONE, 0.14).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+
+
+func _gui_input(event: InputEvent) -> void:
+	var b := event as InputEventMouseButton
+	if b != null and b.pressed and b.button_index == MOUSE_BUTTON_LEFT and tappable and not _rolling:
+		accept_event()
+		tapped.emit()

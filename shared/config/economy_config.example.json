@@ -1,0 +1,13 @@
+{
+  "_comment": "EXAMPLE values for development only (Phase 2). Real values are server-managed configuration, decided with the risk review (docs/RISK_GOLD_ENTRY_MATCHES.md). Validated by server/game-engine/src/economy.ts.",
+  "version": 1,
+  "rake_percent": 10,
+  "starting_gold": 1000,
+  "daily_free_gold": 300,
+  "bailout": { "below_gold": 100, "amount": 200, "per_day": 2 },
+  "tiers": [
+    { "id": "lobby_100", "entry_gold": 100, "players": [2, 4], "shares_2p": [10000, 0], "shares_4p": [6000, 3000, 1000, 0], "min_level": 0, "enabled": true },
+    { "id": "lobby_500", "entry_gold": 500, "players": [2, 4], "shares_2p": [10000, 0], "shares_4p": [6000, 3000, 1000, 0], "min_level": 5, "enabled": true },
+    { "id": "lobby_2500", "entry_gold": 2500, "players": [2, 4], "shares_2p": [10000, 0], "shares_4p": [6000, 3000, 1000, 0], "min_level": 15, "enabled": true }
+  ]
+}

@@ -1,0 +1,463 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: tr\n"
+
+msgid "SETUP_SUBTITLE"
+msgstr "PRATİK · ÇEVRİMDIŞI"
+
+msgid "SETUP_TITLE"
+msgstr "Maç kur"
+
+msgid "SETUP_TWO_PLAYERS"
+msgstr "2 Kişi"
+
+msgid "SETUP_FOUR_PLAYERS"
+msgstr "4 Kişi"
+
+msgid "SETUP_NOTE_BOTS"
+msgstr "Botlar maçta her zaman BOT etiketiyle görünür."
+
+msgid "SETUP_NOTE_HOTSEAT"
+msgstr "Aynı telefonda sırayla oynanır: sırası gelen oyuncu zarı atar."
+
+msgid "SETUP_RULES"
+msgstr "6 ile çık · 6 = tekrar at · yıldızlar güvenli · bitişe tam sayı · zar 10 sn, hamle 12 sn"
+
+msgid "SETUP_PLAY"
+msgstr "OYNA"
+
+msgid "COLOR_RED"
+msgstr "Kırmızı"
+
+msgid "COLOR_GREEN"
+msgstr "Yeşil"
+
+msgid "COLOR_YELLOW"
+msgstr "Sarı"
+
+msgid "COLOR_BLUE"
+msgstr "Mavi"
+
+msgid "COLOR_RED_ACC"
+msgstr "kırmızı"
+
+msgid "COLOR_GREEN_ACC"
+msgstr "yeşil"
+
+msgid "COLOR_YELLOW_ACC"
+msgstr "sarı"
+
+msgid "COLOR_BLUE_ACC"
+msgstr "mavi"
+
+msgid "ROLE_YOU"
+msgstr "Sen"
+
+msgid "ROLE_PLAYER"
+msgstr "Oyuncu"
+
+msgid "ROLE_BOT"
+msgstr "Bot"
+
+msgid "NAME_YOU"
+msgstr "Sen"
+
+msgid "NAME_PLAYER_N"
+msgstr "Oyuncu %d"
+
+msgid "NAME_BOT_N"
+msgstr "Bot %d"
+
+msgid "MATCH_BOT_TAG"
+msgstr "BOT"
+
+msgid "MATCH_MENU"
+msgstr "Menü"
+
+msgid "MATCH_MODE_2P"
+msgstr "2 Kişi · Klasik · Pratik"
+
+msgid "MATCH_MODE_4P"
+msgstr "4 Kişi · Klasik · Pratik"
+
+msgid "MATCH_START_FAILED"
+msgstr "Maç başlatılamadı"
+
+msgid "MATCH_STATUS_LEFT"
+msgstr "Ayrıldı"
+
+msgid "MATCH_STATUS_AUTOPILOT"
+msgstr "Otopilot"
+
+msgid "MATCH_STATUS_FINISHED"
+msgstr "%d. oldu"
+
+msgid "MATCH_STATUS_TURN"
+msgstr "Sırada"
+
+msgid "MATCH_HINT_OVER"
+msgstr "Maç bitti"
+
+msgid "MATCH_HINT_ROLL"
+msgstr "Zar atmak için dokun"
+
+msgid "MATCH_HINT_ROLL_NAMED"
+msgstr "Sıra %s: zara dokun"
+
+msgid "MATCH_HINT_MOVE"
+msgstr "Oynatmak istediğin piyona dokun"
+
+msgid "MATCH_HINT_BOT"
+msgstr "%s düşünüyor…"
+
+msgid "MATCH_HINT_WAIT"
+msgstr "%s oynuyor…"
+
+msgid "MATCH_TOAST_TIMEOUT"
+msgstr "Süre doldu · otomatik oynandı"
+
+msgid "MATCH_TOAST_NO_MOVES"
+msgstr "Oynanabilecek hamle yok"
+
+msgid "MATCH_TOAST_SIX"
+msgstr "6! Tekrar at"
+
+msgid "MATCH_TOAST_BONUS"
+msgstr "Tekrar at!"
+
+msgid "MATCH_TOAST_THREE_SIXES"
+msgstr "Üç kez 6! Sıra geçti"
+
+msgid "MATCH_TOAST_PLAYER_FINISHED"
+msgstr "%s %d. oldu!"
+
+msgid "MATCH_TOAST_AUTOPILOT"
+msgstr "%s için otopilot açıldı"
+
+msgid "MATCH_TOAST_YOU_WERE_CAPTURED"
+msgstr "Piyonun yendi! (%s)"
+
+msgid "MATCH_TOAST_YOU_CAPTURED"
+msgstr "Rakip piyonu yedin!"
+
+msgid "MATCH_TOAST_CAPTURED"
+msgstr "%s %s piyonu yedi!"
+
+msgid "MENU_TITLE"
+msgstr "Maç menüsü"
+
+msgid "MENU_RESUME"
+msgstr "Devam et"
+
+msgid "MENU_RESTART"
+msgstr "Yeniden başlat"
+
+msgid "MENU_LEAVE"
+msgstr "Maçtan çık"
+
+msgid "SETTING_FAST_ANIMATIONS"
+msgstr "Hızlı animasyon"
+
+msgid "SETTING_AUTO_SINGLE_MOVE"
+msgstr "Tek hamleyi otomatik oyna"
+
+msgid "SETTING_COLOR_SYMBOLS"
+msgstr "Renk sembolleri"
+
+msgid "ON"
+msgstr "Açık"
+
+msgid "OFF"
+msgstr "Kapalı"
+
+msgid "CONFIRM_RESTART"
+msgstr "Maç baştan başlasın mı? Bu pratik maç kaydedilmez."
+
+msgid "CONFIRM_LEAVE"
+msgstr "Maçtan çıkılsın mı? Bu pratik maç kaydedilmez."
+
+msgid "CANCEL"
+msgstr "Vazgeç"
+
+msgid "RESULT_PLACE"
+msgstr "%d. oldun!"
+
+msgid "RESULT_PLACE_OTHER"
+msgstr "%d. oldun"
+
+msgid "RESULT_PRACTICE_NOTE"
+msgstr "Pratik maç · ödül ve sıralama yok"
+
+msgid "RESULT_MENU"
+msgstr "Ana menü"
+
+msgid "RESULT_AGAIN"
+msgstr "Tekrar oyna"
+
+msgid "NAV_HOME"
+msgstr "Ana Sayfa"
+
+msgid "NAV_FRIENDS"
+msgstr "Arkadaşlar"
+
+msgid "NAV_STORE"
+msgstr "Mağaza"
+
+msgid "NAV_QUESTS"
+msgstr "Görevler"
+
+msgid "NAV_RANKING"
+msgstr "Sıralama"
+
+msgid "BACK"
+msgstr "Geri"
+
+msgid "SOON"
+msgstr "YAKINDA"
+
+msgid "DEFAULT_NAME"
+msgstr "Oyuncu"
+
+msgid "HOME_GUEST"
+msgstr "Misafir · çevrimdışı"
+
+msgid "HOME_PLAY"
+msgstr "Oyna"
+
+msgid "HOME_CARD_SUB"
+msgstr "Mod seç"
+
+msgid "HOME_PRIVATE"
+msgstr "Özel Oda"
+
+msgid "HOME_PRIVATE_SUB"
+msgstr "Arkadaşlarınla oyna"
+
+msgid "HOME_PRACTICE"
+msgstr "Pratik"
+
+msgid "HOME_PRACTICE_SUB"
+msgstr "Botlara karşı, çevrimdışı"
+
+msgid "HOME_ONLINE_TITLE"
+msgstr "Çevrimiçi maçlar yakında"
+
+msgid "HOME_ONLINE_SUB"
+msgstr "Gerçek rakiplerle hızlı maç, özel oda ve arkadaş daveti hazırlanıyor."
+
+msgid "HOME_STATS_TITLE"
+msgstr "İstatistiklerin"
+
+msgid "HOME_STATS_NOTE"
+msgstr "Bu cihazda oynanan pratik maçlar"
+
+msgid "STAT_MATCHES"
+msgstr "Maç"
+
+msgid "STAT_WINS"
+msgstr "Birincilik"
+
+msgid "STAT_RATE"
+msgstr "Kazanma"
+
+msgid "STAT_2P"
+msgstr "2 kişilik"
+
+msgid "STAT_4P"
+msgstr "4 kişilik"
+
+msgid "MODE_TITLE"
+msgstr "Oyun modu · %s"
+
+msgid "MODE_BOTS"
+msgstr "Botlara karşı"
+
+msgid "MODE_BOTS_SUB"
+msgstr "Çevrimdışı · her zaman açık"
+
+msgid "MODE_LOCAL"
+msgstr "Aynı telefonda"
+
+msgid "MODE_LOCAL_SUB"
+msgstr "Arkadaşınla tek cihazda sırayla"
+
+msgid "MODE_ONLINE"
+msgstr "Çevrimiçi hızlı maç"
+
+msgid "MODE_ONLINE_SUB"
+msgstr "Gerçek rakiplerle eşleş"
+
+msgid "MODE_PRIVATE"
+msgstr "Özel oda"
+
+msgid "MODE_PRIVATE_SUB"
+msgstr "Kodla arkadaşlarını davet et"
+
+msgid "SETUP_HEADER"
+msgstr "Maç kur"
+
+msgid "SETUP_COLOR"
+msgstr "Rengin"
+
+msgid "SETUP_COLOR_NOTE_2P"
+msgstr "İki kişilik maçta rakibin her zaman karşı köşeden başlar."
+
+msgid "SETUP_SEATS"
+msgstr "Oyuncular"
+
+msgid "INFO_STATUS"
+msgstr "Çevrimiçi hesap gerekiyor · Yakında"
+
+msgid "INFO_NOW"
+msgstr "Şimdilik"
+
+msgid "INFO_NOW_TEXT"
+msgstr "Botlara karşı ya da aynı telefonda arkadaşınla oynayabilirsin."
+
+msgid "INFO_PLAY_PRACTICE"
+msgstr "Pratik maç oyna"
+
+msgid "INFO_FRIENDS_TITLE"
+msgstr "Arkadaşlar"
+
+msgid "INFO_FRIENDS_HEAD"
+msgstr "Arkadaşlarınla oyna"
+
+msgid "INFO_FRIENDS_BODY"
+msgstr "Arkadaş koduyla ekleme, çevrimiçi durum ve maç daveti, çevrimiçi hesaplarla birlikte gelecek."
+
+msgid "INFO_STORE_TITLE"
+msgstr "Kozmetik Mağazası"
+
+msgid "INFO_STORE_HEAD"
+msgstr "Zar, piyon ve tahta görünümleri"
+
+msgid "INFO_STORE_BODY"
+msgstr "Mağaza yalnızca görünüm satar; oyunda hiçbir avantaj vermez. Altın ve Elmas çevrimiçi hesapla açılacak."
+
+msgid "INFO_QUESTS_TITLE"
+msgstr "Görevler"
+
+msgid "INFO_QUESTS_HEAD"
+msgstr "Günlük görevler ve ödüller"
+
+msgid "INFO_QUESTS_BODY"
+msgstr "Her gün yenilenen görevler ve ödülleri hesabına kaydedilecek; bunun için çevrimiçi hesap gerekiyor."
+
+msgid "INFO_RANKING_TITLE"
+msgstr "Sıralama"
+
+msgid "INFO_RANKING_HEAD"
+msgstr "Haftalık galibiyet listesi"
+
+msgid "INFO_RANKING_BODY"
+msgstr "Sıralamaya yalnızca çevrimiçi maçlar girer; pratik maçlar sıralamaya sayılmaz."
+
+msgid "INFO_ACHIEVEMENTS_TITLE"
+msgstr "Başarımlar"
+
+msgid "INFO_ACHIEVEMENTS_HEAD"
+msgstr "Rozetler ve başarımlar"
+
+msgid "INFO_ACHIEVEMENTS_BODY"
+msgstr "Başarımlar hesabına bağlı olacak; telefon değiştirsen de kaybolmayacak."
+
+msgid "INFO_ONLINE_TITLE"
+msgstr "Çevrimiçi Maç"
+
+msgid "INFO_ONLINE_HEAD"
+msgstr "Gerçek rakiplerle hızlı maç"
+
+msgid "INFO_ONLINE_BODY"
+msgstr "Sunucu altyapısı kuruluyor. Hazır olduğunda 2 ve 4 kişilik çevrimiçi maçlar burada açılacak."
+
+msgid "INFO_PRIVATE_TITLE"
+msgstr "Özel Oda"
+
+msgid "INFO_PRIVATE_HEAD"
+msgstr "Kodla arkadaş odası"
+
+msgid "INFO_PRIVATE_BODY"
+msgstr "Oda kodunu paylaş, renkleri seçin ve arkadaşlarınla oyna. Çevrimiçi maçlarla birlikte gelecek."
+
+msgid "PROFILE_TITLE"
+msgstr "Profil"
+
+msgid "PROFILE_NAME"
+msgstr "Oyuncu adın"
+
+msgid "PROFILE_NAME_HINT"
+msgstr "3–16 karakter"
+
+msgid "PROFILE_SAVE"
+msgstr "Kaydet"
+
+msgid "PROFILE_SAVED"
+msgstr "Kaydedildi"
+
+msgid "PROFILE_NAME_INVALID"
+msgstr "Ad 3–16 karakter olmalı"
+
+msgid "PROFILE_AVATAR"
+msgstr "Avatar rengi"
+
+msgid "PROFILE_ACCOUNT"
+msgstr "Hesap"
+
+msgid "PROFILE_ACCOUNT_GUEST"
+msgstr "Bu cihazda misafir olarak oynuyorsun. Çevrimiçi hesap ve Google, Apple ya da e-posta ile giriş yakında."
+
+msgid "PROFILE_STATS"
+msgstr "Pratik istatistikleri"
+
+msgid "SETTINGS_TITLE"
+msgstr "Ayarlar"
+
+msgid "SETTINGS_GAME"
+msgstr "Oyun"
+
+msgid "SETTINGS_LANGUAGE"
+msgstr "Dil"
+
+msgid "SETTINGS_RULES"
+msgstr "Nasıl oynanır"
+
+msgid "SETTINGS_VERSION"
+msgstr "Sürüm %s"
+
+msgid "SETTINGS_SOUND_SOON"
+msgstr "Ses ve müzik yakında eklenecek."
+
+msgid "SETTING_VIBRATION"
+msgstr "Titreşim"
+
+msgid "SETTING_REDUCED_MOTION"
+msgstr "Azaltılmış hareket"
+
+msgid "RULES_TITLE"
+msgstr "Nasıl Oynanır"
+
+msgid "RULES_GOAL"
+msgstr "Amaç: dört piyonunu da ortadaki bitişe ilk sen götür."
+
+msgid "RULES_ENTER"
+msgstr "Piyon bekleme alanından yalnızca 6 ile çıkar ve başlangıç karene konur."
+
+msgid "RULES_SIX"
+msgstr "6 atarsan hamlenden sonra bir zar daha atarsın."
+
+msgid "RULES_CAPTURE"
+msgstr "Rakip piyonun durduğu kareye gelirsen onu yersin: piyon evine döner, sen tekrar atarsın."
+
+msgid "RULES_SAFE"
+msgstr "Yıldızlı kareler ve başlangıç kareleri güvenlidir; orada piyon yenmez."
+
+msgid "RULES_FINISH"
+msgstr "Bitişe girmek için zar tam tutmalı. Bir piyonu bitişe sokunca tekrar atarsın."
+
+msgid "RULES_TIME"
+msgstr "Zar atmak için 10, piyon seçmek için 12 saniyen var; süre dolarsa hamle senin yerine oynanır."
+
+msgid "RULES_END"
+msgstr "2 kişilikte dört piyonunu ilk bitiren kazanır. 4 kişilik maç ilk üç oyuncu bitirince sona erer."

@@ -1,0 +1,17 @@
+{
+  "name": "@kb/worker",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Kızma Birader game server: Cloudflare Worker + Durable Objects (one MatchRoom per match).",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev --port 8787",
+    "typecheck": "tsc --noEmit",
+    "test:local": "node test/local_ws_test.mjs"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261117.1",
+    "typescript": "^5.9.3",
+    "wrangler": "^4.163.0"
+  }
+}

@@ -1,0 +1,25 @@
+node_modules/
+dist/
+.godot/
+*.apk
+*.aab
+*.idsig
+build/
+.env
+.env.*
+!.env.example
+*.keystore
+*.jks
+
+# Supabase CLI local state (linked project, pooler URL); never commit
+supabase/.temp/
+supabase/.branches/
+.dev.vars
+.dev.vars.*
+
+# Signing / store keys and Cloudflare local state (secrets); never commit
+*.p8
+*.p12
+*.pem
+*.mobileprovision
+.wrangler/

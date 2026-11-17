@@ -1,0 +1,463 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Kızma Birader — Akşam Masası ekran prototipleri</title>
+<link rel="stylesheet" href="base.css">
+<style>
+  .top { position: absolute; top: 52px; left: 16px; right: 16px; display: flex; align-items: center; gap: 10px; }
+  .grow { flex: 1; }
+  .center { display: flex; align-items: center; justify-content: center; }
+  .col { display: flex; flex-direction: column; }
+  .row { display: flex; align-items: center; }
+  /* Splash */
+  .logo { text-align: center; }
+  .logo .word { font: 800 44px/0.92 "Baloo 2"; letter-spacing: 1px; color: #fff;
+    text-shadow: 0 4px 0 #6a3fd0, 0 8px 0 #3b2378, 0 14px 26px rgba(0,0,0,.45); }
+  .logo .word .w2 { color: var(--mango-300); text-shadow: 0 4px 0 var(--mango-700), 0 8px 0 #6b3300, 0 14px 26px rgba(0,0,0,.45); }
+  .logo .sub { margin-top: 10px; font: 800 14px "Nunito"; letter-spacing: 6px; color: var(--on-night-dim); }
+  .pawn-cluster { position: relative; width: 170px; height: 120px; margin: 0 auto; }
+  .lamp { position: absolute; left: 50%; top: 210px; width: 420px; height: 420px; margin-left: -210px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,168,76,.30), rgba(255,168,76,0) 65%); }
+  /* Menü kartları */
+  .mode { position: relative; height: 150px; border-radius: 26px; overflow: hidden; padding: 16px; color: #fff; }
+  .mode .t { font: 800 24px/1 "Baloo 2"; }
+  .mode .s { font: 800 13px "Nunito"; opacity: .9; margin-top: 4px; }
+  .mode.m2 { background: linear-gradient(160deg, #4d8bff 0%, #3a7bf7 45%, #2457c9 100%); box-shadow: 0 6px 0 #1b3f93, 0 14px 26px rgba(0,0,0,.35), inset 0 2px 0 rgba(255,255,255,.35); }
+  .mode.m4 { background: linear-gradient(160deg, #ff6b70 0%, #e5484d 45%, #b72d33 100%); box-shadow: 0 6px 0 #861d22, 0 14px 26px rgba(0,0,0,.35), inset 0 2px 0 rgba(255,255,255,.35); }
+  .mode .art { position: absolute; right: -6px; bottom: -8px; }
+  .mode .play { position: absolute; left: 16px; bottom: 14px; height: 34px; padding: 0 14px; border-radius: 14px; background: rgba(255,255,255,.95); color: var(--ink-900);
+    display: flex; align-items: center; font: 800 15px "Baloo 2"; box-shadow: 0 3px 0 rgba(0,0,0,.2); }
+  .tile { height: 86px; border-radius: 22px; padding: 12px; display: flex; flex-direction: column; justify-content: space-between; }
+  /* Oyun ekranı */
+  .pcard { display: flex; align-items: center; gap: 10px; }
+  .pcard .name { font: 800 15px "Baloo 2"; line-height: 1; }
+  .pcard .meta { font: 800 11.5px "Nunito"; color: var(--on-night-dim); margin-top: 3px; display: flex; gap: 6px; align-items: center; }
+  .homes { display: flex; gap: 3px; }
+  .homes i { width: 9px; height: 9px; border-radius: 50%; background: rgba(255,255,255,.18); }
+  .homes i.f { background: var(--c); box-shadow: 0 0 0 1.5px #fff; }
+  .turn-chip { position: absolute; padding: 3px 9px; border-radius: 10px; background: var(--mango-500); color: var(--mango-ink); font: 900 10.5px "Nunito"; letter-spacing: .5px; }
+  .dice-pad { position: relative; width: 92px; height: 92px; border-radius: 28px; display: flex; align-items: center; justify-content: center;
+    background: radial-gradient(circle at 50% 40%, rgba(255,195,90,.35), rgba(255,154,31,.08) 70%); border: 2px solid rgba(255,195,90,.65);
+    box-shadow: 0 0 0 6px rgba(255,154,31,.12), 0 0 28px rgba(255,154,31,.45); }
+  .hint { position: absolute; left: 50%; transform: translateX(-50%); padding: 9px 16px; border-radius: 18px; white-space: nowrap;
+    background: rgba(255,255,255,.1); border: 1.5px solid rgba(255,255,255,.16); font: 800 14px "Nunito"; }
+  /* Liste */
+  .li { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 20px; background: rgba(255,255,255,.06); border: 1.5px solid rgba(255,255,255,.08); }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .seg { display: flex; padding: 4px; gap: 4px; border-radius: 18px; background: rgba(0,0,0,.28); }
+  .seg > div { flex: 1; height: 36px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font: 800 14px "Nunito"; color: var(--on-night-dim); }
+  .seg > div.on { background: var(--cream-50); color: var(--ink-900); box-shadow: 0 3px 0 var(--cream-300); }
+  .item { border-radius: 22px; padding: 10px; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .price { height: 32px; width: 100%; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 5px; font: 800 15px "Baloo 2"; }
+  .rarity { position: absolute; top: 8px; left: 8px; }
+</style>
+</head>
+<body>
+
+<!-- 1. Açılış -->
+<section class="screen" id="s1">
+  <div class="stars"></div><div class="lamp"></div>
+  <div class="statusbar"><span>9:41</span><div class="island"></div><span>●●● 5G ▮</span></div>
+  <div style="position:absolute; top:190px; left:0; right:0;">
+    <div class="pawn-cluster" id="cluster"></div>
+    <div class="logo" style="margin-top:6px;">
+      <div class="word">KIZMA<br><span class="w2">BİRADER</span></div>
+      <div class="sub">ONLINE</div>
+    </div>
+  </div>
+  <div style="position:absolute; left:48px; right:48px; bottom:110px;">
+    <div class="progress" style="height:14px;"><i style="width:64%; background:linear-gradient(180deg,var(--mango-300),var(--mango-500));"></i></div>
+    <div class="caption dim" style="text-align:center; margin-top:12px;">Masa hazırlanıyor…</div>
+  </div>
+  <div class="caption dim" style="position:absolute; bottom:40px; width:100%; text-align:center; opacity:.6;">v1.0.0</div>
+  <div class="homebar"></div>
+</section>
+
+<!-- 2. Giriş -->
+<section class="screen" id="s2">
+  <div class="stars"></div><div class="lamp" style="top:40px;"></div>
+  <div class="statusbar"><span>9:41</span><div class="island"></div><span>●●● 5G ▮</span></div>
+  <div style="position:absolute; top:84px; left:0; right:0;" class="logo">
+    <div class="word" style="font-size:34px;">KIZMA<br><span class="w2">BİRADER</span></div>
+  </div>
+  <div class="card" style="position:absolute; left:16px; right:16px; top:200px; padding:22px 18px 20px;">
+    <div class="h2" style="text-align:center;">Masaya hoş geldin!</div>
+    <div class="body" style="text-align:center; color:var(--ink-500); margin:6px 0 18px;">İlerlemen kaybolmasın diye bir hesapla devam et.</div>
+    <div class="btn secondary" style="width:100%; margin-bottom:14px; font-family:Nunito; font-size:16px;"><span id="g-ico"></span>Google ile devam et</div>
+    <div class="btn" style="width:100%; margin-bottom:14px; background:#111; color:#fff; box-shadow:0 5px 0 #000, 0 10px 18px rgba(0,0,0,.3); font-family:Nunito; font-size:16px;"><svg width="18" height="20" viewBox="0 0 17 20"><path fill="#fff" d="M14.1 10.6c0-2.6 2.1-3.8 2.2-3.9-1.2-1.8-3.1-2-3.7-2-1.6-.2-3.1.9-3.9.9-.8 0-2-.9-3.4-.9C3.6 4.8 2 5.8 1.1 7.4c-1.9 3.2-.5 8 1.3 10.6.9 1.3 1.9 2.7 3.3 2.6 1.3-.1 1.8-.8 3.4-.8s2 .8 3.4.8c1.4 0 2.3-1.3 3.1-2.6 1-1.5 1.4-2.9 1.4-3-.1 0-2.9-1.1-2.9-4.4zM11.6 3c.7-.9 1.2-2.1 1.1-3.3-1 0-2.3.7-3 1.6-.7.8-1.2 2-1.1 3.2 1.1.1 2.3-.6 3-1.5z"/></svg>Apple ile devam et</div>
+    <div class="btn ghost" style="width:100%; color:var(--ink-900); border-color:var(--cream-300); background:#fff; font-family:Nunito; font-size:16px;">✉ E-posta ile devam et</div>
+    <div class="row" style="gap:10px; margin:18px 0 16px; color:var(--ink-500);"><div class="grow" style="height:1.5px; background:var(--cream-300);"></div><span class="caption">veya</span><div class="grow" style="height:1.5px; background:var(--cream-300);"></div></div>
+    <div class="btn primary" style="width:100%;">Misafir olarak oyna</div>
+    <div class="caption" style="text-align:center; color:var(--ink-500); margin-top:12px;">Misafir hesabını istediğin zaman kalıcı hesaba bağlayabilirsin.</div>
+  </div>
+  <div class="caption dim" style="position:absolute; left:28px; right:28px; bottom:44px; text-align:center;">Devam ederek <u>Kullanım Koşulları</u> ve <u>Gizlilik Politikası</u>'nı kabul etmiş olursun.</div>
+  <div class="pill" style="position:absolute; top:52px; right:16px; padding:0 12px; font:800 14px Nunito;">🌐 Türkçe</div>
+  <div class="homebar"></div>
+</section>
+
+<!-- 3. Ana menü -->
+<section class="screen" id="s3">
+  <div class="stars"></div>
+  <div class="statusbar"><span>9:41</span><div class="island"></div><span>●●● 5G ▮</span></div>
+  <div class="top">
+    <div class="avatar" style="width:46px; height:46px; background:linear-gradient(160deg,#ffb36b,#ff7a45); --ring:#fff; font-size:20px;">A<span class="lvl">12</span></div>
+    <div class="col grow" style="gap:5px;">
+      <div class="h3" style="line-height:1;">Ayşe</div>
+      <div class="progress" style="height:8px; width:110px;"><i style="width:62%;"></i></div>
+    </div>
+    <div class="pill"><span class="coin"></span><span class="num">12.450</span><span class="plus">+</span></div>
+    <div class="icon-btn" id="ico-gear"></div>
+  </div>
+  <!-- Günlük ödül şeridi -->
+  <div class="glass row" style="position:absolute; top:112px; left:16px; right:16px; height:62px; padding:0 12px; gap:12px; background:linear-gradient(90deg, rgba(255,197,49,.22), rgba(255,255,255,.05));">
+    <div style="font-size:30px;">🎁</div>
+    <div class="col grow"><div class="h3">Günlük ödülün hazır!</div><div class="caption dim">5. gün · 300 altın</div></div>
+    <div class="btn primary small">Al</div>
+  </div>
+  <div style="position:absolute; top:190px; left:16px; right:16px; display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+    <div class="mode m2"><div class="t">2 Kişi</div><div class="s">Hızlı maç</div><div class="art" id="art2"></div><div class="play">Oyna ▸</div></div>
+    <div class="mode m4"><div class="t">4 Kişi</div><div class="s">Hızlı maç</div><div class="art" id="art4"></div><div class="play">Oyna ▸</div></div>
+  </div>
+  <div style="position:absolute; top:356px; left:16px; right:16px; display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+    <div class="tile glass"><div style="font-size:24px;">🔒</div><div><div class="h3">Özel Oda</div><div class="caption dim">Arkadaşlarınla oyna</div></div></div>
+    <div class="tile glass"><div style="font-size:24px;">🤖</div><div><div class="h3">Pratik</div><div class="caption dim">Botlara karşı, çevrimdışı</div></div></div>
+  </div>
+  <!-- Görev kartı -->
+  <div class="card" style="position:absolute; top:458px; left:16px; right:16px; padding:14px 16px;">
+    <div class="row" style="justify-content:space-between;"><div class="h3">Günlük görevler</div><div class="label" style="color:var(--ink-500);">⏱ 6 sa 12 dk</div></div>
+    <div class="row" style="gap:10px; margin-top:10px;">
+      <div class="col grow" style="gap:6px;"><div class="label">3 maç oyna</div><div class="progress" style="background:var(--cream-200);"><i style="width:66%;"></i></div></div>
+      <div class="label num" style="width:34px; text-align:right;">2/3</div>
+      <div class="row" style="gap:3px; width:56px; justify-content:flex-end;"><span class="coin" style="width:18px;height:18px;"></span><span class="label num">100</span></div>
+    </div>
+    <div class="row" style="gap:10px; margin-top:10px;">
+      <div class="col grow" style="gap:6px;"><div class="label">5 rakip piyon ye</div><div class="progress" style="background:var(--cream-200);"><i style="width:40%;"></i></div></div>
+      <div class="label num" style="width:34px; text-align:right;">2/5</div>
+      <div class="row" style="gap:3px; width:56px; justify-content:flex-end;"><span class="coin" style="width:18px;height:18px;"></span><span class="label num">150</span></div>
+    </div>
+  </div>
+  <!-- Arkadaş daveti toast -->
+  <div class="glass row" style="position:absolute; top:614px; left:16px; right:16px; height:52px; padding:0 8px 0 10px; gap:10px;">
+    <div class="avatar" style="width:34px;height:34px; font-size:15px; background:#2fb463; --ring:#2fd39a;">M</div>
+    <div class="grow label">Mehmet çevrimiçi · seni bekliyor</div>
+    <div class="btn mint small" style="height:34px;">Davet et</div>
+  </div>
+  <div class="bottom-nav" id="nav3"></div>
+  <div class="homebar"></div>
+</section>
+
+<!-- 4. Maç kur (oyun modu seçimi / lobi) -->
+<section class="screen" id="s4">
+  <div class="stars"></div>
+  <div class="statusbar"><span>9:41</span><div class="island"></div><span>●●● 5G ▮</span></div>
+  <div class="top"><div class="icon-btn">‹</div><div class="h2 grow" style="text-align:center;">Hızlı Maç</div><div class="pill"><span class="coin"></span><span class="num">12.450</span></div></div>
+  <div style="position:absolute; top:116px; left:16px; right:16px;">
+    <div class="seg"><div>2 Kişi</div><div class="on">4 Kişi</div></div>
+  </div>
+  <div style="position:absolute; top:172px; left:0; right:0;" class="center"><div id="mini4"></div></div>
+  <div class="card" style="position:absolute; top:398px; left:16px; right:16px; padding:14px 16px;">
+    <div class="row" style="justify-content:space-between;"><div class="h3">Klasik kurallar</div><div class="label" style="color:#3a7bf7;">Kurallar ⓘ</div></div>
+    <div class="row" style="flex-wrap:wrap; gap:6px; margin-top:10px;">
+      <span class="tag" style="background:var(--cream-200);">🎲 6 ile çık</span>
+      <span class="tag" style="background:var(--cream-200);">⭐ Yıldızlar güvenli</span>
+      <span class="tag" style="background:var(--cream-200);">🔁 6 = tekrar at</span>
+      <span class="tag" style="background:var(--cream-200);">⏱ 10+12 sn</span>
+    </div>
+    <div style="height:1.5px; background:var(--cream-200); margin:14px 0 12px;"></div>
+    <div class="label" style="color:var(--ink-500); margin-bottom:8px;">Ödüller</div>
+    <div class="row" style="justify-content:space-between;">
+      <div class="col" style="align-items:center;"><div class="micro" style="color:var(--ink-500);">1.</div><div class="row" style="gap:4px;"><span class="coin" style="width:18px;height:18px;"></span><span class="h3 num">80</span></div></div>
+      <div class="col" style="align-items:center;"><div class="micro" style="color:var(--ink-500);">2.</div><div class="row" style="gap:4px;"><span class="coin" style="width:18px;height:18px;"></span><span class="h3 num">40</span></div></div>
+      <div class="col" style="align-items:center;"><div class="micro" style="color:var(--ink-500);">3.</div><div class="row" style="gap:4px;"><span class="coin" style="width:18px;height:18px;"></span><span class="h3 num">15</span></div></div>
+      <div class="col" style="align-items:center;"><div class="micro" style="color:var(--ink-500);">XP</div><div class="h3 num" style="color:#13875f;">+50</div></div>
+    </div>
+  </div>
+  <div class="glass row" style="position:absolute; top:592px; left:16px; right:16px; height:56px; padding:0 12px; gap:10px;">
+    <div id="dice-equip"></div><div class="col grow"><div class="label">Zar: Klasik Krem</div><div class="caption dim">Piyon: Cam Taş</div></div><div class="label" style="color:var(--mango-300);">Değiştir ›</div>
+  </div>
+  <div class="btn primary" style="position:absolute; left:16px; right:16px; bottom:48px; height:64px; font-size:24px;">OYNA</div>
+  <div class="homebar"></div>
+</section>
+
+<!-- 5. Eşleştirme -->
+<section class="screen" id="s5">
+  <div class="stars"></div><div class="lamp" style="top:120px;"></div>
+  <div class="statusbar"><span>9:41</span><div class="island"></div><span>●●● 5G ▮</span></div>
+  <div style="position:absolute; top:84px; width:100%; text-align:center;">
+    <div class="h1">Rakipler aranıyor</div>
+    <div class="body dim" style="margin-top:4px;">4 Kişi · Klasik</div>
+  </div>
+  <div style="position:absolute; top:180px; left:30px; right:30px; display:grid; grid-template-columns:1fr 1fr; gap:16px;" id="slots"></div>
+  <div style="position:absolute; top:520px; width:100%; text-align:center;">
+    <div class="display num">00:12</div>
+    <div class="caption dim" style="margin-top:4px;">Ortalama bekleme ~20 sn</div>
+  </div>
+  <div class="glass" style="position:absolute; left:24px; right:24px; top:614px; padding:12px 14px;"><div class="label">💡 İpucu</div><div class="caption dim" style="margin-top:3px;">Yıldızlı karelerdeki piyonlar yenmez. Rakibin önünden kaçarken yıldızları kullan!</div></div>
+  <div class="btn ghost" style="position:absolute; left:80px; right:80px; bottom:40px;">Vazgeç</div>
+  <div class="homebar"></div>
+</section>
+
+<!-- 6. Aktif maç — 4 kişi -->
+<section class="screen" id="s6">
+  <div class="stars"></div>
+  <div class="statusbar"><span>9:41</span><div class="island"></div><span>●●● 5G ▮</span></div>
+  <div class="top" style="top:50px;"><div class="icon-btn" id="ico-menu"></div><div class="grow center"><span class="tag" style="background:rgba(0,0,0,.3);">4 Kişi · Klasik</span></div><div class="icon-btn" id="ico-chat"></div></div>
+  <!-- Üst oyuncular -->
+  <div class="pcard" style="position:absolute; top:112px; left:14px;">
+    <div class="avatar" style="width:44px;height:44px;font-size:18px;background:linear-gradient(160deg,#ff8e91,#e5484d);--ring:#e5484d;">K<span class="lvl">8</span></div>
+    <div><div class="name">Kerem</div><div class="meta"><div class="homes" style="--c:#e5484d;"><i class="f"></i><i></i><i></i><i></i></div></div></div>
+  </div>
+  <div class="pcard" style="position:absolute; top:112px; right:14px; flex-direction:row-reverse; text-align:right;">
+    <div class="avatar" style="width:44px;height:44px;font-size:18px;background:linear-gradient(160deg,#7be0a3,#2fb463);--ring:#2fb463;">D<span class="lvl">21</span></div>
+    <div><div class="name">Deniz</div><div class="meta" style="justify-content:flex-end;"><span style="color:#ffb3b5;">● Bağlantı yok · 38 sn</span></div></div>
+  </div>
+  <!-- Tahta -->
+  <div id="board4" style="position:absolute; top:172px; left:12px; width:336px; height:336px; border-radius:22px; box-shadow: 0 0 0 5px rgba(255,255,255,.08), 0 18px 40px rgba(0,0,0,.5);"></div>
+  <!-- Alt oyuncular -->
+  <div class="pcard" style="position:absolute; top:526px; right:14px; flex-direction:row-reverse; text-align:right;">
+    <div class="avatar" style="width:44px;height:44px;font-size:18px;background:linear-gradient(160deg,#ffd968,#f5b70a);--ring:#f5b70a;color:#5a3d00;">S<span class="lvl">5</span></div>
+    <div><div class="name">Selin</div><div class="meta" style="justify-content:flex-end;"><div class="homes" style="--c:#f5b70a;"><i class="f"></i><i class="f"></i><i></i><i></i></div></div></div>
+  </div>
+  <!-- Yerel oyuncu: mavi, sol alt (tahta yerel oyuncu sol altta kalacak şekilde döndürülür) -->
+  <div class="pcard" style="position:absolute; top:526px; left:14px;">
+    <div class="avatar" style="width:52px;height:52px;background:linear-gradient(160deg,#ffb36b,#ff7a45);--ring:#3a7bf7;"><span class="timer-ring" style="--t:.62;"></span>A<span class="lvl">12</span></div>
+    <div><div class="name" style="font-size:17px;">Sen</div><div class="meta"><div class="homes" style="--c:#3a7bf7;"><i></i><i></i><i></i><i></i></div><span>· 9 sn</span></div></div>
+  </div>
+  <span class="turn-chip" style="top:516px; left:62px;">SIRA SENDE</span>
+  <div class="dice-pad" style="position:absolute; left:134px; top:592px;" id="dice6"></div>
+  <div class="hint" style="top:700px;">Oynatmak istediğin piyona dokun</div>
+  <div class="homebar"></div>
+</section>
+
+<!-- 7. Aktif maç — 2 kişi -->
+<section class="screen" id="s7">
+  <div class="stars"></div>
+  <div class="statusbar"><span>9:41</span><div class="island"></div><span>●●● 5G ▮</span></div>
+  <div class="top" style="top:50px;"><div class="icon-btn" id="ico-menu2"></div><div class="grow center"><span class="tag" style="background:rgba(0,0,0,.3);">2 Kişi · Klasik</span></div><div class="icon-btn" id="ico-chat2"></div></div>
+  <!-- Rakip: üst, ortalanmış büyük kart -->
+  <div class="glass row" style="position:absolute; top:108px; left:16px; right:16px; height:62px; padding:0 12px; gap:12px;">
+    <div class="avatar" style="width:44px;height:44px;font-size:18px;background:linear-gradient(160deg,#7be0a3,#2fb463);--ring:#2fb463;"><span class="timer-ring" style="--t:.3; -webkit-mask: radial-gradient(circle, transparent 27px, #000 28px);"></span>M<span class="lvl">17</span></div>
+    <div class="col grow"><div class="name h3">Mehmet</div><div class="meta row" style="gap:6px; font:800 11.5px Nunito; color:var(--on-night-dim);"><div class="homes" style="--c:#2fb463;"><i class="f"></i><i class="f"></i><i></i><i></i></div>· 🏆 1.240</div></div>
+    <div id="dice7opp"></div>
+  </div>
+  <div class="toast" style="top:180px;">Mehmet senin piyonunu yedi! 😈</div>
+  <div id="board2" style="position:absolute; top:222px; left:12px; width:336px; height:336px; border-radius:22px; box-shadow: 0 0 0 5px rgba(255,255,255,.08), 0 18px 40px rgba(0,0,0,.5);"></div>
+  <div class="glass row" style="position:absolute; top:580px; left:16px; right:16px; height:62px; padding:0 12px; gap:12px; border-color:rgba(58,123,247,.5);">
+    <div class="avatar" style="width:44px;height:44px;font-size:18px;background:linear-gradient(160deg,#ffb36b,#ff7a45);--ring:#3a7bf7;">A<span class="lvl">12</span></div>
+    <div class="col grow"><div class="name h3">Sen</div><div class="meta row" style="gap:6px; font:800 11.5px Nunito; color:var(--on-night-dim);"><div class="homes" style="--c:#3a7bf7;"><i class="f"></i><i></i><i></i><i></i></div>· 🏆 1.198</div></div>
+    <div class="dice-pad" style="width:56px; height:56px; border-radius:18px; opacity:.55; box-shadow:none; border-color:rgba(255,255,255,.2); background:rgba(255,255,255,.06);" id="dice7me"></div>
+  </div>
+  <div class="hint" style="top:668px;">Rakibin oynuyor…</div>
+  <div class="row" style="position:absolute; bottom:40px; left:0; right:0; justify-content:center; gap:10px;">
+    <div class="pill" style="padding:0 12px; font-size:20px;">👍</div><div class="pill" style="padding:0 12px; font-size:20px;">😂</div><div class="pill" style="padding:0 12px; font-size:20px;">😮</div><div class="pill" style="padding:0 12px; font:800 13px Nunito;">İyi oyun!</div>
+  </div>
+  <div class="homebar"></div>
+</section>
+
+<!-- 8. Maç sonucu -->
+<section class="screen" id="s8">
+  <div class="stars"></div><div class="lamp" style="top:30px;"></div>
+  <div class="statusbar"><span>9:41</span><div class="island"></div><span>●●● 5G ▮</span></div>
+  <div style="position:absolute; top:70px; width:100%; text-align:center;">
+    <div style="font-size:54px; line-height:1;">🏆</div>
+    <div class="display" style="margin-top:6px; color:var(--gold-300); text-shadow:0 3px 0 #a86d00;">1. oldun!</div>
+    <div class="body dim">4 Kişi · 14 dk 20 sn</div>
+  </div>
+  <div class="card" style="position:absolute; top:232px; left:16px; right:16px; padding:10px 12px;" id="ranks"></div>
+  <div class="glass" style="position:absolute; top:478px; left:16px; right:16px; padding:14px;">
+    <div class="row" style="justify-content:space-between;">
+      <div class="row" style="gap:8px;"><span class="coin"></span><span class="h2 num">+80</span></div>
+      <div class="row" style="gap:6px;"><span class="h2 num" style="color:#7ff0c6;">+50 XP</span></div>
+      <div class="row" style="gap:6px;"><span class="h2 num">🏆 +24</span></div>
+    </div>
+    <div class="row" style="gap:10px; margin-top:12px;"><span class="label">Sv. 12</span><div class="progress grow"><i style="width:78%;"></i></div><span class="label">Sv. 13</span></div>
+  </div>
+  <div class="btn berry" style="position:absolute; left:16px; right:16px; top:584px;">▶ İzle · Altını 2 katına çıkar</div>
+  <div class="row" style="position:absolute; left:16px; right:16px; bottom:44px; gap:12px;">
+    <div class="btn secondary grow">Ana menü</div><div class="btn primary grow">Tekrar oyna</div>
+  </div>
+  <div class="homebar"></div>
+</section>
+
+<!-- 9. Mağaza -->
+<section class="screen" id="s9">
+  <div class="stars"></div>
+  <div class="statusbar"><span>9:41</span><div class="island"></div><span>●●● 5G ▮</span></div>
+  <div class="top"><div class="h1 grow">Mağaza</div><div class="pill"><span class="coin"></span><span class="num">12.450</span><span class="plus">+</span></div></div>
+  <div class="row" style="position:absolute; top:104px; left:16px; right:0; gap:8px; overflow:hidden;">
+    <span class="tag" style="height:34px; padding:0 14px; background:var(--cream-50); color:var(--ink-900); font-size:14px; white-space:nowrap; flex:none;">Öne çıkan</span>
+    <span class="tag" style="height:34px; padding:0 14px; background:rgba(255,255,255,.08); font-size:14px;">Zarlar</span>
+    <span class="tag" style="height:34px; padding:0 14px; background:rgba(255,255,255,.08); font-size:14px;">Piyonlar</span>
+    <span class="tag" style="height:34px; padding:0 14px; background:rgba(255,255,255,.08); font-size:14px;">Tahtalar</span>
+    <span class="tag" style="height:34px; padding:0 14px; background:rgba(255,255,255,.08); font-size:14px;">Altın</span>
+  </div>
+  <!-- Premium bandı -->
+  <div style="position:absolute; top:152px; left:16px; right:16px; height:116px; border-radius:26px; padding:16px; overflow:hidden;
+     background:linear-gradient(135deg,#6a3fd0 0%,#8a52ff 45%,#ff7ab0 100%); box-shadow:0 6px 0 #3f2187, 0 14px 26px rgba(0,0,0,.35), inset 0 2px 0 rgba(255,255,255,.35);">
+    <div class="micro" style="opacity:.9;">👑 Kulüp Üyeliği</div>
+    <div class="h2" style="margin-top:4px;">Reklamsız oyna,<br>her ay özel ödül kazan</div>
+    <div class="btn secondary small" style="position:absolute; right:14px; bottom:14px;">İncele</div>
+    <div style="position:absolute; right:22px; top:10px; font-size:44px;">👑</div>
+  </div>
+  <!-- Başlangıç paketi -->
+  <div class="card" style="position:absolute; top:286px; left:16px; right:16px; height:96px; padding:12px 14px; display:flex; gap:12px; align-items:center;">
+    <div style="width:70px; height:70px; border-radius:20px; background:linear-gradient(160deg,#ffe08a,#ffc531); display:flex; align-items:center; justify-content:center; font-size:34px;">🎒</div>
+    <div class="col grow" style="gap:3px;"><div class="h3">Başlangıç Paketi</div><div class="caption" style="color:var(--ink-500);">5.000 altın + Neon zar + çerçeve</div><div class="micro" style="color:#e5484d;">⏱ 23:41:08 · tek seferlik</div></div>
+    <div class="btn primary small" style="padding:0 12px;">₺49,99</div>
+  </div>
+  <div style="position:absolute; top:398px; left:16px; right:16px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;" id="items"></div>
+  <!-- Ücretsiz altın -->
+  <div class="glass row" style="position:absolute; top:606px; left:16px; right:16px; height:56px; padding:0 10px 0 12px; gap:10px;">
+    <div style="font-size:26px;">📺</div><div class="col grow"><div class="label">Ücretsiz 50 altın</div><div class="caption dim">Bugün 2/5 kaldı</div></div><div class="btn berry small">İzle</div>
+  </div>
+  <div class="bottom-nav" id="nav9"></div>
+  <div class="homebar"></div>
+</section>
+
+<!-- 10. Arkadaşlar -->
+<section class="screen" id="s10">
+  <div class="stars"></div>
+  <div class="statusbar"><span>9:41</span><div class="island"></div><span>●●● 5G ▮</span></div>
+  <div class="top"><div class="h1 grow">Arkadaşlar</div><div class="icon-btn" style="width:auto; padding:0 12px; gap:6px; font:800 14px Nunito;">＋ Ekle</div></div>
+  <div style="position:absolute; top:108px; left:16px; right:16px;"><div class="seg"><div class="on">Arkadaşlar</div><div style="position:relative;">İstekler<span class="badge" style="position:relative; margin-left:6px; box-shadow:none;">2</span></div><div>Son oynanan</div></div></div>
+  <div class="card row" style="position:absolute; top:164px; left:16px; right:16px; padding:12px 14px; gap:12px;">
+    <div class="col grow"><div class="micro" style="color:var(--ink-500);">Arkadaş kodun</div><div class="h2 num" style="letter-spacing:1px;">AYSE#4821</div></div>
+    <div class="btn secondary small" style="padding:0 12px;">Kopyala</div><div class="btn primary small" style="padding:0 12px;">Paylaş</div>
+  </div>
+  <div class="micro dim" style="position:absolute; top:252px; left:20px;">Çevrimiçi · 3</div>
+  <div style="position:absolute; top:274px; left:16px; right:16px; display:flex; flex-direction:column; gap:8px;" id="friends"></div>
+  <div class="bottom-nav" id="nav10"></div>
+  <div class="homebar"></div>
+</section>
+
+<script src="board_data.js"></script>
+<script src="board.js"></script>
+<script>
+const ICON = {
+  gear: '<svg viewBox="0 0 24 24" fill="none" stroke="#f6efff" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.8v2.4M12 18.8v2.4M2.8 12h2.4M18.8 12h2.4M5.5 5.5l1.7 1.7M16.8 16.8l1.7 1.7M5.5 18.5l1.7-1.7M16.8 7.2l1.7-1.7"/></svg>',
+  menu: '<svg viewBox="0 0 24 24" fill="none" stroke="#f6efff" stroke-width="2.4" stroke-linecap="round"><path d="M5 7h14M5 12h14M5 17h14"/></svg>',
+  chat: '<svg viewBox="0 0 24 24" fill="none" stroke="#f6efff" stroke-width="2.2" stroke-linejoin="round"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v7a2.5 2.5 0 0 1-2.5 2.5H10l-4.5 3.5V16A2.5 2.5 0 0 1 4 13.5z"/><circle cx="9" cy="10" r=".6" fill="#f6efff"/><circle cx="15" cy="10" r=".6" fill="#f6efff"/></svg>',
+  home: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3.2 3 10.4V20a1 1 0 0 0 1 1h5.5v-6h5v6H20a1 1 0 0 0 1-1v-9.6z"/></svg>',
+  friends: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="8" r="3.6"/><path d="M2.5 19.5c.6-3.6 3.2-5.6 6.5-5.6s5.9 2 6.5 5.6z"/><circle cx="17" cy="9" r="2.8" opacity=".7"/><path d="M16 13.6c3.2-.3 5.3 1.6 5.6 4.9h-4.4c-.2-1.9-.6-3.4-1.2-4.9z" opacity=".7"/></svg>',
+  shop: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 8h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8z"/><path d="M8.5 9V7a3.5 3.5 0 0 1 7 0v2" fill="none" stroke="currentColor" stroke-width="2"/></svg>',
+  quests: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 3h12a1 1 0 0 1 1 1v16.5l-7-3.5-7 3.5V4a1 1 0 0 1 1-1z"/></svg>',
+  rank: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4h10v4a5 5 0 0 1-10 0z"/><path d="M7 5H4v2a3 3 0 0 0 3 3M17 5h3v2a3 3 0 0 1-3 3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M10.5 13h3v3.5H16V20H8v-3.5h2.5z"/></svg>',
+};
+const nav = (id, on, badges = {}) => {
+  const items = [["home", "Ana Sayfa"], ["friends", "Arkadaşlar"], ["shop", "Mağaza"], ["quests", "Görevler"], ["rank", "Sıralama"]];
+  document.getElementById(id).innerHTML = items.map(([k, t]) =>
+    `<div class="nav-item ${k === on ? "on" : ""}">${ICON[k]}<span>${t}</span>${badges[k] ? `<span class="badge">${badges[k]}</span>` : ""}</div>`).join("");
+};
+const s = +(new URLSearchParams(location.search).get("s") || 1);
+document.getElementById("s" + s).classList.add("on");
+
+// 1 — açılış piyon kümesi
+if (s === 1) (() => {
+  const host = document.getElementById("cluster");
+  const svgW = 170;
+  const fake = document.createElement("div");
+  const pawns = [["red", 34, 70, 1.1], ["green", 70, 52, 1.25], ["yellow", 108, 56, 1.15], ["blue", 140, 74, 1.0]];
+  const C = 60;
+  const temp = document.createElement("div");
+  const uid = drawBoard(temp, C * 15, { pawns: [] }).dataset.uid;
+  // Bağımsız büyük piyonlar: tahta çiziciyi kullanmak yerine aynı şekli tekrar çiz
+  host.innerHTML = `<svg width="170" height="120" viewBox="0 0 170 120">${temp.querySelector("defs").outerHTML}` +
+    pawns.map(([c, x, y, sc]) => `<g transform="translate(${x} ${y}) scale(${sc})" filter="url(#${uid}pshadow)">
+      <ellipse cx="0" cy="${C*0.26}" rx="${C*0.4}" ry="${C*0.17}" fill="${PLAYER[c].dark}"/>
+      <path d="M${-C*0.34} ${C*0.22}C${-C*0.3} ${-C*0.05} ${-C*0.12} ${-C*0.1} ${-C*0.1} ${-C*0.2}L${C*0.1} ${-C*0.2}C${C*0.12} ${-C*0.1} ${C*0.3} ${-C*0.05} ${C*0.34} ${C*0.22}Z" fill="url(#${uid}pg-${c})" stroke="#fff" stroke-width="${C*0.05}"/>
+      <circle cx="0" cy="${-C*0.3}" r="${C*0.25}" fill="url(#${uid}pg-${c})" stroke="#fff" stroke-width="${C*0.05}"/></g>`).join("") + `</svg>`;
+})();
+
+if (s === 2) document.getElementById("g-ico").innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.5 12.3c0-.8-.1-1.4-.2-2.1H12v4h5.9c-.1 1-.8 2.5-2.3 3.5l3.6 2.8c2.1-2 3.3-4.9 3.3-8.2z"/><path fill="#34A853" d="M12 23c3 0 5.5-1 7.3-2.7l-3.6-2.8c-1 .7-2.2 1.1-3.7 1.1-2.9 0-5.3-1.9-6.2-4.5L2.1 17C3.9 20.6 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.8 14.1c-.2-.7-.4-1.4-.4-2.1s.1-1.4.4-2.1L2.1 7C1.4 8.5 1 10.2 1 12s.4 3.5 1.1 5z"/><path fill="#EA4335" d="M12 5.4c2 0 3.4.9 4.2 1.6l3.1-3C17.5 2.2 15 1 12 1 7.7 1 3.9 3.4 2.1 7l3.7 2.9C6.7 7.3 9.1 5.4 12 5.4z"/></svg>';
+if (s === 3) {
+  document.getElementById("ico-gear").innerHTML = ICON.gear;
+  nav("nav3", "home", { friends: 2, quests: 1 });
+  const d2 = document.getElementById("art2"); drawDice(d2, 70, 6);
+  const d4 = document.getElementById("art4"); drawDice(d4, 70, 4);
+}
+if (s === 4) {
+  drawBoard(document.getElementById("mini4"), 210, { pawns: [] });
+  drawDice(document.getElementById("dice-equip"), 38, 5);
+}
+if (s === 5) {
+  const slots = [
+    ["Sen", "linear-gradient(160deg,#ffb36b,#ff7a45)", "#3a7bf7", "A", "Sv. 12"],
+    ["Kerem", "linear-gradient(160deg,#ff8e91,#e5484d)", "#e5484d", "K", "Sv. 8"],
+    [null], [null]];
+  document.getElementById("slots").innerHTML = slots.map(([n, bg, ring, ch, lv]) => n ?
+    `<div class="glass col" style="height:150px; align-items:center; justify-content:center; gap:10px; border-color:${ring}66;">
+      <div class="avatar" style="width:64px;height:64px;background:${bg};--ring:${ring};font-size:26px;">${ch}</div>
+      <div class="col" style="align-items:center;"><div class="h3">${n}</div><div class="caption dim">${lv} · Hazır ✓</div></div></div>` :
+    `<div class="glass col" style="height:150px; align-items:center; justify-content:center; gap:10px; border-style:dashed;">
+      <div style="width:64px;height:64px;border-radius:50%; border:3px dashed rgba(255,255,255,.3); display:flex; align-items:center; justify-content:center; font:800 26px Baloo\\ 2; color:rgba(255,255,255,.5);">?</div>
+      <div class="caption dim">Aranıyor…</div></div>`).join("");
+}
+if (s === 6) {
+  document.getElementById("ico-menu").innerHTML = ICON.menu;
+  document.getElementById("ico-chat").innerHTML = ICON.chat;
+  drawBoard(document.getElementById("board4"), 336, {
+    pawns: [
+      { color: "red", at: "yard:1" }, { color: "red", at: "yard:3" }, { color: "red", at: 22 }, { color: "red", at: 56 },
+      { color: "green", at: "yard:0" }, { color: "green", at: 11 }, { color: "green", at: 33 }, { color: "green", at: 52 },
+      { color: "yellow", at: 56 }, { color: "yellow", at: 56 }, { color: "yellow", at: 16 }, { color: "yellow", at: "yard:2" },
+      { color: "blue", at: "yard:0" }, { color: "blue", at: "yard:1" }, { color: "blue", at: 4 }, { color: "blue", at: 27 },
+    ],
+    movable: [{ color: "blue", at: 4 }, { color: "blue", at: 27 }],
+    targets: [{ color: "blue", step: 8 }, { color: "blue", step: 31 }],
+    trail: [{ color: "yellow", from: 11, to: 16 }],
+  });
+  drawDice(document.getElementById("dice6"), 66, 4);
+}
+if (s === 7) {
+  document.getElementById("ico-menu2").innerHTML = ICON.menu;
+  document.getElementById("ico-chat2").innerHTML = ICON.chat;
+  drawBoard(document.getElementById("board2"), 336, {
+    pawns: [
+      { color: "green", at: 56 }, { color: "green", at: 56 }, { color: "green", at: 44 }, { color: "green", at: 33 },
+      { color: "blue", at: 56 }, { color: "blue", at: "yard:0" }, { color: "blue", at: "yard:1" }, { color: "blue", at: 21 },
+    ],
+    trail: [{ color: "green", from: 27, to: 33 }],
+  });
+  drawDice(document.getElementById("dice7opp"), 46, 6);
+  drawDice(document.getElementById("dice7me"), 40, 3);
+}
+if (s === 8) {
+  const rows = [
+    [1, "Sen", "A", "linear-gradient(160deg,#ffb36b,#ff7a45)", "#3a7bf7", "+80", true],
+    [2, "Selin", "S", "linear-gradient(160deg,#ffd968,#f5b70a)", "#f5b70a", "+40"],
+    [3, "Kerem", "K", "linear-gradient(160deg,#ff8e91,#e5484d)", "#e5484d", "+15"],
+    [4, "Deniz", "D", "linear-gradient(160deg,#7be0a3,#2fb463)", "#2fb463", "0", false, "Maçtan ayrıldı · ödül yok"]];
+  document.getElementById("ranks").innerHTML = rows.map(([r, n, ch, bg, ring, c, me, note]) => `
+    <div class="row" style="gap:12px; padding:8px 6px; ${me ? "background:#fff1d6; border-radius:16px;" : ""}">
+      <div class="h2 num" style="width:22px; text-align:center; color:${r === 1 ? "#c88a00" : "var(--ink-500)"};">${r}</div>
+      <div class="avatar" style="width:38px;height:38px;font-size:16px;background:${bg};--ring:${ring};">${ch}</div>
+      <div class="col grow"><div class="h3">${n}</div>${note ? `<div class="caption" style="color:#e5484d;">${note}</div>` : ""}</div>
+      <div class="row" style="gap:4px;"><span class="coin" style="width:18px;height:18px;"></span><span class="h3 num">${c}</span></div>
+      ${me ? '<div style="width:32px;"></div>' : '<div class="icon-btn" style="width:32px;height:32px;border-radius:11px;background:var(--cream-200);border:0;color:var(--ink-900);font:900 16px Nunito;">＋</div>'}
+    </div>`).join("");
+}
+if (s === 9) {
+  nav("nav9", "shop", { friends: 2 });
+  const items = [["Altın Zar", "EPİK", "#e0457b", 6, "2.500", "#fff1c2", "#ffe08a"], ["Neon Zar", "NADİR", "#8a52ff", 5, "1.200", "#efe6ff", "#c9b3ff"], ["Mermer Zar", "SIRADAN", "#7a6d91", 3, "400", "#f2ecf8", "#ddd2ea"]];
+  document.getElementById("items").innerHTML = items.map(([n, r, rc, v, p, top, bottom]) =>
+    `<div class="card item" style="position:relative;"><span class="micro rarity" style="color:${rc};">${r}</span><div style="margin-top:16px;" data-d="${v}" data-t="${top}" data-b="${bottom}"></div><div class="label" style="text-align:center;">${n}</div>
+     <div class="price" style="background:var(--cream-200);"><span class="coin" style="width:16px;height:16px;"></span>${p}</div></div>`).join("");
+  document.querySelectorAll("[data-d]").forEach((h) => drawDice(h, 62, +h.dataset.d, { top: h.dataset.t, bottom: h.dataset.b, edge: "#c9b08a" }));
+}
+if (s === 10) {
+  nav("nav10", "friends", { friends: 2 });
+  const fr = [
+    ["Mehmet", "M", "#2fb463", "Çevrimiçi", "#2fd39a", "Davet et", "mint"],
+    ["Zeynep", "Z", "#8a52ff", "Maçta · 4 Kişi", "#ffc531", "", ""],
+    ["Can", "C", "#3a7bf7", "Çevrimiçi", "#2fd39a", "Davet et", "mint"],
+    ["Elif", "E", "#e5484d", "3 sa önce", "#7a6d91", "", ""],
+    ["Burak", "B", "#f5b70a", "Dün", "#7a6d91", "", ""]];
+  document.getElementById("friends").innerHTML = fr.map(([n, ch, bg, st, sc, act, kind]) => `
+    <div class="li"><div class="avatar" style="width:42px;height:42px;font-size:18px;background:${bg};--ring:rgba(255,255,255,.85);">${ch}<span style="position:absolute; right:-2px; bottom:-2px; width:13px; height:13px; border-radius:50%; background:${sc}; box-shadow:0 0 0 2.5px var(--night-800);"></span></div>
+      <div class="col grow"><div class="h3">${n}</div><div class="caption" style="color:${sc === "#7a6d91" ? "var(--on-night-dim)" : sc};">${st}</div></div>
+      ${act ? `<div class="btn ${kind} small" style="height:36px; ${kind === "ghost" ? "opacity:.6;" : ""}">${act}</div>` : '<div class="label dim">⋯</div>'}</div>`).join("");
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,129 @@
+/* Kızma Birader — "Akşam Masası" tasarım sistemi prototipi (UI_UX_DESIGN_SYSTEM.md).
+   Değerler belgeyle aynıdır; 1 CSS px = 1 pt (iOS) / 1 dp (Android). */
+@font-face { font-family: "Baloo 2"; src: url("fonts/Baloo2.ttf"); font-weight: 400 800; }
+@font-face { font-family: "Nunito"; src: url("fonts/Nunito-Variable.ttf"); font-weight: 200 1000; }
+
+:root {
+  /* Zemin */
+  --night-900: #140e2b;
+  --night-800: #1d1438;
+  --night-700: #2a1d52;
+  --night-600: #3a2a6b;
+  --glow: rgba(255, 168, 76, 0.22);
+  /* Yüzeyler */
+  --cream-50: #fffaf2;
+  --cream-100: #fff3e2;
+  --cream-200: #f5e6cf;
+  --cream-300: #e8d3b4;
+  --ink-900: #2a1f3d;
+  --ink-700: #4b3f62;
+  --ink-500: #7a6d91;
+  --on-night: #f6efff;
+  --on-night-dim: #b9add6;
+  /* Eylem */
+  --mango-300: #ffc35a;
+  --mango-500: #ff9a1f;
+  --mango-700: #c25f00;
+  --mango-ink: #3d1c00;
+  --berry-500: #ff5d8f;
+  --mint-500: #2fd39a;
+  --gold-300: #ffe08a;
+  --gold-500: #ffc531;
+  --gold-700: #c88a00;
+  --danger-500: #ff5a5f;
+  /* Oyuncu renkleri */
+  --p-red: #e5484d;    --p-red-dark: #a8262b;    --p-red-soft: #ffd5d6;
+  --p-green: #2fb463;  --p-green-dark: #1c7a40;  --p-green-soft: #cdf2dc;
+  --p-yellow: #f5b70a; --p-yellow-dark: #b27f00; --p-yellow-soft: #ffeeb8;
+  --p-blue: #3a7bf7;   --p-blue-dark: #1f4fb8;   --p-blue-soft: #d5e3ff;
+  /* Ölçü */
+  --r-s: 10px; --r-m: 16px; --r-l: 22px; --r-xl: 28px;
+  --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s5: 20px; --s6: 24px; --s8: 32px;
+  --safe-top: 44px; --safe-bottom: 24px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 360px; height: 780px; overflow: hidden; background: #000; }
+body { font-family: "Nunito", sans-serif; font-weight: 700; color: var(--on-night); -webkit-font-smoothing: antialiased; }
+.screen { position: relative; width: 360px; height: 780px; overflow: hidden; display: none;
+  background: radial-gradient(120% 60% at 50% 38%, var(--night-600) 0%, var(--night-700) 38%, var(--night-800) 70%, var(--night-900) 100%); }
+.screen.on { display: block; }
+.stars { position: absolute; inset: 0; pointer-events: none; opacity: .55;
+  background-image:
+    radial-gradient(1.2px 1.2px at 20px 30px, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 90px 120px, #fff 50%, transparent 51%),
+    radial-gradient(1.4px 1.4px at 160px 60px, #ffe7b0 50%, transparent 51%),
+    radial-gradient(1px 1px at 250px 150px, #fff 50%, transparent 51%),
+    radial-gradient(1.2px 1.2px at 320px 40px, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 60px 220px, #ffe7b0 50%, transparent 51%),
+    radial-gradient(1.3px 1.3px at 300px 260px, #fff 50%, transparent 51%);
+  background-size: 360px 300px; }
+.statusbar { position: absolute; top: 0; left: 0; right: 0; height: 44px; display: flex; align-items: center; justify-content: space-between;
+  padding: 0 26px; font: 700 14px "Nunito"; color: var(--on-night); z-index: 9; }
+.statusbar .island { position: absolute; left: 50%; top: 11px; width: 108px; height: 30px; margin-left: -54px; border-radius: 20px; background: #000; }
+.homebar { position: absolute; bottom: 8px; left: 50%; width: 120px; height: 5px; margin-left: -60px; border-radius: 3px; background: rgba(255,255,255,.55); z-index: 9; }
+
+/* Tipografi */
+.display { font: 800 34px/1.0 "Baloo 2"; letter-spacing: .5px; }
+.h1 { font: 800 26px/1.1 "Baloo 2"; }
+.h2 { font: 800 20px/1.15 "Baloo 2"; }
+.h3 { font: 700 17px/1.2 "Baloo 2"; }
+.body { font: 700 15px/1.35 "Nunito"; }
+.label { font: 800 13px/1.2 "Nunito"; }
+.caption { font: 700 12px/1.25 "Nunito"; }
+.micro { font: 900 10.5px/1.1 "Nunito"; letter-spacing: .6px; text-transform: uppercase; }
+.num { font-family: "Baloo 2"; font-weight: 800; font-variant-numeric: tabular-nums; }
+.dim { color: var(--on-night-dim); }
+
+/* Butonlar — kalın alt kenarlı "oyun butonu"; basılınca 4 px gömülür */
+.btn { position: relative; display: flex; align-items: center; justify-content: center; gap: 8px; border: 0; cursor: pointer;
+  height: 56px; padding: 0 22px; border-radius: var(--r-l); font: 800 18px "Baloo 2"; letter-spacing: .3px; }
+.btn.primary { color: var(--mango-ink); background: linear-gradient(180deg, var(--mango-300) 0%, var(--mango-500) 55%, #ff8a0a 100%);
+  box-shadow: 0 5px 0 var(--mango-700), 0 10px 22px rgba(255, 140, 20, .35), inset 0 2px 0 rgba(255,255,255,.55); }
+.btn.secondary { color: var(--ink-900); background: linear-gradient(180deg, #fffdf8, var(--cream-100));
+  box-shadow: 0 5px 0 var(--cream-300), 0 10px 18px rgba(0,0,0,.25), inset 0 2px 0 #fff; }
+.btn.ghost { color: var(--on-night); background: rgba(255,255,255,.08); border: 1.5px solid rgba(255,255,255,.18); box-shadow: none; }
+.btn.berry { color: #fff; background: linear-gradient(180deg, #ff86ab, var(--berry-500)); box-shadow: 0 5px 0 #b8295a, 0 10px 20px rgba(255,93,143,.3), inset 0 2px 0 rgba(255,255,255,.45); }
+.btn.mint { color: #04291b; background: linear-gradient(180deg, #7ff0c6, var(--mint-500)); box-shadow: 0 5px 0 #13875f, 0 10px 20px rgba(47,211,154,.28), inset 0 2px 0 rgba(255,255,255,.5); }
+.btn.small { height: 40px; padding: 0 14px; border-radius: var(--r-m); font-size: 15px; }
+.btn.pressed { transform: translateY(4px); box-shadow: 0 1px 0 var(--mango-700), inset 0 2px 0 rgba(255,255,255,.4); }
+.icon-btn { width: 44px; height: 44px; border-radius: 15px; display: flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,.09); border: 1.5px solid rgba(255,255,255,.14); }
+.icon-btn svg { width: 22px; height: 22px; }
+
+/* Kartlar */
+.card { background: linear-gradient(180deg, var(--cream-50), var(--cream-100)); color: var(--ink-900); border-radius: var(--r-xl);
+  box-shadow: 0 2px 0 rgba(255,255,255,.7) inset, 0 6px 0 var(--cream-300), 0 16px 30px rgba(10, 4, 30, .45); }
+.glass { background: rgba(255,255,255,.07); border: 1.5px solid rgba(255,255,255,.12); border-radius: var(--r-l); }
+.pill { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px 0 6px; border-radius: 17px;
+  background: rgba(10, 4, 30, .45); border: 1.5px solid rgba(255,255,255,.14); font: 800 16px "Baloo 2"; }
+.pill .plus { width: 22px; height: 22px; border-radius: 8px; background: var(--mint-500); color: #04291b; display: flex; align-items: center; justify-content: center; font: 900 16px "Nunito"; margin-left: 2px; }
+.badge { position: absolute; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 10px; background: var(--danger-500); color: #fff;
+  font: 900 12px/20px "Nunito"; text-align: center; box-shadow: 0 0 0 2px var(--night-800); }
+.coin { width: 24px; height: 24px; border-radius: 50%; flex: none;
+  background: radial-gradient(circle at 35% 30%, #fff3b8 0 18%, var(--gold-500) 40%, var(--gold-700) 100%);
+  box-shadow: inset 0 0 0 2px rgba(150, 90, 0, .45), 0 2px 0 rgba(0,0,0,.25); position: relative; }
+.coin::after { content: "★"; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #a86d00; }
+
+/* Avatar — renk halkalı daire; sayaç halkası conic-gradient */
+.avatar { position: relative; width: 52px; height: 52px; border-radius: 50%; flex: none; display: flex; align-items: center; justify-content: center;
+  font: 800 22px "Baloo 2"; color: #fff; box-shadow: 0 0 0 3px var(--ring, #fff), 0 6px 14px rgba(0,0,0,.35); }
+.avatar .lvl { position: absolute; bottom: -6px; right: -6px; min-width: 22px; height: 22px; border-radius: 11px; padding: 0 5px;
+  background: var(--gold-500); color: #4a2d00; font: 900 12px/22px "Nunito"; text-align: center; box-shadow: 0 0 0 2px var(--night-800); }
+.timer-ring { position: absolute; inset: -7px; border-radius: 50%;
+  background: conic-gradient(var(--mango-500) calc(var(--t) * 1turn), rgba(255,255,255,.12) 0); -webkit-mask: radial-gradient(circle, transparent 31px, #000 32px); }
+
+.bottom-nav { position: absolute; left: 12px; right: 12px; bottom: 22px; height: 70px; border-radius: 26px; display: flex; justify-content: space-around; align-items: center;
+  background: linear-gradient(180deg, rgba(58, 42, 107, .96), rgba(36, 25, 70, .98)); border: 1.5px solid rgba(255,255,255,.12); box-shadow: 0 12px 30px rgba(0,0,0,.45); }
+.nav-item { position: relative; width: 62px; display: flex; flex-direction: column; align-items: center; gap: 3px; color: var(--on-night-dim); font: 800 11px "Nunito"; }
+.nav-item svg { width: 26px; height: 26px; }
+.nav-item.on { color: #fff; }
+.nav-item.on::before { content: ""; position: absolute; top: -9px; width: 50px; height: 50px; border-radius: 17px; background: rgba(255,154,31,.2); z-index: -1; }
+.nav-item .badge { top: -6px; right: 6px; }
+
+.progress { height: 12px; border-radius: 6px; background: rgba(0,0,0,.25); overflow: hidden; box-shadow: inset 0 2px 3px rgba(0,0,0,.25); }
+.progress > i { display: block; height: 100%; border-radius: 6px; background: linear-gradient(180deg, #7ff0c6, var(--mint-500)); }
+
+.tag { display: inline-flex; align-items: center; gap: 5px; height: 24px; padding: 0 9px; border-radius: 12px; font: 800 12px "Nunito"; }
+.toast { position: absolute; left: 50%; transform: translateX(-50%); padding: 10px 16px; border-radius: 18px; font: 800 14px "Nunito";
+  background: rgba(20, 14, 43, .92); border: 1.5px solid rgba(255,255,255,.16); box-shadow: 0 10px 24px rgba(0,0,0,.4); white-space: nowrap; }

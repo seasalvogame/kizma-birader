@@ -1,0 +1,463 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: en\n"
+
+msgid "SETUP_SUBTITLE"
+msgstr "PRACTICE · OFFLINE"
+
+msgid "SETUP_TITLE"
+msgstr "Set up a match"
+
+msgid "SETUP_TWO_PLAYERS"
+msgstr "2 Players"
+
+msgid "SETUP_FOUR_PLAYERS"
+msgstr "4 Players"
+
+msgid "SETUP_NOTE_BOTS"
+msgstr "Bots are always marked BOT in the match."
+
+msgid "SETUP_NOTE_HOTSEAT"
+msgstr "Pass and play on one phone: whoever's turn it is rolls."
+
+msgid "SETUP_RULES"
+msgstr "Enter on 6 · 6 = roll again · stars are safe · exact roll to finish · 10 s to roll, 12 s to move"
+
+msgid "SETUP_PLAY"
+msgstr "PLAY"
+
+msgid "COLOR_RED"
+msgstr "Red"
+
+msgid "COLOR_GREEN"
+msgstr "Green"
+
+msgid "COLOR_YELLOW"
+msgstr "Yellow"
+
+msgid "COLOR_BLUE"
+msgstr "Blue"
+
+msgid "COLOR_RED_ACC"
+msgstr "red"
+
+msgid "COLOR_GREEN_ACC"
+msgstr "green"
+
+msgid "COLOR_YELLOW_ACC"
+msgstr "yellow"
+
+msgid "COLOR_BLUE_ACC"
+msgstr "blue"
+
+msgid "ROLE_YOU"
+msgstr "You"
+
+msgid "ROLE_PLAYER"
+msgstr "Player"
+
+msgid "ROLE_BOT"
+msgstr "Bot"
+
+msgid "NAME_YOU"
+msgstr "You"
+
+msgid "NAME_PLAYER_N"
+msgstr "Player %d"
+
+msgid "NAME_BOT_N"
+msgstr "Bot %d"
+
+msgid "MATCH_BOT_TAG"
+msgstr "BOT"
+
+msgid "MATCH_MENU"
+msgstr "Menu"
+
+msgid "MATCH_MODE_2P"
+msgstr "2 Players · Classic · Practice"
+
+msgid "MATCH_MODE_4P"
+msgstr "4 Players · Classic · Practice"
+
+msgid "MATCH_START_FAILED"
+msgstr "The match could not start"
+
+msgid "MATCH_STATUS_LEFT"
+msgstr "Left"
+
+msgid "MATCH_STATUS_AUTOPILOT"
+msgstr "Autopilot"
+
+msgid "MATCH_STATUS_FINISHED"
+msgstr "Finished %d."
+
+msgid "MATCH_STATUS_TURN"
+msgstr "Playing"
+
+msgid "MATCH_HINT_OVER"
+msgstr "Match over"
+
+msgid "MATCH_HINT_ROLL"
+msgstr "Tap to roll"
+
+msgid "MATCH_HINT_ROLL_NAMED"
+msgstr "%s's turn: tap the dice"
+
+msgid "MATCH_HINT_MOVE"
+msgstr "Tap the pawn you want to move"
+
+msgid "MATCH_HINT_BOT"
+msgstr "%s is thinking…"
+
+msgid "MATCH_HINT_WAIT"
+msgstr "%s is playing…"
+
+msgid "MATCH_TOAST_TIMEOUT"
+msgstr "Time's up · played automatically"
+
+msgid "MATCH_TOAST_NO_MOVES"
+msgstr "No possible move"
+
+msgid "MATCH_TOAST_SIX"
+msgstr "Six! Roll again"
+
+msgid "MATCH_TOAST_BONUS"
+msgstr "Roll again!"
+
+msgid "MATCH_TOAST_THREE_SIXES"
+msgstr "Three sixes! Turn lost"
+
+msgid "MATCH_TOAST_PLAYER_FINISHED"
+msgstr "%s finished %d.!"
+
+msgid "MATCH_TOAST_AUTOPILOT"
+msgstr "Autopilot on for %s"
+
+msgid "MATCH_TOAST_YOU_WERE_CAPTURED"
+msgstr "Your pawn was captured! (%s)"
+
+msgid "MATCH_TOAST_YOU_CAPTURED"
+msgstr "You captured a pawn!"
+
+msgid "MATCH_TOAST_CAPTURED"
+msgstr "%s captured a %s pawn!"
+
+msgid "MENU_TITLE"
+msgstr "Match menu"
+
+msgid "MENU_RESUME"
+msgstr "Resume"
+
+msgid "MENU_RESTART"
+msgstr "Restart"
+
+msgid "MENU_LEAVE"
+msgstr "Leave match"
+
+msgid "SETTING_FAST_ANIMATIONS"
+msgstr "Fast animations"
+
+msgid "SETTING_AUTO_SINGLE_MOVE"
+msgstr "Auto-play a single move"
+
+msgid "SETTING_COLOR_SYMBOLS"
+msgstr "Colour symbols"
+
+msgid "ON"
+msgstr "On"
+
+msgid "OFF"
+msgstr "Off"
+
+msgid "CONFIRM_RESTART"
+msgstr "Start the match again? This practice match is not saved."
+
+msgid "CONFIRM_LEAVE"
+msgstr "Leave the match? This practice match is not saved."
+
+msgid "CANCEL"
+msgstr "Cancel"
+
+msgid "RESULT_PLACE"
+msgstr "You finished %d.!"
+
+msgid "RESULT_PLACE_OTHER"
+msgstr "You finished %d."
+
+msgid "RESULT_PRACTICE_NOTE"
+msgstr "Practice match · no rewards, no ranking"
+
+msgid "RESULT_MENU"
+msgstr "Main menu"
+
+msgid "RESULT_AGAIN"
+msgstr "Play again"
+
+msgid "NAV_HOME"
+msgstr "Home"
+
+msgid "NAV_FRIENDS"
+msgstr "Friends"
+
+msgid "NAV_STORE"
+msgstr "Store"
+
+msgid "NAV_QUESTS"
+msgstr "Quests"
+
+msgid "NAV_RANKING"
+msgstr "Ranking"
+
+msgid "BACK"
+msgstr "Back"
+
+msgid "SOON"
+msgstr "SOON"
+
+msgid "DEFAULT_NAME"
+msgstr "Player"
+
+msgid "HOME_GUEST"
+msgstr "Guest · offline"
+
+msgid "HOME_PLAY"
+msgstr "Play"
+
+msgid "HOME_CARD_SUB"
+msgstr "Pick a mode"
+
+msgid "HOME_PRIVATE"
+msgstr "Private Room"
+
+msgid "HOME_PRIVATE_SUB"
+msgstr "Play with friends"
+
+msgid "HOME_PRACTICE"
+msgstr "Practice"
+
+msgid "HOME_PRACTICE_SUB"
+msgstr "Against bots, offline"
+
+msgid "HOME_ONLINE_TITLE"
+msgstr "Online matches are coming"
+
+msgid "HOME_ONLINE_SUB"
+msgstr "Quick matches with real players, private rooms and invites are on the way."
+
+msgid "HOME_STATS_TITLE"
+msgstr "Your stats"
+
+msgid "HOME_STATS_NOTE"
+msgstr "Practice matches played on this device"
+
+msgid "STAT_MATCHES"
+msgstr "Matches"
+
+msgid "STAT_WINS"
+msgstr "Wins"
+
+msgid "STAT_RATE"
+msgstr "Win rate"
+
+msgid "STAT_2P"
+msgstr "2 players"
+
+msgid "STAT_4P"
+msgstr "4 players"
+
+msgid "MODE_TITLE"
+msgstr "Game mode · %s"
+
+msgid "MODE_BOTS"
+msgstr "Against bots"
+
+msgid "MODE_BOTS_SUB"
+msgstr "Offline · always available"
+
+msgid "MODE_LOCAL"
+msgstr "Pass and play"
+
+msgid "MODE_LOCAL_SUB"
+msgstr "Take turns on one device"
+
+msgid "MODE_ONLINE"
+msgstr "Online quick match"
+
+msgid "MODE_ONLINE_SUB"
+msgstr "Get matched with real players"
+
+msgid "MODE_PRIVATE"
+msgstr "Private room"
+
+msgid "MODE_PRIVATE_SUB"
+msgstr "Invite friends with a code"
+
+msgid "SETUP_HEADER"
+msgstr "Set up a match"
+
+msgid "SETUP_COLOR"
+msgstr "Your colour"
+
+msgid "SETUP_COLOR_NOTE_2P"
+msgstr "In a 2-player match your opponent always starts in the opposite corner."
+
+msgid "SETUP_SEATS"
+msgstr "Players"
+
+msgid "INFO_STATUS"
+msgstr "Needs an online account · Coming soon"
+
+msgid "INFO_NOW"
+msgstr "For now"
+
+msgid "INFO_NOW_TEXT"
+msgstr "You can play against bots or pass and play with a friend."
+
+msgid "INFO_PLAY_PRACTICE"
+msgstr "Play a practice match"
+
+msgid "INFO_FRIENDS_TITLE"
+msgstr "Friends"
+
+msgid "INFO_FRIENDS_HEAD"
+msgstr "Play with your friends"
+
+msgid "INFO_FRIENDS_BODY"
+msgstr "Friend codes, online status and match invites arrive together with online accounts."
+
+msgid "INFO_STORE_TITLE"
+msgstr "Cosmetics Store"
+
+msgid "INFO_STORE_HEAD"
+msgstr "Dice, pawn and board styles"
+
+msgid "INFO_STORE_BODY"
+msgstr "The store only sells looks and never gives an advantage. Gold and Gems open with online accounts."
+
+msgid "INFO_QUESTS_TITLE"
+msgstr "Quests"
+
+msgid "INFO_QUESTS_HEAD"
+msgstr "Daily quests and rewards"
+
+msgid "INFO_QUESTS_BODY"
+msgstr "Daily quests and their rewards are saved to your account, so they need an online account."
+
+msgid "INFO_RANKING_TITLE"
+msgstr "Ranking"
+
+msgid "INFO_RANKING_HEAD"
+msgstr "Weekly wins leaderboard"
+
+msgid "INFO_RANKING_BODY"
+msgstr "Only online matches are ranked; practice matches never count."
+
+msgid "INFO_ACHIEVEMENTS_TITLE"
+msgstr "Achievements"
+
+msgid "INFO_ACHIEVEMENTS_HEAD"
+msgstr "Badges and achievements"
+
+msgid "INFO_ACHIEVEMENTS_BODY"
+msgstr "Achievements will belong to your account, so a new phone will not lose them."
+
+msgid "INFO_ONLINE_TITLE"
+msgstr "Online Match"
+
+msgid "INFO_ONLINE_HEAD"
+msgstr "Quick match with real players"
+
+msgid "INFO_ONLINE_BODY"
+msgstr "The game server is being built. 2- and 4-player online matches will open here when it is ready."
+
+msgid "INFO_PRIVATE_TITLE"
+msgstr "Private Room"
+
+msgid "INFO_PRIVATE_HEAD"
+msgstr "A room for friends, by code"
+
+msgid "INFO_PRIVATE_BODY"
+msgstr "Share the room code, pick colours and play with friends. Arrives with online matches."
+
+msgid "PROFILE_TITLE"
+msgstr "Profile"
+
+msgid "PROFILE_NAME"
+msgstr "Your player name"
+
+msgid "PROFILE_NAME_HINT"
+msgstr "3–16 characters"
+
+msgid "PROFILE_SAVE"
+msgstr "Save"
+
+msgid "PROFILE_SAVED"
+msgstr "Saved"
+
+msgid "PROFILE_NAME_INVALID"
+msgstr "The name must be 3–16 characters"
+
+msgid "PROFILE_AVATAR"
+msgstr "Avatar colour"
+
+msgid "PROFILE_ACCOUNT"
+msgstr "Account"
+
+msgid "PROFILE_ACCOUNT_GUEST"
+msgstr "You are playing as a guest on this device. Online accounts and Google, Apple or email sign-in are coming."
+
+msgid "PROFILE_STATS"
+msgstr "Practice stats"
+
+msgid "SETTINGS_TITLE"
+msgstr "Settings"
+
+msgid "SETTINGS_GAME"
+msgstr "Game"
+
+msgid "SETTINGS_LANGUAGE"
+msgstr "Language"
+
+msgid "SETTINGS_RULES"
+msgstr "How to play"
+
+msgid "SETTINGS_VERSION"
+msgstr "Version %s"
+
+msgid "SETTINGS_SOUND_SOON"
+msgstr "Sound and music are coming soon."
+
+msgid "SETTING_VIBRATION"
+msgstr "Vibration"
+
+msgid "SETTING_REDUCED_MOTION"
+msgstr "Reduced motion"
+
+msgid "RULES_TITLE"
+msgstr "How to Play"
+
+msgid "RULES_GOAL"
+msgstr "Goal: be the first to bring all four pawns home to the centre."
+
+msgid "RULES_ENTER"
+msgstr "A pawn leaves the yard only with a 6 and goes onto your start cell."
+
+msgid "RULES_SIX"
+msgstr "Roll a 6 and you roll again after your move."
+
+msgid "RULES_CAPTURE"
+msgstr "Land on an opponent's pawn to capture it: it goes back to its yard and you roll again."
+
+msgid "RULES_SAFE"
+msgstr "Star cells and start cells are safe: no captures there."
+
+msgid "RULES_FINISH"
+msgstr "You need the exact number to get home. Bringing a pawn home gives you another roll."
+
+msgid "RULES_TIME"
+msgstr "You have 10 seconds to roll and 12 to move; when time runs out the move is played for you."
+
+msgid "RULES_END"
+msgstr "In a 2-player match the first to finish wins. A 4-player match ends when three players have finished."

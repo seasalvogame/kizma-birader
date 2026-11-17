@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <!-- Placeholder app icon (K-01: brand and icon not decided). -->
+  <rect width="128" height="128" rx="28" fill="#2a1d52"/>
+  <circle cx="64" cy="64" r="44" fill="#fff6e6"/>
+  <path d="M64 30 l9 20 22 2 -17 14 6 22 -20 -12 -20 12 6 -22 -17 -14 22 -2z" fill="#ffd04a" stroke="#d49a00" stroke-width="3"/>
+</svg>
