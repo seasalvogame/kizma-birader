@@ -14,7 +14,7 @@ import { fileURLToPath } from "node:url";
 
 const repo = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 const WIN = process.platform === "win32";
-export const CONFIGS = { progression: "shared/config/progression_config.json", quests: "shared/config/quests_config.json" };
+export const CONFIGS = { progression: "shared/config/progression_config.json", quests: "shared/config/quests_config.json", daily_login: "shared/config/daily_login_config.json" };
 
 function query(sql, write) {
   const dir = mkdtempSync(join(tmpdir(), "kb-cfg-"));

@@ -274,4 +274,12 @@ func _phase6_more() -> void:
 	await _shot("63_quests_sample_scrolled")
 	Online.progress.quests = {}
 	Online.progress._count()
+	main.call("go", "home")
+	await _frames(10)
+	var status := {"can_claim": true, "next_day": 4, "streak": 3, "cycles": 0, "cycle": [{"day": 1, "xp": 30}, {"day": 2, "gold": 100},
+		{"day": 3, "xp": 50}, {"day": 4, "gold": 200}, {"day": 5, "xp": 80}, {"day": 6, "gold": 300}, {"day": 7, "gold": 500, "xp": 100, "badge": "login_week"}]}
+	var panel := DailyLoginPanel.open(main.get("current"), status)
+	await _frames(14)
+	await _shot("64_daily_login_sample")
+	panel.queue_free()
 

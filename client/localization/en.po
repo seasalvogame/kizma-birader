@@ -1262,3 +1262,48 @@ msgstr "%dh %dm"
 
 msgid "TIME_DH"
 msgstr "%dd %dh"
+
+msgid "LOGIN_TITLE"
+msgstr "Daily Reward"
+
+msgid "LOGIN_INFO"
+msgstr "Come back every day and collect your reward!"
+
+msgid "LOGIN_STREAK"
+msgstr "Streak: %d days in a row"
+
+msgid "LOGIN_DAY"
+msgstr "Day %d"
+
+msgid "LOGIN_GOLD"
+msgstr "%d Gold"
+
+msgid "LOGIN_CLAIM"
+msgstr "Collect day %d"
+
+msgid "LOGIN_COME_BACK"
+msgstr "You collected today's reward. Come back tomorrow!"
+
+msgid "LOGIN_RULE"
+msgstr "If you miss a day the cycle continues where you left it; only the streak starts again. Days renew by server time (00:00 Turkey)."
+
+msgid "LOGIN_CLOSE"
+msgstr "Close"
+
+msgid "LOGIN_DONE"
+msgstr "Day %d reward!"
+
+msgid "LOGIN_ALREADY"
+msgstr "Already collected today"
+
+msgid "LOGIN_CARD_SUB"
+msgstr "7-day login rewards"
+
+msgid "LOGIN_CARD_READY"
+msgstr "Today's reward is waiting!"
+
+msgid "LOGIN_BADGE"
+msgstr "READY"
+
+msgid "BADGE_LOGIN_WEEK"
+msgstr "Loyal Player"

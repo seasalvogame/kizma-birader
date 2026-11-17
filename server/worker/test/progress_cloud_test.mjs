@@ -148,6 +148,9 @@ try {
   const target = qa.data.daily.find((q) => !q.completed) ?? qa.data.daily[0];
   sql(`update public.player_quests set progress = target, completed_at = coalesce(completed_at, now()) where user_id = '${A.id}' and period = 'daily' and quest_id = '${target.quest_id}'`, true);
   const goldBefore = sql(`select coins from public.wallets where user_id = '${A.id}'`)[0].coins;
+  // the ledger key of this reward (an earlier run on the same day may already have paid it: then it is never paid again)
+  const ledgerKey = `${A.id}:quest:daily:${target.period_key}:${target.quest_id}`;
+  const paidBefore = sql(`select count(*)::int as n from public.wallet_transactions where idempotency_key = '${ledgerKey}'`)[0].n;
   const args = { p_period: "daily", p_period_key: target.period_key, p_quest_id: target.quest_id };
   const forged = A.token.split(".").slice(0, 2).join(".") + ".invalidsignature";
   check((await rpc(forged, "claim_quest", args)).status === 401, "a forged JWT cannot claim");
@@ -157,7 +160,23 @@ try {
   const ok = results.filter((r) => r.status === 200);
   check(ok.length === 1 && results.filter((r) => /ALREADY_CLAIMED/.test(r.error ?? "")).length === 4, "5 concurrent claims: exactly one succeeds, four get ALREADY_CLAIMED");
   const goldAfter = sql(`select coins from public.wallets where user_id = '${A.id}'`)[0].coins;
-  check(goldAfter - goldBefore === target.gold + (ok[0].data.level_gold ?? 0), `gold paid once (+${goldAfter - goldBefore})`);
+  const paidAfter = sql(`select count(*)::int as n from public.wallet_transactions where idempotency_key = '${ledgerKey}'`)[0].n;
+  check(paidAfter === 1 && goldAfter - goldBefore === (paidBefore ? 0 : target.gold) + (ok[0].data.level_gold ?? 0),
+    `gold paid once: one ledger row for this reward (+${goldAfter - goldBefore}${paidBefore ? ', already paid by an earlier run today' : ''})`);
+
+  console.log("5. Daily login reward (server clock, once per TR day)");
+  const st = await rpc(B.token, "daily_login_status");
+  check(st.status === 200 && st.data.can_claim === true && st.data.next_day === 1 && st.data.cycle.length === 7, "status: day 1 of 7 is ready");
+  const loginTries = await Promise.all(Array.from({ length: 5 }, () => rpc(B.token, "claim_daily_login")));
+  const loginOk = loginTries.filter((r) => r.status === 200);
+  check(loginOk.length === 1 && loginTries.filter((r) => /ALREADY_CLAIMED/.test(r.error ?? "")).length === 4, "5 concurrent claims: one reward, four ALREADY_CLAIMED");
+  check(loginOk[0].data.day === 1 && loginOk[0].data.xp === 30 && loginOk[0].data.streak === 1, "day 1 pays 30 XP, streak 1");
+  const st2 = await rpc(B.token, "daily_login_status");
+  check(st2.data.can_claim === false && st2.data.next_day === 2, "after the claim: nothing more today, tomorrow is day 2");
+  check([401, 403].includes(await rest(B.token, "PATCH", `player_login?user_id=eq.${B.id}`, { last_claim_day: "2000-01-01" })), "client cannot move its last login day");
+  check((await rpc(forged, "claim_daily_login")).status === 401, "a forged JWT cannot claim the login reward");
+  const claims = sql(`select count(*)::int as n from public.login_claims where user_id = '${B.id}'`)[0].n;
+  check(claims === 1, "exactly one login claim stored");
 
   console.log("4. Direct writes from the client are refused");
   check([401, 403].includes(await rest(A.token, "PATCH", `profiles?user_id=eq.${A.id}`, { xp: 99999, level: 50 })), "client cannot change its XP / level");

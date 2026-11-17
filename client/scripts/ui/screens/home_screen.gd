@@ -10,6 +10,8 @@ var avatar: Avatar
 var card_2p: PlayCard
 var card_4p: PlayCard
 var _invites: MenuCard
+var _login: MenuCard
+static var _login_offered := false     # the login panel opens by itself once per app session
 
 
 func _nav_tab() -> String:
@@ -50,6 +52,16 @@ func _build() -> void:
 	content.add_child(_invites)
 	_update_invites()
 	Online.hub.invites_changed.connect(_update_invites)
+	_login = MenuCard.new()
+	_login.wide = true
+	_login.icon_name = "trophy"
+	_login.title = tr("LOGIN_TITLE")
+	_login.subtitle = tr("LOGIN_CARD_SUB")
+	_login.tint = UiPalette.GOLD_300
+	_login.pressed.connect(_open_login)
+	content.add_child(_login)
+	Online.progress.changed.connect(_update_login)
+	_check_login()
 	_stats_card()
 
 
@@ -147,3 +159,31 @@ func _update_invites() -> void:
 	_invites.subtitle = tr("INVITES_COUNT") % n if n > 0 else tr("INVITES_NONE")
 	_invites.badge = str(n) if n > 0 else ""
 	_invites.refresh()
+
+
+func _check_login() -> void:
+	if not Online.session.has_account():
+		return          # no account yet: nothing to collect (the first online match creates it)
+	var ok := await Online.progress.refresh_login()
+	if ok and is_inside_tree() and bool(Online.progress.login.get("can_claim", false)) and not _login_offered:
+		_login_offered = true
+		DailyLoginPanel.open(self, Online.progress.login)
+
+
+func _update_login() -> void:
+	if not is_instance_valid(_login):
+		return
+	var can := bool(Online.progress.login.get("can_claim", false))
+	_login.subtitle = tr("LOGIN_CARD_READY") if can else tr("LOGIN_CARD_SUB")
+	_login.badge = tr("LOGIN_BADGE") if can else ""
+	_login.refresh()
+
+
+func _open_login() -> void:
+	if Online.progress.login.is_empty():
+		var ok := await Online.progress.refresh_login()
+		if not ok or not is_inside_tree():
+			Celebration.pop(self, tr("LOGIN_TITLE"), tr("PROFILE_OFFLINE"), [])
+			return
+	DailyLoginPanel.open(self, Online.progress.login)
+

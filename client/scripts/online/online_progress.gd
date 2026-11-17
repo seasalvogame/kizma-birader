@@ -10,6 +10,7 @@ signal changed
 var api: OnlineApi
 var quests := {}            # my_quests(): {daily, weekly, unclaimed_old, daily_resets_at, weekly_resets_at, server_time}
 var claimable := 0
+var login := {}             # daily_login_status(): {can_claim, next_day, streak, cycle, resets_at, ...}
 var last_error := ""
 
 
@@ -30,6 +31,26 @@ func claim_quest(q: Dictionary) -> Dictionary:
 	if r["ok"] or r["error"] == "ALREADY_CLAIMED":
 		await refresh_quests()
 		Online.profile.loaded_at = 0     # gold / XP changed: the profile reloads
+	return r
+
+
+func refresh_login() -> bool:
+	var r := await api.call_rpc("daily_login_status", {})
+	if not r["ok"]:
+		last_error = r["error"]
+		return false
+	login = r["data"]
+	changed.emit()
+	return true
+
+
+## Claims today's login reward: {ok, data: {day, gold, xp, streak, badge, level_before, level_after}, error}.
+func claim_login() -> Dictionary:
+	var r := await api.call_rpc("claim_daily_login", {})
+	await refresh_login()
+	if r["ok"]:
+		Online.profile.loaded_at = 0
+		refresh_quests()       # the weekly "log in on N days" quest moved
 	return r
 
 

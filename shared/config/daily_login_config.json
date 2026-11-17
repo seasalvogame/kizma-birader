@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "missed_day": "cycle_continues_streak_resets",
+  "cycle": [
+    {"day": 1, "xp": 30},
+    {"day": 2, "gold": 100},
+    {"day": 3, "xp": 50},
+    {"day": 4, "gold": 200},
+    {"day": 5, "xp": 80},
+    {"day": 6, "gold": 300},
+    {"day": 7, "gold": 500, "xp": 100, "badge": "login_week"}
+  ]
+}

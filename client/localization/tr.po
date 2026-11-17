@@ -1262,3 +1262,48 @@ msgstr "%d sa %d dk"
 
 msgid "TIME_DH"
 msgstr "%d gün %d sa"
+
+msgid "LOGIN_TITLE"
+msgstr "Günlük Ödül"
+
+msgid "LOGIN_INFO"
+msgstr "Her gün gel, ödülünü topla!"
+
+msgid "LOGIN_STREAK"
+msgstr "Seri: %d gün üst üste"
+
+msgid "LOGIN_DAY"
+msgstr "%d. gün"
+
+msgid "LOGIN_GOLD"
+msgstr "%d Altın"
+
+msgid "LOGIN_CLAIM"
+msgstr "%d. günün ödülünü topla"
+
+msgid "LOGIN_COME_BACK"
+msgstr "Bugünün ödülünü topladın. Yarın tekrar gel!"
+
+msgid "LOGIN_RULE"
+msgstr "Bir gün kaçırırsan döngü kaldığın günden sürer; yalnızca seri yeniden başlar. Gün, sunucu saatine göre (TR 00:00) yenilenir."
+
+msgid "LOGIN_CLOSE"
+msgstr "Kapat"
+
+msgid "LOGIN_DONE"
+msgstr "%d. gün ödülü!"
+
+msgid "LOGIN_ALREADY"
+msgstr "Bugün zaten toplandı"
+
+msgid "LOGIN_CARD_SUB"
+msgstr "7 günlük giriş ödülleri"
+
+msgid "LOGIN_CARD_READY"
+msgstr "Bugünün ödülü seni bekliyor!"
+
+msgid "LOGIN_BADGE"
+msgstr "HAZIR"
+
+msgid "BADGE_LOGIN_WEEK"
+msgstr "Sadık Oyuncu"

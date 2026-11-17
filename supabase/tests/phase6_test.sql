@@ -274,6 +274,78 @@ begin
   execute format('set local role %I', me);
   if v_cnt <> 10 or (v_j->'progress'->b::text->>'xp')::int <> 0 then raise exception 'FAIL 8.4 daily match XP cap (% then %)', v_cnt, v_j->'progress'->b::text->>'xp'; end if; n := n + 1;
 
+
+  -------------------------------------------- 9. daily login (6.3)
+  perform set_config('request.jwt.claims', json_build_object('sub', a, 'role', 'authenticated')::text, true);
+  set local role authenticated;
+  v_j := public.daily_login_status();
+  if not (v_j->>'can_claim')::boolean or (v_j->>'next_day')::int <> 1 then raise exception 'FAIL 9.1 first status %', v_j; end if; n := n + 1;
+  select coins into gold_before from public.wallets where user_id = a;
+  v_j := public.claim_daily_login();
+  if (v_j->>'day')::int <> 1 or (v_j->>'xp')::int <> 30 or (v_j->>'streak')::int <> 1 then raise exception 'FAIL 9.2 day 1 reward %', v_j; end if; n := n + 1;
+  begin
+    perform public.claim_daily_login();
+    raise exception 'FAIL 9.3 second claim the same day';
+  exception when others then if sqlerrm <> 'ALREADY_CLAIMED' then raise; end if; n := n + 1;
+  end;
+  v_j := public.daily_login_status();
+  if (v_j->>'can_claim')::boolean or (v_j->>'next_day')::int <> 2 then raise exception 'FAIL 9.4 status after claim %', v_j; end if; n := n + 1;
+  begin
+    update public.player_login set last_claim_day = null where user_id = a;
+    raise exception 'FAIL 9.5 client reset its login day';
+  exception when insufficient_privilege then n := n + 1;
+  end;
+  begin
+    insert into public.login_claims (user_id, claim_day, cycle_day) values (a, v_today + 1, 2);
+    raise exception 'FAIL 9.6 client wrote a claim';
+  exception when insufficient_privilege then n := n + 1;
+  end;
+  execute format('set local role %I', me);
+  -- "tomorrow": the previous claim was yesterday -> streak 2, day 2 pays gold
+  update public.player_login set last_claim_day = v_today - 1 where user_id = a;
+  delete from public.login_claims where user_id = a and claim_day = v_today;
+  delete from public.wallet_transactions where user_id = a and idempotency_key = format('login:%s:%s', a, v_today);   -- simulated next day
+  set local role authenticated;
+  v_j := public.claim_daily_login();
+  if (v_j->>'day')::int <> 2 or (v_j->>'gold')::int <> 100 or (v_j->>'streak')::int <> 2 then raise exception 'FAIL 9.7 consecutive day %', v_j; end if; n := n + 1;
+  execute format('set local role %I', me);
+  select coins - gold_before into v_b from public.wallets where user_id = a;
+  if v_b < 100 then raise exception 'FAIL 9.8 gold not paid'; end if; n := n + 1;
+  -- missed days: the cycle continues (day 3), the streak starts again at 1
+  update public.player_login set last_claim_day = v_today - 3 where user_id = a;
+  delete from public.login_claims where user_id = a and claim_day = v_today;
+  delete from public.wallet_transactions where user_id = a and idempotency_key = format('login:%s:%s', a, v_today);   -- simulated next day
+  set local role authenticated;
+  v_j := public.claim_daily_login();
+  if (v_j->>'day')::int <> 3 or (v_j->>'streak')::int <> 1 then raise exception 'FAIL 9.9 missed day rule %', v_j; end if; n := n + 1;
+  execute format('set local role %I', me);
+  -- day 7 closes the cycle: badge once, next day is 1 again
+  update public.player_login set last_claim_day = v_today - 1, next_cycle_day = 7 where user_id = a;
+  delete from public.login_claims where user_id = a and claim_day = v_today;
+  delete from public.wallet_transactions where user_id = a and idempotency_key = format('login:%s:%s', a, v_today);   -- simulated next day
+  set local role authenticated;
+  v_j := public.claim_daily_login();
+  if (v_j->>'day')::int <> 7 or (v_j->>'gold')::int <> 500 or v_j->>'badge' <> 'login_week' then raise exception 'FAIL 9.10 day 7 %', v_j; end if; n := n + 1;
+  v_j := public.daily_login_status();
+  if (v_j->>'next_day')::int <> 1 or (v_j->>'cycles')::int <> 1 then raise exception 'FAIL 9.11 new cycle %', v_j; end if; n := n + 1;
+  execute format('set local role %I', me);
+  -- the same day is never paid twice even with the ledger key (idempotency)
+  select count(*) into v_i from public.wallet_transactions where user_id = a and reason = 'daily_login' and idempotency_key = format('login:%s:%s', a, v_today);
+  if v_i <> 1 then raise exception 'FAIL 9.12 ledger rows for today %', v_i; end if; n := n + 1;
+  -- every claim advances the weekly login quest (if the player has it)
+  update public.player_quests set metric = 'login_days', target = 10, progress = 0, completed_at = null
+   where user_id = a and period = 'weekly' and quest_id = (select quest_id from public.player_quests where user_id = a and period = 'weekly' order by quest_id limit 1);
+  update public.player_login set last_claim_day = v_today - 1 where user_id = a;
+  delete from public.login_claims where user_id = a and claim_day = v_today;
+  delete from public.wallet_transactions where user_id = a and idempotency_key = format('login:%s:%s', a, v_today);   -- simulated next day
+  set local role authenticated;
+  perform public.my_quests();
+  perform public.claim_daily_login();
+  execute format('set local role %I', me);
+  if not exists (select 1 from public.player_quests where user_id = a and metric = 'login_days' and progress = 1) then
+    raise exception 'FAIL 9.13 login quest progress';
+  end if; n := n + 1;
+
   raise exception 'TESTS_PASSED %', n;
 end
 $$;

@@ -433,6 +433,21 @@ T = {
     "QUEST_HINT_LOGIN_DAYS": ('Günlük giriş ödülünü topladığın her gün sayılır.', 'Every day you collect the daily login reward counts.'),
     "TIME_HM": ('%d sa %d dk', '%dh %dm'),
     "TIME_DH": ('%d gün %d sa', '%dd %dh'),
+    "LOGIN_TITLE": ('Günlük Ödül', 'Daily Reward'),
+    "LOGIN_INFO": ('Her gün gel, ödülünü topla!', 'Come back every day and collect your reward!'),
+    "LOGIN_STREAK": ('Seri: %d gün üst üste', 'Streak: %d days in a row'),
+    "LOGIN_DAY": ('%d. gün', 'Day %d'),
+    "LOGIN_GOLD": ('%d Altın', '%d Gold'),
+    "LOGIN_CLAIM": ('%d. günün ödülünü topla', 'Collect day %d'),
+    "LOGIN_COME_BACK": ('Bugünün ödülünü topladın. Yarın tekrar gel!', "You collected today's reward. Come back tomorrow!"),
+    "LOGIN_RULE": ('Bir gün kaçırırsan döngü kaldığın günden sürer; yalnızca seri yeniden başlar. Gün, sunucu saatine göre (TR 00:00) yenilenir.', 'If you miss a day the cycle continues where you left it; only the streak starts again. Days renew by server time (00:00 Turkey).'),
+    "LOGIN_CLOSE": ('Kapat', 'Close'),
+    "LOGIN_DONE": ('%d. gün ödülü!', 'Day %d reward!'),
+    "LOGIN_ALREADY": ('Bugün zaten toplandı', 'Already collected today'),
+    "LOGIN_CARD_SUB": ('7 günlük giriş ödülleri', '7-day login rewards'),
+    "LOGIN_CARD_READY": ('Bugünün ödülü seni bekliyor!', "Today's reward is waiting!"),
+    "LOGIN_BADGE": ('HAZIR', 'READY'),
+    "BADGE_LOGIN_WEEK": ('Sadık Oyuncu', 'Loyal Player'),
 }
 
 
