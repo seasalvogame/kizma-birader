@@ -8,6 +8,7 @@ var profile: OnlineProfile
 var hub: OnlineHub
 var social: OnlineSocial
 var room: OnlineRoom              # the private room the player is in (outlives screen changes)
+var progress: OnlineProgress      # quests, daily login, achievements, leaderboard (Phase 6)
 var match_connection: OnlineMatchConnection
 
 
@@ -27,6 +28,9 @@ func _ready() -> void:
 	hub = OnlineHub.new()
 	hub.session = session
 	add_child(hub)
+	progress = OnlineProgress.new()
+	progress.api = api
+	add_child(progress)
 	social = OnlineSocial.new()
 	social.api = api
 	social.hub = hub
@@ -43,6 +47,7 @@ func _ready() -> void:
 func start_social() -> void:
 	if session.has_account() and OnlineConfig.supabase_url() != "":
 		hub.start()
+		progress.refresh_quests()   # the dot on the quests tab
 
 
 ## Enters (or re-enters) a private room; the room node lives here, not in a screen.

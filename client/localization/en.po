@@ -1178,3 +1178,87 @@ msgstr "Level 50"
 
 msgid "BADGE_LEVEL_100"
 msgstr "Level 100"
+
+msgid "QUESTS_TITLE"
+msgstr "Quests"
+
+msgid "QUESTS_LOADING"
+msgstr "Loading quests…"
+
+msgid "QUESTS_INFO"
+msgstr "Quests advance with online matches. In private rooms only friend quests advance."
+
+msgid "QUESTS_DAILY"
+msgstr "Daily quests"
+
+msgid "QUESTS_WEEKLY"
+msgstr "Weekly quests"
+
+msgid "QUESTS_OLD"
+msgstr "Rewards to collect"
+
+msgid "QUESTS_DAILY_RESETS"
+msgstr "Renews in %s"
+
+msgid "QUESTS_WEEKLY_RESETS"
+msgstr "Renews in %s"
+
+msgid "QUESTS_EMPTY"
+msgstr "No quests right now."
+
+msgid "QUEST_CLAIM"
+msgstr "Collect reward"
+
+msgid "QUEST_CLAIMED"
+msgstr "Collected ✓"
+
+msgid "QUEST_DONE_TITLE"
+msgstr "Quest complete!"
+
+msgid "QUEST_MATCHES"
+msgstr "Complete %d matches"
+
+msgid "QUEST_WINS"
+msgstr "Win %d matches"
+
+msgid "QUEST_ROLLS"
+msgstr "Roll the dice %d times"
+
+msgid "QUEST_MATCHES_2P"
+msgstr "Complete %d 2-player matches"
+
+msgid "QUEST_MATCHES_4P"
+msgstr "Complete %d 4-player matches"
+
+msgid "QUEST_FRIEND_MATCHES"
+msgstr "Play %d matches with a friend"
+
+msgid "QUEST_LOGIN_DAYS"
+msgstr "Log in on %d different days"
+
+msgid "QUEST_HINT_MATCHES"
+msgstr "Online quick matches count; not if you leave."
+
+msgid "QUEST_HINT_WINS"
+msgstr "A 2-player win or 1st place in a 4-player match."
+
+msgid "QUEST_HINT_ROLLS"
+msgstr "Your own rolls in quick matches count."
+
+msgid "QUEST_HINT_MATCHES_2P"
+msgstr "Online 2-player quick match."
+
+msgid "QUEST_HINT_MATCHES_4P"
+msgstr "Online 4-player match."
+
+msgid "QUEST_HINT_FRIEND_MATCHES"
+msgstr "Play in the same match as someone on your friend list (private rooms count)."
+
+msgid "QUEST_HINT_LOGIN_DAYS"
+msgstr "Every day you collect the daily login reward counts."
+
+msgid "TIME_HM"
+msgstr "%dh %dm"
+
+msgid "TIME_DH"
+msgstr "%dd %dh"

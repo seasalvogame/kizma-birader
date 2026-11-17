@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "day_offset_hours": 3,
+  "daily_count": 3,
+  "weekly_count": 4,
+  "daily": [
+    {"id": "d_play_1",   "group": "play",   "metric": "matches",        "target": 1,  "gold": 60,  "xp": 15},
+    {"id": "d_play_3",   "group": "play",   "metric": "matches",        "target": 3,  "gold": 120, "xp": 30},
+    {"id": "d_win_1",    "group": "win",    "metric": "wins",           "target": 1,  "gold": 120, "xp": 30},
+    {"id": "d_win_2",    "group": "win",    "metric": "wins",           "target": 2,  "gold": 200, "xp": 45},
+    {"id": "d_rolls_40", "group": "rolls",  "metric": "rolls",          "target": 40, "gold": 80,  "xp": 20},
+    {"id": "d_2p_1",     "group": "mode",   "metric": "matches_2p",     "target": 1,  "gold": 80,  "xp": 20},
+    {"id": "d_4p_1",     "group": "mode",   "metric": "matches_4p",     "target": 1,  "gold": 100, "xp": 25},
+    {"id": "d_friend_1", "group": "friend", "metric": "friend_matches", "target": 1,  "gold": 120, "xp": 30}
+  ],
+  "weekly": [
+    {"id": "w_play_10",  "group": "play",   "metric": "matches",        "target": 10, "gold": 500, "xp": 100},
+    {"id": "w_win_5",    "group": "win",    "metric": "wins",           "target": 5,  "gold": 600, "xp": 120},
+    {"id": "w_login_3",  "group": "login",  "metric": "login_days",     "target": 3,  "gold": 300, "xp": 60},
+    {"id": "w_4p_5",     "group": "mode",   "metric": "matches_4p",     "target": 5,  "gold": 500, "xp": 100},
+    {"id": "w_friend_3", "group": "friend", "metric": "friend_matches", "target": 3,  "gold": 400, "xp": 80}
+  ]
+}

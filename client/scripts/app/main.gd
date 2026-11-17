@@ -59,7 +59,9 @@ func _show(direction: int) -> void:
 	match String(entry["route"]):
 		"home":
 			screen = HomeScreen.new()
-		"store", "quests", "ranking":
+		"quests":
+			screen = QuestsScreen.new()
+		"store", "ranking":
 			screen = InfoScreen.new()
 			params = {"kind": entry["route"]}
 		"friends":

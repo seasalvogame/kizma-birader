@@ -1178,3 +1178,87 @@ msgstr "Seviye 50"
 
 msgid "BADGE_LEVEL_100"
 msgstr "Seviye 100"
+
+msgid "QUESTS_TITLE"
+msgstr "Görevler"
+
+msgid "QUESTS_LOADING"
+msgstr "Görevler yükleniyor…"
+
+msgid "QUESTS_INFO"
+msgstr "Görevler çevrimiçi maçlarla ilerler. Özel odada yalnızca arkadaş görevleri ilerler."
+
+msgid "QUESTS_DAILY"
+msgstr "Günlük görevler"
+
+msgid "QUESTS_WEEKLY"
+msgstr "Haftalık görevler"
+
+msgid "QUESTS_OLD"
+msgstr "Toplanmamış ödüller"
+
+msgid "QUESTS_DAILY_RESETS"
+msgstr "Yenilenme: %s"
+
+msgid "QUESTS_WEEKLY_RESETS"
+msgstr "Yenilenme: %s"
+
+msgid "QUESTS_EMPTY"
+msgstr "Şu an görev yok."
+
+msgid "QUEST_CLAIM"
+msgstr "Ödülü topla"
+
+msgid "QUEST_CLAIMED"
+msgstr "Toplandı ✓"
+
+msgid "QUEST_DONE_TITLE"
+msgstr "Görev tamam!"
+
+msgid "QUEST_MATCHES"
+msgstr "%d maç tamamla"
+
+msgid "QUEST_WINS"
+msgstr "%d maç kazan"
+
+msgid "QUEST_ROLLS"
+msgstr "%d kez zar at"
+
+msgid "QUEST_MATCHES_2P"
+msgstr "%d iki kişilik maç tamamla"
+
+msgid "QUEST_MATCHES_4P"
+msgstr "%d dört kişilik maç tamamla"
+
+msgid "QUEST_FRIEND_MATCHES"
+msgstr "Arkadaşınla %d maç yap"
+
+msgid "QUEST_LOGIN_DAYS"
+msgstr "%d farklı gün giriş yap"
+
+msgid "QUEST_HINT_MATCHES"
+msgstr "Çevrimiçi hızlı maçlar sayılır; maçtan ayrılırsan sayılmaz."
+
+msgid "QUEST_HINT_WINS"
+msgstr "2 kişilikte galibiyet ya da 4 kişilikte birincilik."
+
+msgid "QUEST_HINT_ROLLS"
+msgstr "Hızlı maçta kendi attığın zarlar sayılır."
+
+msgid "QUEST_HINT_MATCHES_2P"
+msgstr "Çevrimiçi 2 kişilik hızlı maç."
+
+msgid "QUEST_HINT_MATCHES_4P"
+msgstr "Çevrimiçi 4 kişilik maç."
+
+msgid "QUEST_HINT_FRIEND_MATCHES"
+msgstr "Arkadaş listendeki biriyle aynı maçta oyna (özel oda da sayılır)."
+
+msgid "QUEST_HINT_LOGIN_DAYS"
+msgstr "Günlük giriş ödülünü topladığın her gün sayılır."
+
+msgid "TIME_HM"
+msgstr "%d sa %d dk"
+
+msgid "TIME_DH"
+msgstr "%d gün %d sa"

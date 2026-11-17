@@ -55,7 +55,8 @@ func _ready() -> void:
 		oc.fatal.connect(func(code: String) -> void: _show_toast(tr("ONLINE_FATAL") % code))
 		oc.recorded.connect(func(_id: String) -> void:
 			_show_toast(tr("ONLINE_RECORDED"))
-			Online.profile.loaded_at = 0)   # profile reloads with the new stats
+			Online.profile.loaded_at = 0   # profile reloads with the new stats
+			Online.progress.refresh_quests())   # quest progress from this match
 		oc.progress_received.connect(_on_progress)
 	var seats: Array = config.get("seats", [])
 	two_players = seats.size() == 2

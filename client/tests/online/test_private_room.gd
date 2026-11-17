@@ -150,7 +150,10 @@ func test_friends_invite_private_room_match() -> void:
 		assert_true(prof.recent.size() >= 1 and String(prof.recent[0]["mode"]) == "private", "the private match is in A's history")
 		assert_eq(int(prof.stats.get("wins_2p", 0)), 1, "A's win counted")
 		await _until(func() -> bool: return not a.progress.is_empty() and not b.progress.is_empty(), "XP results", 20000)
-		assert_eq(int(a.progress.get("xp", -1)), 20, "private room: half XP for the winner (40 -> 20)")
+		# B left right after the start: a match cut that short gives nobody XP (anti-farming guard);
+		# the private-room XP rate itself (half) is checked in supabase/tests/phase6_test.sql §2.6
+		assert_eq(int(a.progress.get("xp", -1)), 0, "a match cut short by a leave gives no XP")
+		assert_false(bool(a.progress.get("counted", true)), "the server reports that the match did not count for rewards")
 		assert_eq(int(b.progress.get("xp", -1)), 0, "B left the match: no XP")
 		prof.queue_free()
 	for p: P in [a, b]:

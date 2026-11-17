@@ -250,3 +250,28 @@ func _phase6_screens() -> void:
 	Online.profile.reset()
 	Online.session.user_id = ""
 
+
+func _phase6_more() -> void:
+	var q := func(per: String, id: String, metric: String, target: int, progress: int, gold: int, xp: int, claimed: bool) -> Dictionary:
+		return {"period": per, "period_key": "2026-11-18", "quest_id": id, "metric": metric, "target": target, "progress": progress,
+			"gold": gold, "xp": xp, "completed": progress >= target, "claimed": claimed}
+	Online.progress.quests = {
+		"daily": [q.call("daily", "d_play_3", "matches", 3, 2, 120, 30, false), q.call("daily", "d_win_1", "wins", 1, 1, 120, 30, false),
+			q.call("daily", "d_rolls_40", "rolls", 40, 40, 80, 20, true)],
+		"weekly": [q.call("weekly", "w_play_10", "matches", 10, 4, 500, 100, false), q.call("weekly", "w_friend_3", "friend_matches", 3, 1, 400, 80, false),
+			q.call("weekly", "w_login_3", "login_days", 3, 2, 300, 60, false), q.call("weekly", "w_4p_5", "matches_4p", 5, 0, 500, 100, false)],
+		"unclaimed_old": [], "daily_resets_at": "2026-11-18T21:00:00+00:00", "weekly_resets_at": "2026-11-23T21:00:00+00:00"}
+	Online.progress._count()
+	main.call("go", "quests")
+	await _frames(3)
+	(main.get("current") as Node).get("status").clear()
+	(main.get("current") as Node).call("_render")
+	await _frames(12)
+	await _shot("62_quests_sample")
+	var sc: ScrollContainer = (main.get("current") as Node).find_children("*", "ScrollContainer", true, false)[0]
+	sc.scroll_vertical = 1200
+	await _frames(6)
+	await _shot("63_quests_sample_scrolled")
+	Online.progress.quests = {}
+	Online.progress._count()
+

@@ -17,6 +17,8 @@ const TABS := [
 var current := "home"
 var bottom_inset := 0.0
 var buttons := {}
+## Tabs with something waiting (e.g. a quest reward to collect): a small mango dot.
+static var dots := {}
 
 
 func _ready() -> void:
@@ -60,3 +62,10 @@ func _ready() -> void:
 		b.pressed.connect(func() -> void: tab_selected.emit(id))
 		buttons[id] = b
 		row.add_child(b)
+		if dots.get(id, false):
+			var dot := Control.new()
+			dot.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			dot.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+			dot.draw.connect(func() -> void:
+				dot.draw_circle(Vector2(dot.size.x * 0.5 + 30, 14), 10, UiPalette.MANGO_500))
+			b.add_child(dot)
