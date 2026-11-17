@@ -15,6 +15,7 @@ Klasik yıldızlı Kızma Birader / Ludo tahtasında oynanan, çevrimiçi çok o
 > - **Faz 3:** 3.1 ve 3.2 tamam; 3.3 oynanabilir sürüm; 3.4 ilk 2 kişilik çevrimiçi maç (0.4.0). Raporlar: [PHASE_3_3_REPORT.md](PHASE_3_3_REPORT.md), [PHASE_3_4_REPORT.md](PHASE_3_4_REPORT.md).
 > - **Faz 4 (0.5.0):** kalıcı hesaplar, sunucunun yazdığı maç kayıtları, istatistikler, profil / maç geçmişi / hesap ekranları. Raporlar: [PHASE_4_REPORT.md](PHASE_4_REPORT.md), [PHASE_4_FINAL_REPORT.md](PHASE_4_FINAL_REPORT.md).
 > - **Faz 5 (0.6.1):** arkadaşlar (arama, istekler, engelleme, canlı durum), maç davetleri, 2 ve 4 kişilik özel odalar (aynı MatchRoom ve maç ekranı). Raporlar: [PHASE_5_REPORT.md](PHASE_5_REPORT.md), [PHASE_5_FINAL_REPORT.md](PHASE_5_FINAL_REPORT.md).
+> - **Faz 6 (0.7.0):** XP ve seviye, günlük / haftalık görevler, 7 günlük giriş ödülü, başarımlar ve rozetler, haftalık sıralama (otomatik hafta kapanışı). Rapor: [PHASE_6_FINAL_REPORT.md](PHASE_6_FINAL_REPORT.md) · kurallar: [docs/economy/PROGRESSION_SYSTEMS.md](docs/economy/PROGRESSION_SYSTEMS.md).
 > - Rapor: [PHASE_2_REPORT.md](PHASE_2_REPORT.md) · Plan: [docs/PHASE_2_PLAN.md](docs/PHASE_2_PLAN.md) · Faz 1: [PHASE_1_REPORT.md](PHASE_1_REPORT.md)
 > - Karar bekleyen konular: [docs/DECISIONS_AND_OPEN_QUESTIONS.md](docs/DECISIONS_AND_OPEN_QUESTIONS.md)
 
@@ -33,10 +34,13 @@ Klasik yıldızlı Kızma Birader / Ludo tahtasında oynanan, çevrimiçi çok o
 
 ```sh
 cd server/game-engine && npm install && npm test                          # 85 test
-godot_console --headless --path client res://tests/test_runner.tscn     # 36 test (çevrimdışı, ağa çıkmaz)
+godot_console --headless --path client res://tests/test_runner.tscn     # 37 test (çevrimdışı, ağa çıkmaz)
 npx supabase db query --remote --yes -f supabase/tests/phase4_test.sql   # TESTS_PASSED 35 (bulut, geri alınır)
 node supabase/tests/api_e2e_test.mjs <ref>                               # 26 (bulut REST)
 npx supabase db query --remote --yes -f supabase/tests/phase5_test.sql   # TESTS_PASSED 31 (bulut, geri alınır)
+npx supabase db query --remote --yes -f supabase/tests/phase6_test.sql   # TESTS_PASSED 93 (bulut, geri alınır)
+cd server/worker && node test/progress_cloud_test.mjs <ref> --remote <url>  # 37 (ilerleme, test hesaplarıyla)
+cd server/worker && node scripts/progression_config.mjs --check          # yapılandırma dosyaları = veritabanı
 cd server/worker && node test/local_ws_test.mjs <ref> [--remote <url>]   # 26 yerel / 31 bulut
 cd server/worker && node test/social_room_test.mjs <ref> [--remote <url>] # 32 yerel / 58 bulut (oda, davet, durum)
 cd server/worker && node test/godot_online_test.mjs [--remote <url>]     # iki Godot istemcisi, gerçek maç

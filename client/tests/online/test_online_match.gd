@@ -102,6 +102,10 @@ func test_two_clients_queue_match_and_play_to_the_end() -> void:
 	holder.theme = UiTheme.theme()
 	holder.size = Vector2(720, 1560)
 	vp.add_child(holder)
+	# the match screen also uses the app-wide Online services (quests, profile): they must use
+	# player A's (test) account, never create an account of their own
+	Online.session.path = a.session.path
+	Online.session._load()
 	a.screen = MatchScreen.new()
 	a.screen.config = OnlineQueueScreen.match_config(a.snap, a.conn)
 	a.screen.size = Vector2(720, 1560)
