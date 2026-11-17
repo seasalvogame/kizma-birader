@@ -1484,3 +1484,366 @@ msgstr "Champion of the Week"
 
 msgid "BADGE_WEEKLY_TOP10"
 msgstr "Weekly Top 10"
+
+msgid "COLLECTION_TITLE"
+msgstr "My Collection"
+
+msgid "COLLECTION_CARD_SUB"
+msgstr "Dice, pawns, boards, frames…"
+
+msgid "COLLECTION_LOADING"
+msgstr "Loading your collection…"
+
+msgid "COLLECTION_EMPTY"
+msgstr "No items in this category yet."
+
+msgid "COS_DETAIL_TITLE"
+msgstr "Item"
+
+msgid "COS_NOT_FOUND"
+msgstr "Item not found."
+
+msgid "COS_OWNED"
+msgstr "Owned"
+
+msgid "COS_NO_EFFECT"
+msgstr "Cosmetics only change the look; dice, moves and chances stay the same."
+
+msgid "COS_HOW_BUY"
+msgstr "In the store for %d %s"
+
+msgid "COS_HOW_NONE"
+msgstr "Not available right now"
+
+msgid "COS_USAGE_MATCH"
+msgstr "Shown in matches"
+
+msgid "COS_USAGE_PROFILE"
+msgstr "Shown on your profile"
+
+msgid "COS_USAGE_PROFILE_MATCH"
+msgstr "Shown on your profile and in matches"
+
+msgid "COS_SRC_DEFAULT"
+msgstr "Starter item"
+
+msgid "COS_SRC_STORE"
+msgstr "Bought in the store"
+
+msgid "COS_SRC_LEVEL"
+msgstr "Level %d reward"
+
+msgid "COS_SRC_ACHIEVEMENT"
+msgstr "Achievement: %s"
+
+msgid "COS_SRC_QUEST"
+msgstr "Weekly quest reward"
+
+msgid "COS_SRC_LEADERBOARD"
+msgstr "Weekly ranking top %d"
+
+msgid "COS_SRC_LOGIN"
+msgstr "7-day login reward"
+
+msgid "COS_SRC_REWARD"
+msgstr "Reward"
+
+msgid "COS_CAT_DICE"
+msgstr "Dice"
+
+msgid "COS_CAT_PAWNS"
+msgstr "Pawns"
+
+msgid "COS_CAT_BOARD"
+msgstr "Boards"
+
+msgid "COS_CAT_FRAME"
+msgstr "Frames"
+
+msgid "COS_CAT_EFFECT"
+msgstr "Effects"
+
+msgid "COS_CAT_NAME"
+msgstr "Name style"
+
+msgid "COS_CAT_EMOTES"
+msgstr "Emotes"
+
+msgid "COS_CAT_BADGE"
+msgstr "Badges"
+
+msgid "RARITY_COMMON"
+msgstr "Common"
+
+msgid "RARITY_RARE"
+msgstr "Rare"
+
+msgid "RARITY_EPIC"
+msgstr "Epic"
+
+msgid "RARITY_LEGENDARY"
+msgstr "Legendary"
+
+msgid "CURRENCY_GOLD"
+msgstr "Gold"
+
+msgid "CURRENCY_GEMS"
+msgstr "Gems"
+
+msgid "COS_DICE_CLASSIC"
+msgstr "Classic Cream"
+
+msgid "COS_DICE_CLASSIC_DESC"
+msgstr "The cream dice of the evening table."
+
+msgid "COS_DICE_NIGHT"
+msgstr "Night Purple"
+
+msgid "COS_DICE_NIGHT_DESC"
+msgstr "Deep purple dice with cream pips."
+
+msgid "COS_DICE_MANGO"
+msgstr "Mango"
+
+msgid "COS_DICE_MANGO_DESC"
+msgstr "Warm orange with dark pips."
+
+msgid "COS_DICE_EMERALD"
+msgstr "Emerald"
+
+msgid "COS_DICE_EMERALD_DESC"
+msgstr "A bright green dice."
+
+msgid "COS_DICE_STAR"
+msgstr "Starry Night"
+
+msgid "COS_DICE_STAR_DESC"
+msgstr "Navy dice with golden stars as pips."
+
+msgid "COS_DICE_AURORA"
+msgstr "Aurora"
+
+msgid "COS_DICE_AURORA_DESC"
+msgstr "A premium dice flowing from teal to purple."
+
+msgid "COS_DICE_MASTER"
+msgstr "Master Dice"
+
+msgid "COS_DICE_MASTER_DESC"
+msgstr "Golden ring pips; for players who reach level 15."
+
+msgid "COS_PAWNS_CLASSIC"
+msgstr "Classic Glass"
+
+msgid "COS_PAWNS_CLASSIC_DESC"
+msgstr "Shiny glass pawns."
+
+msgid "COS_PAWNS_CROWN"
+msgstr "Crowned"
+
+msgid "COS_PAWNS_CROWN_DESC"
+msgstr "Pawns wearing a small golden crown."
+
+msgid "COS_PAWNS_STAR"
+msgstr "Star Heads"
+
+msgid "COS_PAWNS_STAR_DESC"
+msgstr "Star-shaped heads; a level 20 reward."
+
+msgid "COS_PAWNS_GEM"
+msgstr "Gemstones"
+
+msgid "COS_PAWNS_GEM_DESC"
+msgstr "Faceted gemstone pawns."
+
+msgid "COS_BOARD_CLASSIC"
+msgstr "Classic Table"
+
+msgid "COS_BOARD_CLASSIC_DESC"
+msgstr "The cream board."
+
+msgid "COS_BOARD_MINT"
+msgstr "Mint"
+
+msgid "COS_BOARD_MINT_DESC"
+msgstr "A fresh mint-green board."
+
+msgid "COS_BOARD_NIGHT"
+msgstr "Night Sky"
+
+msgid "COS_BOARD_NIGHT_DESC"
+msgstr "Dark purple board with light cells."
+
+msgid "COS_BOARD_SUNSET"
+msgstr "Sunset"
+
+msgid "COS_BOARD_SUNSET_DESC"
+msgstr "A warm peach-toned board."
+
+msgid "COS_FRAME_NONE"
+msgstr "No frame"
+
+msgid "COS_FRAME_NONE_DESC"
+msgstr "A plain avatar."
+
+msgid "COS_FRAME_MINT"
+msgstr "Mint Ring"
+
+msgid "COS_FRAME_MINT_DESC"
+msgstr "A thin double mint ring."
+
+msgid "COS_FRAME_GOLD"
+msgstr "Gold Frame"
+
+msgid "COS_FRAME_GOLD_DESC"
+msgstr "A thick shiny gold ring."
+
+msgid "COS_FRAME_STAR"
+msgstr "Star Frame"
+
+msgid "COS_FRAME_STAR_DESC"
+msgstr "A gold ring with five stars; a level 10 reward."
+
+msgid "COS_FRAME_CHAMPION"
+msgstr "Champion's Crown"
+
+msgid "COS_FRAME_CHAMPION_DESC"
+msgstr "For the weekly ranking's number one."
+
+msgid "COS_FRAME_ROYAL"
+msgstr "Royal"
+
+msgid "COS_FRAME_ROYAL_DESC"
+msgstr "Purple and gold with pearls; a premium frame."
+
+msgid "COS_EFFECT_NONE"
+msgstr "No effect"
+
+msgid "COS_EFFECT_NONE_DESC"
+msgstr "A plain profile."
+
+msgid "COS_EFFECT_SPARKLE"
+msgstr "Sparkle"
+
+msgid "COS_EFFECT_SPARKLE_DESC"
+msgstr "Little stars circling your avatar."
+
+msgid "COS_EFFECT_AURORA"
+msgstr "Aurora"
+
+msgid "COS_EFFECT_AURORA_DESC"
+msgstr "A colourful halo behind your avatar."
+
+msgid "COS_NAME_PLAIN"
+msgstr "Plain"
+
+msgid "COS_NAME_PLAIN_DESC"
+msgstr "Your name as usual."
+
+msgid "COS_NAME_MANGO"
+msgstr "Mango Text"
+
+msgid "COS_NAME_MANGO_DESC"
+msgstr "Your name in mango."
+
+msgid "COS_NAME_GOLD"
+msgstr "Gold Text"
+
+msgid "COS_NAME_GOLD_DESC"
+msgstr "A golden, outlined name."
+
+msgid "COS_NAME_STAR"
+msgstr "Starry Name"
+
+msgid "COS_NAME_STAR_DESC"
+msgstr "Stars around your name; for 5 wins in a row."
+
+msgid "COS_EMOTES_CLASSIC"
+msgstr "Classic Emotes"
+
+msgid "COS_EMOTES_CLASSIC_DESC"
+msgstr "Hello, good game, come on, wow."
+
+msgid "COS_EMOTES_CHEER"
+msgstr "Cheers"
+
+msgid "COS_EMOTES_CHEER_DESC"
+msgstr "Great, lucky, so close, thanks."
+
+msgid "COS_EMOTES_STAR"
+msgstr "Star Emotes"
+
+msgid "COS_EMOTES_STAR_DESC"
+msgstr "Premium emotes in purple bubbles."
+
+msgid "COS_BADGE_LEVEL_5"
+msgstr "Level 5"
+
+msgid "COS_BADGE_LEVEL_10"
+msgstr "Level 10"
+
+msgid "COS_BADGE_LEVEL_25"
+msgstr "Level 25"
+
+msgid "COS_BADGE_LEVEL_50"
+msgstr "Level 50"
+
+msgid "COS_BADGE_LEVEL_100"
+msgstr "Level 100"
+
+msgid "COS_BADGE_LOGIN_WEEK"
+msgstr "Loyal Player"
+
+msgid "COS_BADGE_VETERAN"
+msgstr "Veteran"
+
+msgid "COS_BADGE_CHAMPION"
+msgstr "Champion"
+
+msgid "COS_BADGE_UNSTOPPABLE"
+msgstr "Unstoppable"
+
+msgid "COS_BADGE_SOCIAL"
+msgstr "Social Butterfly"
+
+msgid "COS_BADGE_WEEKLY_CHAMPION"
+msgstr "Champion of the Week"
+
+msgid "COS_BADGE_WEEKLY_TOP10"
+msgstr "Weekly Top 10"
+
+msgid "EMOTE_HELLO"
+msgstr "Hello!"
+
+msgid "EMOTE_GG"
+msgstr "Good game!"
+
+msgid "EMOTE_GO"
+msgstr "Come on!"
+
+msgid "EMOTE_WOW"
+msgstr "Wow!"
+
+msgid "EMOTE_GREAT"
+msgstr "You're great!"
+
+msgid "EMOTE_LUCKY"
+msgstr "Lucky!"
+
+msgid "EMOTE_CLOSE"
+msgstr "So close!"
+
+msgid "EMOTE_THANKS"
+msgstr "Thanks!"
+
+msgid "EMOTE_STAR"
+msgstr "Like a star!"
+
+msgid "EMOTE_CHAMP"
+msgstr "Champion!"
+
+msgid "EMOTE_REMATCH"
+msgstr "Rematch?"
+
+msgid "EMOTE_AMAZING"
+msgstr "Amazing!"

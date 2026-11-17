@@ -180,6 +180,13 @@ func _render() -> void:
 	account.subtitle = _account_text()
 	account.pressed.connect(func() -> void: navigate.emit("account", {}))
 	_sections.add_child(account)
+	var collection := MenuCard.new()
+	collection.wide = true
+	collection.icon_name = "bag"
+	collection.title = tr("COLLECTION_TITLE")
+	collection.subtitle = tr("COLLECTION_CARD_SUB")
+	collection.pressed.connect(func() -> void: navigate.emit("collection", {}))
+	_sections.add_child(collection)
 	var achievements := MenuCard.new()
 	achievements.wide = true
 	achievements.icon_name = "medal"

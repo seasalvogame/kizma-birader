@@ -9,6 +9,7 @@ var hub: OnlineHub
 var social: OnlineSocial
 var room: OnlineRoom              # the private room the player is in (outlives screen changes)
 var progress: OnlineProgress      # quests, daily login, achievements, leaderboard (Phase 6)
+var cosmetics: OnlineCosmetics    # catalog, inventory, loadout (Phase 7)
 var match_connection: OnlineMatchConnection
 
 
@@ -31,6 +32,9 @@ func _ready() -> void:
 	progress = OnlineProgress.new()
 	progress.api = api
 	add_child(progress)
+	cosmetics = OnlineCosmetics.new()
+	cosmetics.api = api
+	add_child(cosmetics)
 	social = OnlineSocial.new()
 	social.api = api
 	social.hub = hub

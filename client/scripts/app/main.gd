@@ -63,6 +63,10 @@ func _show(direction: int) -> void:
 			screen = QuestsScreen.new()
 		"achievements":
 			screen = AchievementsScreen.new()
+		"collection":
+			screen = CollectionScreen.new()
+		"cosmetic":
+			screen = CosmeticDetailScreen.new()
 		"ranking":
 			screen = LeaderboardScreen.new()
 		"store":

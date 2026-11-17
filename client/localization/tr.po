@@ -1484,3 +1484,366 @@ msgstr "Haftanın Şampiyonu"
 
 msgid "BADGE_WEEKLY_TOP10"
 msgstr "Haftanın İlk 10'u"
+
+msgid "COLLECTION_TITLE"
+msgstr "Koleksiyonum"
+
+msgid "COLLECTION_CARD_SUB"
+msgstr "Zarlar, piyonlar, tahtalar, çerçeveler…"
+
+msgid "COLLECTION_LOADING"
+msgstr "Koleksiyon yükleniyor…"
+
+msgid "COLLECTION_EMPTY"
+msgstr "Bu kategoride henüz ürünün yok."
+
+msgid "COS_DETAIL_TITLE"
+msgstr "Ürün"
+
+msgid "COS_NOT_FOUND"
+msgstr "Bu ürün bulunamadı."
+
+msgid "COS_OWNED"
+msgstr "Sende var"
+
+msgid "COS_NO_EFFECT"
+msgstr "Kozmetikler yalnızca görünümü değiştirir; zar, hamle ve kazanma şansı aynı kalır."
+
+msgid "COS_HOW_BUY"
+msgstr "Mağazada %d %s"
+
+msgid "COS_HOW_NONE"
+msgstr "Şu an edinilemiyor"
+
+msgid "COS_USAGE_MATCH"
+msgstr "Maçta görünür"
+
+msgid "COS_USAGE_PROFILE"
+msgstr "Profilde görünür"
+
+msgid "COS_USAGE_PROFILE_MATCH"
+msgstr "Profilde ve maçta görünür"
+
+msgid "COS_SRC_DEFAULT"
+msgstr "Başlangıç ürünü"
+
+msgid "COS_SRC_STORE"
+msgstr "Mağazadan alındı"
+
+msgid "COS_SRC_LEVEL"
+msgstr "Seviye %d ödülü"
+
+msgid "COS_SRC_ACHIEVEMENT"
+msgstr "Başarım: %s"
+
+msgid "COS_SRC_QUEST"
+msgstr "Haftalık görev ödülü"
+
+msgid "COS_SRC_LEADERBOARD"
+msgstr "Haftalık sıralamada ilk %d"
+
+msgid "COS_SRC_LOGIN"
+msgstr "7 günlük giriş ödülü"
+
+msgid "COS_SRC_REWARD"
+msgstr "Ödül"
+
+msgid "COS_CAT_DICE"
+msgstr "Zarlar"
+
+msgid "COS_CAT_PAWNS"
+msgstr "Piyonlar"
+
+msgid "COS_CAT_BOARD"
+msgstr "Tahtalar"
+
+msgid "COS_CAT_FRAME"
+msgstr "Çerçeveler"
+
+msgid "COS_CAT_EFFECT"
+msgstr "Efektler"
+
+msgid "COS_CAT_NAME"
+msgstr "İsim süsü"
+
+msgid "COS_CAT_EMOTES"
+msgstr "Tepkiler"
+
+msgid "COS_CAT_BADGE"
+msgstr "Rozetler"
+
+msgid "RARITY_COMMON"
+msgstr "Yaygın"
+
+msgid "RARITY_RARE"
+msgstr "Nadir"
+
+msgid "RARITY_EPIC"
+msgstr "Epik"
+
+msgid "RARITY_LEGENDARY"
+msgstr "Efsanevi"
+
+msgid "CURRENCY_GOLD"
+msgstr "Altın"
+
+msgid "CURRENCY_GEMS"
+msgstr "Elmas"
+
+msgid "COS_DICE_CLASSIC"
+msgstr "Klasik Krem"
+
+msgid "COS_DICE_CLASSIC_DESC"
+msgstr "Akşam Masası'nın krem zarı."
+
+msgid "COS_DICE_NIGHT"
+msgstr "Gece Moru"
+
+msgid "COS_DICE_NIGHT_DESC"
+msgstr "Koyu mor zar, krem noktalar."
+
+msgid "COS_DICE_MANGO"
+msgstr "Mango"
+
+msgid "COS_DICE_MANGO_DESC"
+msgstr "Sıcak turuncu, koyu noktalar."
+
+msgid "COS_DICE_EMERALD"
+msgstr "Zümrüt"
+
+msgid "COS_DICE_EMERALD_DESC"
+msgstr "Parlak yeşil zar."
+
+msgid "COS_DICE_STAR"
+msgstr "Yıldızlı Gece"
+
+msgid "COS_DICE_STAR_DESC"
+msgstr "Lacivert zar, noktalar yerine altın yıldızlar."
+
+msgid "COS_DICE_AURORA"
+msgstr "Kutup Işığı"
+
+msgid "COS_DICE_AURORA_DESC"
+msgstr "Turkuazdan mora akan premium zar."
+
+msgid "COS_DICE_MASTER"
+msgstr "Usta Zarı"
+
+msgid "COS_DICE_MASTER_DESC"
+msgstr "Altın halkalı noktalar; 15. seviyeye ulaşanlara."
+
+msgid "COS_PAWNS_CLASSIC"
+msgstr "Klasik Cam"
+
+msgid "COS_PAWNS_CLASSIC_DESC"
+msgstr "Parlak cam piyonlar."
+
+msgid "COS_PAWNS_CROWN"
+msgstr "Taçlı"
+
+msgid "COS_PAWNS_CROWN_DESC"
+msgstr "Başında küçük altın taç olan piyonlar."
+
+msgid "COS_PAWNS_STAR"
+msgstr "Yıldız Başlı"
+
+msgid "COS_PAWNS_STAR_DESC"
+msgstr "Başı yıldız biçiminde; 20. seviye ödülü."
+
+msgid "COS_PAWNS_GEM"
+msgstr "Mücevher"
+
+msgid "COS_PAWNS_GEM_DESC"
+msgstr "Yüzeyli mücevher piyonlar."
+
+msgid "COS_BOARD_CLASSIC"
+msgstr "Klasik Masa"
+
+msgid "COS_BOARD_CLASSIC_DESC"
+msgstr "Krem tahta."
+
+msgid "COS_BOARD_MINT"
+msgstr "Nane"
+
+msgid "COS_BOARD_MINT_DESC"
+msgstr "Ferah nane yeşili tahta."
+
+msgid "COS_BOARD_NIGHT"
+msgstr "Gece Göğü"
+
+msgid "COS_BOARD_NIGHT_DESC"
+msgstr "Koyu mor tahta, açık hücreler."
+
+msgid "COS_BOARD_SUNSET"
+msgstr "Gün Batımı"
+
+msgid "COS_BOARD_SUNSET_DESC"
+msgstr "Şeftali tonlarında sıcak tahta."
+
+msgid "COS_FRAME_NONE"
+msgstr "Çerçevesiz"
+
+msgid "COS_FRAME_NONE_DESC"
+msgstr "Sade avatar."
+
+msgid "COS_FRAME_MINT"
+msgstr "Nane Halka"
+
+msgid "COS_FRAME_MINT_DESC"
+msgstr "İnce çift nane halkası."
+
+msgid "COS_FRAME_GOLD"
+msgstr "Altın Çerçeve"
+
+msgid "COS_FRAME_GOLD_DESC"
+msgstr "Kalın, parlak altın halka."
+
+msgid "COS_FRAME_STAR"
+msgstr "Yıldız Çerçeve"
+
+msgid "COS_FRAME_STAR_DESC"
+msgstr "Beş yıldızlı altın halka; 10. seviye ödülü."
+
+msgid "COS_FRAME_CHAMPION"
+msgstr "Şampiyon Tacı"
+
+msgid "COS_FRAME_CHAMPION_DESC"
+msgstr "Haftalık sıralamada birinci olanlara."
+
+msgid "COS_FRAME_ROYAL"
+msgstr "Kraliyet"
+
+msgid "COS_FRAME_ROYAL_DESC"
+msgstr "Mor ve altın, inci süslü premium çerçeve."
+
+msgid "COS_EFFECT_NONE"
+msgstr "Efektsiz"
+
+msgid "COS_EFFECT_NONE_DESC"
+msgstr "Sade profil."
+
+msgid "COS_EFFECT_SPARKLE"
+msgstr "Işıltı"
+
+msgid "COS_EFFECT_SPARKLE_DESC"
+msgstr "Avatarın etrafında dönen yıldızlar."
+
+msgid "COS_EFFECT_AURORA"
+msgstr "Aurora"
+
+msgid "COS_EFFECT_AURORA_DESC"
+msgstr "Avatarın arkasında renkli ışık halesi."
+
+msgid "COS_NAME_PLAIN"
+msgstr "Sade"
+
+msgid "COS_NAME_PLAIN_DESC"
+msgstr "Normal ad yazısı."
+
+msgid "COS_NAME_MANGO"
+msgstr "Mango Yazı"
+
+msgid "COS_NAME_MANGO_DESC"
+msgstr "Adın mango renginde."
+
+msgid "COS_NAME_GOLD"
+msgstr "Altın Yazı"
+
+msgid "COS_NAME_GOLD_DESC"
+msgstr "Altın renkli, kenarlı ad."
+
+msgid "COS_NAME_STAR"
+msgstr "Yıldızlı Ad"
+
+msgid "COS_NAME_STAR_DESC"
+msgstr "Adının iki yanında yıldızlar; 5 maç üst üste kazananlara."
+
+msgid "COS_EMOTES_CLASSIC"
+msgstr "Klasik Tepkiler"
+
+msgid "COS_EMOTES_CLASSIC_DESC"
+msgstr "Selam, iyi oyun, hadi, vay be."
+
+msgid "COS_EMOTES_CHEER"
+msgstr "Tezahürat"
+
+msgid "COS_EMOTES_CHEER_DESC"
+msgstr "Harikasın, şansına, az kaldı, teşekkürler."
+
+msgid "COS_EMOTES_STAR"
+msgstr "Yıldız Tepkiler"
+
+msgid "COS_EMOTES_STAR_DESC"
+msgstr "Mor balonlarda premium tepkiler."
+
+msgid "COS_BADGE_LEVEL_5"
+msgstr "Seviye 5"
+
+msgid "COS_BADGE_LEVEL_10"
+msgstr "Seviye 10"
+
+msgid "COS_BADGE_LEVEL_25"
+msgstr "Seviye 25"
+
+msgid "COS_BADGE_LEVEL_50"
+msgstr "Seviye 50"
+
+msgid "COS_BADGE_LEVEL_100"
+msgstr "Seviye 100"
+
+msgid "COS_BADGE_LOGIN_WEEK"
+msgstr "Sadık Oyuncu"
+
+msgid "COS_BADGE_VETERAN"
+msgstr "Kıdemli"
+
+msgid "COS_BADGE_CHAMPION"
+msgstr "Şampiyon"
+
+msgid "COS_BADGE_UNSTOPPABLE"
+msgstr "Durdurulamaz"
+
+msgid "COS_BADGE_SOCIAL"
+msgstr "Sosyal Kelebek"
+
+msgid "COS_BADGE_WEEKLY_CHAMPION"
+msgstr "Haftanın Şampiyonu"
+
+msgid "COS_BADGE_WEEKLY_TOP10"
+msgstr "Haftanın İlk 10'u"
+
+msgid "EMOTE_HELLO"
+msgstr "Selam!"
+
+msgid "EMOTE_GG"
+msgstr "İyi oyun!"
+
+msgid "EMOTE_GO"
+msgstr "Hadi!"
+
+msgid "EMOTE_WOW"
+msgstr "Vay be!"
+
+msgid "EMOTE_GREAT"
+msgstr "Harikasın!"
+
+msgid "EMOTE_LUCKY"
+msgstr "Şansına!"
+
+msgid "EMOTE_CLOSE"
+msgstr "Az kaldı!"
+
+msgid "EMOTE_THANKS"
+msgstr "Teşekkürler!"
+
+msgid "EMOTE_STAR"
+msgstr "Yıldız gibi!"
+
+msgid "EMOTE_CHAMP"
+msgstr "Şampiyon!"
+
+msgid "EMOTE_REMATCH"
+msgstr "Rövanş?"
+
+msgid "EMOTE_AMAZING"
+msgstr "Muhteşem!"

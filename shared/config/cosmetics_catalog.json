@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "prices": {
+    "gold": {"common": 400, "rare": 1200, "epic": 2500, "legendary": 5000},
+    "gems": {"rare": 60, "epic": 120, "legendary": 250}
+  },
+  "featured": ["dice_star", "pawns_crown", "board_mint", "frame_gold", "effect_sparkle", "dice_aurora"],
+  "items": [
+    {"id": "dice_classic",   "category": "dice",   "rarity": "common",    "default": true,  "published": true, "purchasable": false, "earnable": false, "asset": "res://assets/dice",                  "usage": "match"},
+    {"id": "dice_night",     "category": "dice",   "rarity": "common",    "currency": "gold", "published": true, "purchasable": true,  "earnable": false, "asset": "res://assets/cosmetics/dice/night",   "usage": "match"},
+    {"id": "dice_mango",     "category": "dice",   "rarity": "rare",      "currency": "gold", "published": true, "purchasable": true,  "earnable": false, "asset": "res://assets/cosmetics/dice/mango",   "usage": "match"},
+    {"id": "dice_emerald",   "category": "dice",   "rarity": "rare",      "currency": "gold", "published": true, "purchasable": true,  "earnable": false, "asset": "res://assets/cosmetics/dice/emerald", "usage": "match"},
+    {"id": "dice_star",      "category": "dice",   "rarity": "epic",      "currency": "gold", "published": true, "purchasable": true,  "earnable": false, "asset": "res://assets/cosmetics/dice/star",    "usage": "match"},
+    {"id": "dice_aurora",    "category": "dice",   "rarity": "epic",      "currency": "gems", "published": true, "purchasable": true,  "earnable": false, "asset": "res://assets/cosmetics/dice/aurora",  "usage": "match"},
+    {"id": "dice_master",    "category": "dice",   "rarity": "rare",      "published": true, "purchasable": false, "earnable": true,  "source": "level:15", "asset": "res://assets/cosmetics/dice/master", "usage": "match"},
+
+    {"id": "pawns_classic",  "category": "pawns",  "rarity": "common",    "default": true,  "published": true, "purchasable": false, "earnable": false, "asset": "res://assets/pawns",                 "usage": "match"},
+    {"id": "pawns_crown",    "category": "pawns",  "rarity": "rare",      "currency": "gold", "published": true, "purchasable": true,  "earnable": false, "asset": "res://assets/cosmetics/pawns/crown",  "usage": "match"},
+    {"id": "pawns_star",     "category": "pawns",  "rarity": "epic",      "published": true, "purchasable": false, "earnable": true,  "source": "level:20", "asset": "res://assets/cosmetics/pawns/star", "usage": "match"},
+    {"id": "pawns_gem",      "category": "pawns",  "rarity": "epic",      "currency": "gems", "published": true, "purchasable": true,  "earnable": false, "asset": "res://assets/cosmetics/pawns/gem",    "usage": "match"},
+
+    {"id": "board_classic",  "category": "board",  "rarity": "common",    "default": true,  "published": true, "purchasable": false, "earnable": false, "asset": "palette:classic", "usage": "match"},
+    {"id": "board_mint",     "category": "board",  "rarity": "rare",      "currency": "gold", "published": true, "purchasable": true,  "earnable": false, "asset": "palette:mint",    "usage": "match"},
+    {"id": "board_night",    "category": "board",  "rarity": "epic",      "published": true, "purchasable": false, "earnable": true,  "source": "level:25", "asset": "palette:night", "usage": "match"},
+    {"id": "board_sunset",   "category": "board",  "rarity": "legendary", "currency": "gems", "published": true, "purchasable": true,  "earnable": false, "asset": "palette:sunset",  "usage": "match"},
+
+    {"id": "frame_none",     "category": "frame",  "rarity": "common",    "default": true,  "published": true, "purchasable": false, "earnable": false, "asset": "frame:none",     "usage": "profile+match"},
+    {"id": "frame_mint",     "category": "frame",  "rarity": "common",    "currency": "gold", "published": true, "purchasable": true,  "earnable": true, "source": "quest:w_play_10", "asset": "frame:mint", "usage": "profile+match"},
+    {"id": "frame_gold",     "category": "frame",  "rarity": "rare",      "currency": "gold", "published": true, "purchasable": true,  "earnable": false, "asset": "frame:gold",     "usage": "profile+match"},
+    {"id": "frame_star",     "category": "frame",  "rarity": "epic",      "published": true, "purchasable": false, "earnable": true,  "source": "level:10", "asset": "frame:star",  "usage": "profile+match"},
+    {"id": "frame_champion", "category": "frame",  "rarity": "legendary", "published": true, "purchasable": false, "earnable": true,  "source": "leaderboard:1", "asset": "frame:champion", "usage": "profile+match"},
+    {"id": "frame_royal",    "category": "frame",  "rarity": "legendary", "currency": "gems", "published": true, "purchasable": true,  "earnable": false, "asset": "frame:royal",    "usage": "profile+match"},
+
+    {"id": "effect_none",    "category": "effect", "rarity": "common",    "default": true,  "published": true, "purchasable": false, "earnable": false, "asset": "effect:none",    "usage": "profile"},
+    {"id": "effect_sparkle", "category": "effect", "rarity": "epic",      "currency": "gold", "published": true, "purchasable": true,  "earnable": false, "asset": "effect:sparkle", "usage": "profile"},
+    {"id": "effect_aurora",  "category": "effect", "rarity": "legendary", "currency": "gems", "published": true, "purchasable": true,  "earnable": false, "asset": "effect:aurora",  "usage": "profile"},
+
+    {"id": "name_plain",     "category": "name",   "rarity": "common",    "default": true,  "published": true, "purchasable": false, "earnable": false, "asset": "name:plain",     "usage": "profile+match"},
+    {"id": "name_mango",     "category": "name",   "rarity": "common",    "currency": "gold", "published": true, "purchasable": true,  "earnable": false, "asset": "name:mango",     "usage": "profile+match"},
+    {"id": "name_gold",      "category": "name",   "rarity": "rare",      "currency": "gold", "published": true, "purchasable": true,  "earnable": false, "asset": "name:gold",      "usage": "profile+match"},
+    {"id": "name_star",      "category": "name",   "rarity": "epic",      "published": true, "purchasable": false, "earnable": true,  "source": "achievement:streak_5", "asset": "name:star", "usage": "profile+match"},
+
+    {"id": "emotes_classic", "category": "emotes", "rarity": "common",    "default": true,  "published": true, "purchasable": false, "earnable": false, "asset": "emotes", "usage": "match", "phrases": ["hello", "gg", "go", "wow"]},
+    {"id": "emotes_cheer",   "category": "emotes", "rarity": "rare",      "currency": "gold", "published": true, "purchasable": true,  "earnable": false, "asset": "emotes", "usage": "match", "phrases": ["great", "lucky", "close", "thanks"]},
+    {"id": "emotes_star",    "category": "emotes", "rarity": "epic",      "currency": "gems", "published": true, "purchasable": true,  "earnable": false, "asset": "emotes", "usage": "match", "phrases": ["star", "champ", "rematch", "amazing"]},
+
+    {"id": "badge_level_5",         "category": "badge", "rarity": "common",    "published": true, "purchasable": false, "earnable": true, "source": "level:5",   "asset": "badge:level_5",   "usage": "profile"},
+    {"id": "badge_level_10",        "category": "badge", "rarity": "rare",      "published": true, "purchasable": false, "earnable": true, "source": "level:10",  "asset": "badge:level_10",  "usage": "profile"},
+    {"id": "badge_level_25",        "category": "badge", "rarity": "epic",      "published": true, "purchasable": false, "earnable": true, "source": "level:25",  "asset": "badge:level_25",  "usage": "profile"},
+    {"id": "badge_level_50",        "category": "badge", "rarity": "legendary", "published": true, "purchasable": false, "earnable": true, "source": "level:50",  "asset": "badge:level_50",  "usage": "profile"},
+    {"id": "badge_level_100",       "category": "badge", "rarity": "legendary", "published": true, "purchasable": false, "earnable": true, "source": "level:100", "asset": "badge:level_100", "usage": "profile"},
+    {"id": "badge_login_week",      "category": "badge", "rarity": "rare",      "published": true, "purchasable": false, "earnable": true, "source": "daily_login:7", "asset": "badge:login_week", "usage": "profile"},
+    {"id": "badge_veteran",         "category": "badge", "rarity": "epic",      "published": true, "purchasable": false, "earnable": true, "source": "achievement:matches_100", "asset": "badge:veteran", "usage": "profile"},
+    {"id": "badge_champion",        "category": "badge", "rarity": "legendary", "published": true, "purchasable": false, "earnable": true, "source": "achievement:wins_50", "asset": "badge:champion", "usage": "profile"},
+    {"id": "badge_unstoppable",     "category": "badge", "rarity": "epic",      "published": true, "purchasable": false, "earnable": true, "source": "achievement:streak_5", "asset": "badge:unstoppable", "usage": "profile"},
+    {"id": "badge_social",          "category": "badge", "rarity": "rare",      "published": true, "purchasable": false, "earnable": true, "source": "achievement:friends_10", "asset": "badge:social", "usage": "profile"},
+    {"id": "badge_weekly_champion", "category": "badge", "rarity": "legendary", "published": true, "purchasable": false, "earnable": true, "source": "leaderboard:1", "asset": "badge:weekly_champion", "usage": "profile"},
+    {"id": "badge_weekly_top10",    "category": "badge", "rarity": "epic",      "published": true, "purchasable": false, "earnable": true, "source": "leaderboard:10", "asset": "badge:weekly_top10", "usage": "profile"}
+  ]
+}

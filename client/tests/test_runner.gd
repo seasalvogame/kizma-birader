@@ -88,4 +88,6 @@ func _isolate() -> void:
 	Online.session._clear()
 	Online.profile.cache_path = "user://test_run/online_profile_cache.json"
 	Online.profile.reset()
+	Online.cosmetics.cache_path = "user://test_run/cosmetics_cache.json"
+	Online.cosmetics.load_cache()
 

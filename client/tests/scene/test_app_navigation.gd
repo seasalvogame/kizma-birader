@@ -284,3 +284,23 @@ func test_result_place_with_server_json_ranks() -> void:
 	assert_eq(MatchScreen.place_of([0, 1], 1), 2, "int ranks still work")
 	assert_eq(MatchScreen.place_of([], 0), 0, "not ranked")
 
+
+
+## Phase 7 screens open offline (no catalog yet: honest loading / offline state, no fake items).
+func test_cosmetics_screens_open_offline() -> void:
+	assert_eq(Cosmetics.board_palette("board_unknown"), Cosmetics.BOARDS["board_classic"], "unknown board -> classic palette")
+	assert_true(Cosmetics.dice_face("dice_star", 6) != null and Cosmetics.dice_face("dice_nope", 3) != null, "dice faces load (fallback to classic)")
+	assert_true(Cosmetics.pawn_texture("pawns_gem", "blue") != null, "pawn skin loads")
+	var vp := _viewport(Vector2i(720, 1560))
+	var main := _main(vp)
+	await _frames(2)
+	main.call("go", "collection", {})
+	await _frames(4)
+	var col: Node = main.get("current")
+	assert_eq(col.get_script().get_global_name(), "CollectionScreen", "collection opens")
+	assert_true((col.get("status") as StatusCard).visible, "collection shows a loading / offline state")
+	main.call("go", "cosmetic", {"id": "dice_star"})
+	await _frames(3)
+	assert_eq((main.get("current") as Node).get_script().get_global_name(), "CosmeticDetailScreen", "item details open")
+	vp.queue_free()
+	await _frames(1)

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 100 100">
+  <defs><linearGradient id="d" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#3b40a0"/><stop offset="100%" stop-color="#171a4a"/></linearGradient></defs>
+  <rect x="6" y="10" width="88" height="86" rx="22" fill="#0b0d33"/>
+  <rect x="6" y="4" width="88" height="86" rx="22" fill="url(#d)" stroke="#8f95ff" stroke-width="2.5"/>
+  <rect x="18" y="9" width="64" height="5" rx="2.5" fill="#ffffff" opacity=".35"/>
+  <path d="M30.00 16.50L32.78 23.18L39.99 23.76L34.49 28.46L36.17 35.49L30.00 31.73L23.83 35.49L25.51 28.46L20.01 23.76L27.22 23.18Z" fill="#ffd04a"/><path d="M70.00 16.50L72.78 23.18L79.99 23.76L74.49 28.46L76.17 35.49L70.00 31.73L63.83 35.49L65.51 28.46L60.01 23.76L67.22 23.18Z" fill="#ffd04a"/><path d="M30.00 56.50L32.78 63.18L39.99 63.76L34.49 68.46L36.17 75.49L30.00 71.72L23.83 75.49L25.51 68.46L20.01 63.76L27.22 63.18Z" fill="#ffd04a"/><path d="M70.00 56.50L72.78 63.18L79.99 63.76L74.49 68.46L76.17 75.49L70.00 71.72L63.83 75.49L65.51 68.46L60.01 63.76L67.22 63.18Z" fill="#ffd04a"/>
+</svg>

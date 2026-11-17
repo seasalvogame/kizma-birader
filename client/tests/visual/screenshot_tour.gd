@@ -46,6 +46,7 @@ func _ready() -> void:
 	await _phase4_screens()
 	await _phase5_screens()
 	await _phase6_screens()
+	await _phase7_screens()
 	main.call("go", "modes", {"players": 2})
 	await _frames(12)
 	await _shot("00i_modes_online")
@@ -314,4 +315,40 @@ func _phase6_more() -> void:
 	lb.get("status").clear()
 	await _frames(12)
 	await _shot("66_leaderboard_sample")
+
+
+## Phase 7 screens with a SAMPLE catalog / inventory (screenshots only).
+func _phase7_screens() -> void:
+	var it := func(id: String, cat: String, rarity: String, price: Variant, cur: String = "gold", extra: Dictionary = {}) -> Dictionary:
+		var d := {"id": id, "category": cat, "rarity": rarity, "published": true, "purchasable": price != null, "earnable": false,
+			"currency": cur, "price": price, "usage": "match"}
+		d.merge(extra, true)
+		return d
+	Online.cosmetics.catalog = {"store_enabled": true, "featured": ["dice_star", "pawns_crown", "board_mint", "frame_gold"], "items": [
+		it.call("dice_classic", "dice", "common", null, "gold", {"default": true}), it.call("dice_night", "dice", "common", 400),
+		it.call("dice_mango", "dice", "rare", 1200), it.call("dice_emerald", "dice", "rare", 1200), it.call("dice_star", "dice", "epic", 2500),
+		it.call("dice_aurora", "dice", "epic", 120, "gems"), it.call("dice_master", "dice", "rare", null, "gold", {"earnable": true, "source": "level:15"}),
+		it.call("pawns_classic", "pawns", "common", null, "gold", {"default": true}), it.call("pawns_crown", "pawns", "rare", 1200),
+		it.call("pawns_star", "pawns", "epic", null, "gold", {"earnable": true, "source": "level:20"}), it.call("pawns_gem", "pawns", "epic", 120, "gems"),
+		it.call("board_classic", "board", "common", null, "gold", {"default": true}), it.call("board_mint", "board", "rare", 1200),
+		it.call("board_night", "board", "epic", null, "gold", {"earnable": true, "source": "level:25"}), it.call("board_sunset", "board", "legendary", 250, "gems"),
+		it.call("frame_none", "frame", "common", null, "gold", {"default": true}), it.call("frame_gold", "frame", "rare", 1200),
+		it.call("frame_star", "frame", "epic", null, "gold", {"earnable": true, "source": "level:10"}), it.call("frame_royal", "frame", "legendary", 250, "gems"),
+		it.call("effect_sparkle", "effect", "epic", 2500), it.call("name_gold", "name", "rare", 1200), it.call("emotes_cheer", "emotes", "rare", 1200)]}
+	var own := func(id: String, cat: String, src: String) -> Dictionary: return {"id": id, "category": cat, "source": src}
+	Online.cosmetics.inventory = {"owned": [own.call("dice_classic", "dice", "default"), own.call("dice_mango", "dice", "store"),
+		own.call("dice_master", "dice", "level:15"), own.call("pawns_classic", "pawns", "default"), own.call("board_classic", "board", "default")],
+		"loadout": {"dice": "dice_mango"}}
+	main.call("go", "collection", {"category": "dice"})
+	await _frames(3)
+	(main.get("current") as Node).get("status").clear()
+	await _frames(12)
+	await _shot("70_collection_sample")
+	main.call("go", "cosmetic", {"id": "dice_star"})
+	await _frames(12)
+	await _shot("71_cosmetic_detail_sample")
+	if self.has_method("_phase7_more"):
+		await call("_phase7_more")
+	Online.cosmetics.catalog = {}
+	Online.cosmetics.inventory = {}
 
