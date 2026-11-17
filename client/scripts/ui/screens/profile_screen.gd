@@ -69,6 +69,24 @@ func _render() -> void:
 	chip.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	top.add_child(chip)
 	_sections.add_child(top)
+	# --- level and XP (server: my_progress)
+	if online and not p.progress.is_empty():
+		var lv := _card(tr("PROGRESS_LEVEL") % int(p.progress.get("level", 1)))
+		var bar := XpBar.new()
+		bar.set_progress(int(p.progress["level"]), int(p.progress["xp_in_level"]), int(p.progress["xp_for_next"]))
+		lv.add_child(bar)
+		var maxed := int(p.progress["xp_for_next"]) <= 0
+		lv.add_child(UiKit.label(tr("PROGRESS_MAX") if maxed else tr("PROGRESS_XP") % [int(p.progress["xp_in_level"]), int(p.progress["xp_for_next"])], "InkBodyLabel"))
+		if not maxed:
+			lv.add_child(UiKit.label(tr("PROGRESS_NEXT_REWARD") % int(p.progress.get("next_level_gold", 0)), "InkDimLabel"))
+		lv.add_child(UiKit.label(tr("PROGRESS_TOTAL") % int(p.progress["xp"]), "InkDimLabel"))
+		var badges: Array = p.progress.get("badges", [])
+		if not badges.is_empty():
+			var row := HFlowContainer.new()
+			row.add_theme_constant_override("h_separation", 8)
+			for b: String in badges:
+				row.add_child(UiKit.chip(tr("BADGE_" + b.to_upper()), Color(UiPalette.MANGO_500, 0.2), UiPalette.MANGO_700))
+			lv.add_child(row)
 	# --- online stats
 	var stats := _card(tr("PROFILE_ONLINE_STATS"))
 	if online:

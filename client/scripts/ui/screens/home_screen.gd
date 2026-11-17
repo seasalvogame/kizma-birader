@@ -79,7 +79,9 @@ func _top_row() -> Control:
 	var n := UiKit.label(Settings.display_name(), "H3Label")
 	n.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	names.add_child(n)
-	var chip := UiKit.chip(tr("HOME_GUEST"))
+	var lvl := int(Online.profile.progress.get("level", 0))
+	var chip := UiKit.chip(tr("PROGRESS_LEVEL_SHORT") % lvl if lvl > 0 else tr("HOME_GUEST"),
+		Color(UiPalette.MANGO_500, 0.25) if lvl > 0 else Color(0, 0, 0, 0.3), UiPalette.MANGO_300 if lvl > 0 else UiPalette.ON_NIGHT)
 	chip.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 	chip.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	names.add_child(chip)

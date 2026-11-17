@@ -18,7 +18,7 @@ import {
   Action, cryptoDice, createGame, GameEngine, GameEvent, GameState, maxDiceValue, stateHash,
 } from "../../game-engine/src/index.js";
 import { verifySupabaseJwt } from "./auth.js";
-import { dbConfigured, recordMatch } from "./db.js";
+import { dbConfigured, PlayerProgress, recordMatch } from "./db.js";
 import { ClientMessage, parseClientMessage, ProtocolError } from "./protocol.js";
 
 export interface Env {
@@ -60,11 +60,13 @@ interface MatchRecord {
   db_id: string;               // uuid of the database record (fixed at creation: idempotent recording)
   log: string[];               // compact actions: r6 m0 t3 t l1 (replayable with the engine)
   ended_at?: number;
-  db?: { status: "pending" | "done" | "skipped"; attempts: number; error?: string };
+  db?: { status: "pending" | "done" | "skipped"; attempts: number; error?: string; progress?: Record<string, PlayerProgress> };
+  counts?: Record<number, SeatCounts>;   // per seat, for quests and achievements (Phase 6)
   room?: string;               // private room code (the room becomes a lobby again at game over)
 }
 
 interface Attachment { authed: boolean; userId?: string; seat?: number }
+interface SeatCounts { rolls: number; sixes: number; captures: number; finished: number }
 
 /** {re: id} when the raw message carries a readable request id (errors can then be matched). */
 function requestId(raw: string | ArrayBuffer): { re?: string } {
@@ -254,6 +256,14 @@ export class MatchRoom extends DurableObject<Env> {
     if (!r.ok) return { ok: false, error: r.error };
     m.state = r.state;
     m.seq++;
+    // per-seat counters from the engine's own events; auto rolls (timeouts, autopilot) are not counted
+    const counts = (m.counts ??= {});
+    const c = (seat: number): SeatCounts => (counts[seat] ??= { rolls: 0, sixes: 0, captures: 0, finished: 0 });
+    for (const e of r.events) {
+      if (e.type === "dice_rolled" && !e.auto) { c(e.seat).rolls++; if (e.value === 6) c(e.seat).sixes++; }
+      else if (e.type === "pawn_captured") c(e.by_seat).captures++;
+      else if (e.type === "pawn_finished") c(e.seat).finished++;
+    }
     (m.log ??= []).push(action.type === "roll" ? `r${dice}` : action.type === "move" ? `m${action.pawn}`
       : action.type === "timeout" ? (dice ? `t${dice}` : "t") : `l${action.seat}`);
     return { ok: true, events: r.events };
@@ -331,13 +341,14 @@ export class MatchRoom extends DurableObject<Env> {
     if (!m.db || m.db.status !== "pending") return;
     const s = m.state;
     try {
-      await recordMatch(this.env, {
+      const result = await recordMatch(this.env, {
         matchId: m.db_id,
         mode: m.mode ?? "test",
         ruleset: s.ruleset,
         seats: m.seats.map((seat) => ({
           seat: seat.seat, color: seat.color, user_id: seat.is_bot ? null : seat.user_id, is_bot: seat.is_bot,
           rank: s.ranks.indexOf(seat.seat) + 1, left: s.players[seat.seat]?.status === "left", name: seat.name,
+          ...(m.counts?.[seat.seat] ?? {}),
         })),
         startedAt: m.created_at,
         endedAt: m.ended_at ?? Date.now(),
@@ -348,11 +359,11 @@ export class MatchRoom extends DurableObject<Env> {
         serverVersion: this.env.CF_VERSION_METADATA?.id ?? "local",
       });
       // applied now, or already stored by an earlier attempt: either way it is in the database once
-      m.db = { status: "done", attempts: m.db.attempts + 1 };
+      m.db = { status: "done", attempts: m.db.attempts + 1, progress: result.applied ? result.progress : (m.db.progress ?? {}) };
       await this.save();
       for (const ws of this.ctx.getWebSockets()) {
         const a = ws.deserializeAttachment() as Attachment | null;
-        if (a?.authed) this.send(ws, { t: "match.recorded", p: { matchId: m.db_id } });
+        if (a?.authed) this.send(ws, { t: "match.recorded", p: { matchId: m.db_id, progress: (a.userId && m.db.progress?.[a.userId]) || null } });
       }
     } catch (e) {
       const attempts = m.db.attempts + 1;
@@ -369,7 +380,8 @@ export class MatchRoom extends DurableObject<Env> {
 
   // ------------------------------------------------------------- helpers
   private snapshot(m: MatchRecord, seat: number) {
-    return { t: "match.snapshot", seq: m.seq, p: { matchId: m.id, yourSeat: seat, seats: m.seats, state: m.state, deadline: m.deadline, serverTime: Date.now(), boot: this.boot, record: m.db?.status ?? null, recordId: m.db?.status === "done" ? m.db_id : null } };
+    return { t: "match.snapshot", seq: m.seq, p: { matchId: m.id, yourSeat: seat, seats: m.seats, state: m.state, deadline: m.deadline, serverTime: Date.now(), boot: this.boot, record: m.db?.status ?? null, recordId: m.db?.status === "done" ? m.db_id : null,
+      progress: (seat >= 0 && m.db?.progress?.[m.seats[seat]?.user_id ?? ""]) || null } };
   }
 
   private broadcast(m: MatchRecord, events: GameEvent[]): void {

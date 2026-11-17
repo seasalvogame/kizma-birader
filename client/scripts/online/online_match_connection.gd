@@ -11,6 +11,7 @@ signal connection_changed(connected: bool)
 signal fatal(code: String)                      # the match cannot continue on this device
 signal action_refused(code: String)
 signal recorded(match_id: String)               # the server stored the result (Supabase)
+signal progress_received(progress: Dictionary)  # my XP / level from that result {xp, level_before, level_after, gold}
 
 const BACKOFF := [0.5, 1.0, 2.0, 4.0, 8.0, 15.0]
 
@@ -78,6 +79,8 @@ func _on_message(m: Dictionary) -> void:
 		"match.snapshot":
 			last_seq = int(m.get("seq", 0))
 			snapshot_received.emit(p)
+			if (p.get("progress") is Dictionary):   # reconnect after the result was recorded
+				progress_received.emit(p["progress"])
 		"match.events":
 			var seq := int(m.get("seq", 0))
 			if seq <= last_seq:
@@ -89,6 +92,8 @@ func _on_message(m: Dictionary) -> void:
 			events_received.emit(p)
 		"match.recorded":
 			recorded.emit(String(p.get("matchId", "")))
+			if p.get("progress") is Dictionary:
+				progress_received.emit(p["progress"])
 		"error":
 			var code := String(p.get("code", "ERROR"))
 			if m.get("re", "") == _hello_id or code in ["AUTH_INVALID", "NOT_IN_MATCH", "SESSION_REPLACED", "MATCH_NOT_FOUND"]:

@@ -23,14 +23,24 @@ class P:
 	var conn: OnlineMatchConnection
 	var over := false
 	var recorded := ""
+	var progress := {}
 
 
 func _make(n: String) -> P:
 	var p := P.new()
 	p.name = n
 	p.session = OnlineSession.new()
-	p.session.path = "user://test_room_%s.cfg" % n
-	DirAccess.remove_absolute(ProjectSettings.globalize_path(p.session.path))
+	# reusable test accounts: the runner passes a folder with their session files
+	var seeded := ""
+	for arg: String in OS.get_cmdline_user_args():
+		if arg.begins_with("--test-session-dir="):
+			seeded = arg.trim_prefix("--test-session-dir=").path_join("room_%s.cfg" % n)
+	if seeded != "":
+		p.session.path = seeded
+	else:
+		p.session.path = "user://test_room_%s.cfg" % n
+		if not p.session.path.contains("kb-godot-sessions"):
+			DirAccess.remove_absolute(ProjectSettings.globalize_path(p.session.path))
 	tree.root.add_child(p.session)
 	p.api = OnlineApi.new()
 	p.api.session = p.session
@@ -117,6 +127,7 @@ func test_friends_invite_private_room_match() -> void:
 		p.conn = OnlineMatchConnection.new()
 		tree.root.add_child(p.conn)
 		p.conn.recorded.connect(func(id: String) -> void: p.recorded = id)
+		p.conn.progress_received.connect(func(pr: Dictionary) -> void: p.progress = pr)
 		p.conn.events_received.connect(func(ev: Dictionary) -> void:
 			if (ev.get("state", {}) as Dictionary).get("turn", {}).get("phase", "") == "game_over":
 				p.over = true)
@@ -138,6 +149,9 @@ func test_friends_invite_private_room_match() -> void:
 		assert_true(await prof.refresh(5), "A's profile loads")
 		assert_true(prof.recent.size() >= 1 and String(prof.recent[0]["mode"]) == "private", "the private match is in A's history")
 		assert_eq(int(prof.stats.get("wins_2p", 0)), 1, "A's win counted")
+		await _until(func() -> bool: return not a.progress.is_empty() and not b.progress.is_empty(), "XP results", 20000)
+		assert_eq(int(a.progress.get("xp", -1)), 20, "private room: half XP for the winner (40 -> 20)")
+		assert_eq(int(b.progress.get("xp", -1)), 0, "B left the match: no XP")
 		prof.queue_free()
 	for p: P in [a, b]:
 		p.room.leave()
@@ -147,7 +161,8 @@ func test_friends_invite_private_room_match() -> void:
 	for p: P in [a, b]:
 		for n: Node in [p.conn, p.room, p.social, p.hub, p.api, p.session]:
 			n.queue_free()
-		DirAccess.remove_absolute(ProjectSettings.globalize_path(p.session.path))
+		if not p.session.path.contains("kb-godot-sessions"):
+			DirAccess.remove_absolute(ProjectSettings.globalize_path(p.session.path))
 	await _frames(2)
 
 

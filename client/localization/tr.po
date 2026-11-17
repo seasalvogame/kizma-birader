@@ -514,7 +514,7 @@ msgid "MATCH_MODE_2P_ONLINE"
 msgstr "2 Kişi · Klasik · Çevrimiçi"
 
 msgid "RESULT_ONLINE_NOTE"
-msgstr "Çevrimiçi maç · geçmişine ve istatistiklerine kaydedilir"
+msgstr "Çevrimiçi maç · XP, geçmiş ve istatistiklerine kaydedilir"
 
 msgid "ONLINE_RECORDED"
 msgstr "Maç geçmişine kaydedildi ✓"
@@ -1124,3 +1124,57 @@ msgstr "Oturum açılamadı."
 
 msgid "ERR_SESSION_EXPIRED"
 msgstr "Oturumun geçersiz oldu. Hesap ekranına bak."
+
+msgid "CELEBRATE_OK"
+msgstr "Harika!"
+
+msgid "RESULT_XP"
+msgstr "+%d XP kazandın"
+
+msgid "RESULT_NO_XP"
+msgstr "Bu maçtan XP yok (maçtan ayrıldın)"
+
+msgid "REWARD_GOLD"
+msgstr "+%d Altın"
+
+msgid "LEVEL_UP_TITLE"
+msgstr "Seviye %d!"
+
+msgid "LEVEL_UP_SUB"
+msgstr "Yeni seviyeye ulaştın."
+
+msgid "PROGRESS_LEVEL"
+msgstr "Seviye %d"
+
+msgid "PROGRESS_LEVEL_SHORT"
+msgstr "Sv. %d"
+
+msgid "PROGRESS_XP"
+msgstr "%d / %d XP"
+
+msgid "PROGRESS_MAX"
+msgstr "En yüksek seviyedesin"
+
+msgid "PROGRESS_NEXT_REWARD"
+msgstr "Sonraki seviyede: +%d Altın"
+
+msgid "PROGRESS_TOTAL"
+msgstr "Toplam %d XP"
+
+msgid "DETAIL_XP"
+msgstr "Kazanılan XP"
+
+msgid "BADGE_LEVEL_5"
+msgstr "Seviye 5"
+
+msgid "BADGE_LEVEL_10"
+msgstr "Seviye 10"
+
+msgid "BADGE_LEVEL_25"
+msgstr "Seviye 25"
+
+msgid "BADGE_LEVEL_50"
+msgstr "Seviye 50"
+
+msgid "BADGE_LEVEL_100"
+msgstr "Seviye 100"

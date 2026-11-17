@@ -514,7 +514,7 @@ msgid "MATCH_MODE_2P_ONLINE"
 msgstr "2 Players · Classic · Online"
 
 msgid "RESULT_ONLINE_NOTE"
-msgstr "Online match · saved to your history and stats"
+msgstr "Online match · saved to your XP, history and stats"
 
 msgid "ONLINE_RECORDED"
 msgstr "Saved to your match history ✓"
@@ -1124,3 +1124,57 @@ msgstr "Could not sign in."
 
 msgid "ERR_SESSION_EXPIRED"
 msgstr "Your session expired. See the account screen."
+
+msgid "CELEBRATE_OK"
+msgstr "Great!"
+
+msgid "RESULT_XP"
+msgstr "+%d XP earned"
+
+msgid "RESULT_NO_XP"
+msgstr "No XP from this match (you left)"
+
+msgid "REWARD_GOLD"
+msgstr "+%d Gold"
+
+msgid "LEVEL_UP_TITLE"
+msgstr "Level %d!"
+
+msgid "LEVEL_UP_SUB"
+msgstr "You reached a new level."
+
+msgid "PROGRESS_LEVEL"
+msgstr "Level %d"
+
+msgid "PROGRESS_LEVEL_SHORT"
+msgstr "Lv. %d"
+
+msgid "PROGRESS_XP"
+msgstr "%d / %d XP"
+
+msgid "PROGRESS_MAX"
+msgstr "You are at the top level"
+
+msgid "PROGRESS_NEXT_REWARD"
+msgstr "Next level: +%d Gold"
+
+msgid "PROGRESS_TOTAL"
+msgstr "%d XP in total"
+
+msgid "DETAIL_XP"
+msgstr "XP earned"
+
+msgid "BADGE_LEVEL_5"
+msgstr "Level 5"
+
+msgid "BADGE_LEVEL_10"
+msgstr "Level 10"
+
+msgid "BADGE_LEVEL_25"
+msgstr "Level 25"
+
+msgid "BADGE_LEVEL_50"
+msgstr "Level 50"
+
+msgid "BADGE_LEVEL_100"
+msgstr "Level 100"

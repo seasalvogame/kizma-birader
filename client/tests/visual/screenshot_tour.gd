@@ -45,6 +45,7 @@ func _ready() -> void:
 		await _shot(step[2])
 	await _phase4_screens()
 	await _phase5_screens()
+	await _phase6_screens()
 	main.call("go", "modes", {"players": 2})
 	await _frames(12)
 	await _shot("00i_modes_online")
@@ -227,5 +228,25 @@ func _phase5_screens() -> void:
 	room.queue_free()
 	Online.social.friends = []; Online.social.incoming = []; Online.social.outgoing = []; Online.social.loaded = false
 	Online.hub.statuses = {}; Online.hub.invites = []; Online.hub.connected = false
+	Online.session.user_id = ""
+
+
+## Phase 6 screens with SAMPLE server rows (screenshots only).
+func _phase6_screens() -> void:
+	var me := "11111111-1111-4111-8111-111111111111"
+	Online.session.user_id = me
+	Online.profile.profile = {"user_id": me, "display_name": "Ayşe", "tag": 1234, "avatar_id": "fill:3", "level": 7}
+	Online.profile.stats = {"matches_2p": 21, "wins_2p": 12, "matches_4p": 6, "wins_4p": 2}
+	Online.profile.progress = {"level": 7, "xp": 1290, "xp_in_level": 140, "xp_for_next": 250, "max_level": 100, "next_level_gold": 130, "badges": ["level_5"]}
+	Online.profile.loaded_at = 1
+	main.call("go", "profile")
+	await _frames(14)
+	await _shot("60_profile_progress_sample")
+	Celebration.pop(main.get("current"), tr("LEVEL_UP_TITLE") % 8, tr("LEVEL_UP_SUB"), [["bag", tr("REWARD_GOLD") % 130]])
+	await _frames(40)
+	await _shot("61_level_up_sample")
+	if self.has_method("_phase6_more"):
+		await call("_phase6_more")
+	Online.profile.reset()
 	Online.session.user_id = ""
 

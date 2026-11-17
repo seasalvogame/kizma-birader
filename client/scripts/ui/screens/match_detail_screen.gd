@@ -47,6 +47,7 @@ func _build() -> void:
 			[tr("DETAIL_DURATION"), MatchRow.duration(info)],
 			[tr("DETAIL_END"), tr("DETAIL_END_LEFT") if String(info.get("end_reason", "")) == "left" else tr("DETAIL_END_FINISHED")],
 			[tr("DETAIL_MOVES"), str(int(info.get("action_count", 0)))],
+			[tr("DETAIL_XP"), "+%d XP" % int(me.get("xp_gained", 0))],
 			[tr("DETAIL_ID"), String(info.get("id", "")).substr(0, 8)],
 			[tr("DETAIL_SERVER"), String(info.get("server_version", "")).substr(0, 8)]]:
 		var r := UiKit.hbox(UiTokens.S2)

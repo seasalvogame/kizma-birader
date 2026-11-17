@@ -16,6 +16,8 @@ signal action_refused(code: String)
 signal fatal(code: String)
 ## The server stored the finished match in the database (match history, stats).
 signal recorded(match_id: String)
+## XP / level gained by this player in the recorded match.
+signal progress_received(progress: Dictionary)
 
 var conn: OnlineMatchConnection
 var local_seat := 0
@@ -43,6 +45,7 @@ func start(config: Dictionary, _dice: DiceSource = null) -> bool:
 	conn.action_refused.connect(_on_refused)
 	conn.fatal.connect(func(code: String) -> void: fatal.emit(code))
 	conn.recorded.connect(func(id: String) -> void: recorded.emit(id))
+	conn.progress_received.connect(func(pr: Dictionary) -> void: progress_received.emit(pr))
 	_busy = false
 	_schedule()
 	return true

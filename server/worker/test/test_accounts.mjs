@@ -72,13 +72,17 @@ export function poolIds() { return readPool().map((a) => a.id); }
 
 export const poolPath = (...p) => join(dirname(POOL_FILE), ...p);
 
-/** SQL that removes what earlier runs left between the test accounts (never other players' data):
- *  their match records, friendships, friend requests and blocks. */
+/** SQL that resets the test accounts (never other players' data): their match records,
+ *  friendships, requests, blocks, XP, level, unlocks and online stats. */
 export function resetSql(ids) {
   const l = ids.map((i) => `'${i}'`).join(",");
   return `delete from public.matches where id in (select match_id from public.match_players where user_id in (${l}));
 delete from public.friendships where user_low in (${l}) or user_high in (${l});
 delete from public.friend_requests where from_id in (${l}) or to_id in (${l});
-delete from public.blocks where blocker_id in (${l}) or blocked_id in (${l})`;
+delete from public.blocks where blocker_id in (${l}) or blocked_id in (${l});
+delete from public.xp_events where user_id in (${l});
+delete from public.player_unlocks where user_id in (${l});
+update public.profiles set xp = 0, level = 1 where user_id in (${l});
+update public.player_stats set matches_2p = 0, wins_2p = 0, matches_4p = 0, wins_4p = 0, leaves = 0 where user_id in (${l})`;
 }
 

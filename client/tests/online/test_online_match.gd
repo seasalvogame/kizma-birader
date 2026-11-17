@@ -30,14 +30,24 @@ class Player:
 	var drops := 0
 	var reconnects := 0
 	var recorded := ""
+	var progress := {}
 
 
 func _player(n: String) -> Player:
 	var p := Player.new()
 	p.name = n
 	p.session = OnlineSession.new()
-	p.session.path = "user://test_online_%s.cfg" % n
-	DirAccess.remove_absolute(ProjectSettings.globalize_path(p.session.path))
+	# reusable test accounts: the runner passes a folder with their session files
+	var seeded := ""
+	for arg: String in OS.get_cmdline_user_args():
+		if arg.begins_with("--test-session-dir="):
+			seeded = arg.trim_prefix("--test-session-dir=").path_join("online_%s.cfg" % n)
+	if seeded != "":
+		p.session.path = seeded
+	else:
+		p.session.path = "user://test_online_%s.cfg" % n
+		if not p.session.path.contains("kb-godot-sessions"):
+			DirAccess.remove_absolute(ProjectSettings.globalize_path(p.session.path))
 	tree.root.add_child(p.session)
 	return p
 
@@ -76,6 +86,7 @@ func test_two_clients_queue_match_and_play_to_the_end() -> void:
 		p.conn = OnlineMatchConnection.new()
 		tree.root.add_child(p.conn)
 		p.conn.recorded.connect(func(id: String) -> void: p.recorded = id)
+		p.conn.progress_received.connect(func(pr: Dictionary) -> void: p.progress = pr)
 		p.conn.snapshot_received.connect(func(s: Dictionary) -> void:
 			if p.snap.is_empty():
 				p.snap = s, CONNECT_ONE_SHOT)
@@ -159,7 +170,8 @@ func test_two_clients_queue_match_and_play_to_the_end() -> void:
 	for n: Node in [b.ctl, a.conn, b.conn, a.mm, b.mm, a.session, b.session]:
 		n.queue_free()
 	for p: Player in [a, b]:
-		DirAccess.remove_absolute(ProjectSettings.globalize_path(p.session.path))
+		if not p.session.path.contains("kb-godot-sessions"):
+			DirAccess.remove_absolute(ProjectSettings.globalize_path(p.session.path))
 	await _frames(2)
 
 
@@ -184,6 +196,10 @@ func _check_records(a: Player, b: Player) -> void:
 		var ok := await prof.refresh(5)
 		assert_true(ok, "%s: profile, stats and history loaded from Supabase" % p.name)
 		var won := int(p.found["seat"]) == winner_seat
+		await _until_progress(p)
+		assert_eq(int(p.progress.get("xp", -1)), 40 if won else 15, "%s: server tells the XP of this match (2 players: 40 win / 15 loss)" % p.name)
+		assert_eq(int(prof.progress.get("xp", -1)), 40 if won else 15, "%s: profile shows the new total XP" % p.name)
+		assert_eq(int(prof.progress.get("level", 0)), 1, "%s: still level 1 (100 XP needed)" % p.name)
 		var t := prof.totals()
 		assert_eq(t["matches"], 1, "%s: exactly one online match counted" % p.name)
 		assert_eq(t["wins"], 1 if won else 0, "%s: win counted only for the winner" % p.name)
@@ -204,4 +220,10 @@ func _check_records(a: Player, b: Player) -> void:
 	var token := await again.ensure()
 	assert_true(token != "" and again.user_id == a.session.user_id, "after a restart the same account signs in again (refresh token)")
 	again.queue_free()
+
+
+func _until_progress(p: Player) -> void:
+	var end := Time.get_ticks_msec() + 20000
+	while p.progress.is_empty() and Time.get_ticks_msec() < end:
+		await tree.process_frame
 

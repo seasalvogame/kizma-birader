@@ -7,13 +7,14 @@ extends Node
 
 signal changed
 
-const HISTORY_SELECT := "id,mode,players,status,started_at,ended_at,end_reason,server_version,action_count,match_players(seat,color,rank,user_id,is_bot,display_name,tag,left_match)"
+const HISTORY_SELECT := "id,mode,players,status,started_at,ended_at,end_reason,server_version,action_count,match_players(seat,color,rank,user_id,is_bot,display_name,tag,left_match,xp_gained)"
 
 var api: OnlineApi
 var session: OnlineSession
 var profile := {}          # {user_id, display_name, tag, avatar_id, level}
 var stats := {}            # player_stats row
 var recent: Array = []     # last matches (see HISTORY_SELECT)
+var progress := {}         # my_progress(): {level, xp, xp_in_level, xp_for_next, max_level, next_level_gold, badges}
 var loaded_at := 0         # unix seconds of the last successful load (0 = never)
 var last_error := ""
 var cache_path := "user://online_profile_cache.json"
@@ -43,12 +44,15 @@ func refresh(recent_limit: int = 5) -> bool:
 	var p := await api.get_json("profiles?select=user_id,display_name,tag,avatar_id,level&user_id=eq." + uid)
 	var s := await api.get_json("player_stats?select=*&user_id=eq." + uid)
 	var h := await history(recent_limit)
+	var g := await api.call_rpc("my_progress", {})
 	if not (p["ok"] and s["ok"] and h["ok"]) or (p["data"] as Array).is_empty():
 		last_error = p["error"] if not p["ok"] else ("SERVER" if p["ok"] and (p["data"] as Array).is_empty() else s["error"])
 		return false
 	profile = (p["data"] as Array)[0]
 	stats = (s["data"] as Array)[0] if not (s["data"] as Array).is_empty() else {}
 	recent = h["data"]
+	if g["ok"] and g["data"] is Dictionary:
+		progress = g["data"]
 	loaded_at = int(Time.get_unix_time_from_system())
 	await _adopt_local_name()
 	_mirror_to_settings()
@@ -130,7 +134,7 @@ func _mirror_to_settings() -> void:
 func _save_cache() -> void:
 	var f := FileAccess.open(cache_path, FileAccess.WRITE)
 	if f != null:
-		f.store_string(JSON.stringify({"user_id": session.user_id, "profile": profile, "stats": stats, "recent": recent, "loaded_at": loaded_at}))
+		f.store_string(JSON.stringify({"user_id": session.user_id, "profile": profile, "stats": stats, "recent": recent, "progress": progress, "loaded_at": loaded_at}))
 
 
 func _load_cache() -> void:
@@ -142,5 +146,6 @@ func _load_cache() -> void:
 		profile = d.get("profile", {})
 		stats = d.get("stats", {})
 		recent = d.get("recent", [])
+		progress = d.get("progress", {})
 		loaded_at = int(d.get("loaded_at", 0))
 		_mirror_to_settings()

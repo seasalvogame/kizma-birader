@@ -46,6 +46,10 @@ export interface RecordSeat {
   rank: number;
   left: boolean;
   name: string;
+  rolls?: number;
+  sixes?: number;
+  captures?: number;
+  finished?: number;
 }
 
 export interface MatchRecordInput {
@@ -63,15 +67,19 @@ export interface MatchRecordInput {
 }
 
 /** Records a finished free match (idempotent in the database). Returns true if this call stored it. */
-export async function recordMatch(env: DbEnv, r: MatchRecordInput): Promise<boolean> {
+/** XP / level result of one player for a recorded match (Phase 6). */
+export interface PlayerProgress { xp: number; level_before: number; level_after: number; gold: number }
+
+export async function recordMatch(env: DbEnv, r: MatchRecordInput): Promise<{ applied: boolean; progress: Record<string, PlayerProgress> }> {
   return withDb(env, async (sql) => {
     const rows = await sql`
       select game.record_match(
         ${r.matchId}::uuid, ${r.mode}, ${sql.json(r.ruleset as postgres.JSONValue)}, ${sql.json(r.seats as unknown as postgres.JSONValue)},
         ${new Date(r.startedAt).toISOString()}::timestamptz, ${new Date(r.endedAt).toISOString()}::timestamptz, ${r.endReason},
         ${r.actions}, ${r.finalStateHash}::bigint, ${r.actionCount}::int, ${r.serverVersion}) as result`;
-    const result = rows[0]?.result as { applied?: boolean } | undefined;
-    return result?.applied === true;
+    const raw = rows[0]?.result;
+    const result = (typeof raw === "string" ? JSON.parse(raw) : raw) as { applied?: boolean; progress?: Record<string, PlayerProgress> } | undefined;
+    return { applied: result?.applied === true, progress: result?.progress ?? {} };
   });
 }
 

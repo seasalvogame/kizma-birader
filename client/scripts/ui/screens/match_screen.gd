@@ -35,6 +35,9 @@ var _closing := false
 var _compact := false
 ## Online match (server authority): no restart, no pause, leaving tells the server.
 var online := false
+var _progress := {}            # server result for me: {xp, level_before, level_after, gold}
+var _xp_box: VBoxContainer     # XP line in the result card
+var _celebrated := false
 
 
 func _ready() -> void:
@@ -53,6 +56,7 @@ func _ready() -> void:
 		oc.recorded.connect(func(_id: String) -> void:
 			_show_toast(tr("ONLINE_RECORDED"))
 			Online.profile.loaded_at = 0)   # profile reloads with the new stats
+		oc.progress_received.connect(_on_progress)
 	var seats: Array = config.get("seats", [])
 	two_players = seats.size() == 2
 	for i in seats.size():
@@ -609,6 +613,9 @@ func _show_result(state: Dictionary) -> void:
 	title.add_theme_color_override("font_color", UiPalette.GOLD_300 if my_rank == 1 else UiPalette.ON_NIGHT)
 	col.add_child(title)
 	col.add_child(UiKit.label(tr("RESULT_ONLINE_NOTE") if online else tr("RESULT_PRACTICE_NOTE"), "DimLabel", HORIZONTAL_ALIGNMENT_CENTER))
+	_xp_box = UiKit.vbox(4)
+	col.add_child(_xp_box)
+	_render_xp()
 	var card := PanelContainer.new()
 	card.theme_type_variation = "CreamCard"
 	var list := UiKit.vbox(UiTokens.S1)
@@ -662,4 +669,31 @@ static func place_of(ranks: Array, seat: int) -> int:
 		if int(ranks[i]) == seat:
 			return i + 1
 	return 0
+
+
+## XP / level result from the server (online matches only; may arrive before or after the result card).
+func _on_progress(pr: Dictionary) -> void:
+	_progress = pr
+	_render_xp()
+
+
+func _render_xp() -> void:
+	if _xp_box == null or not is_instance_valid(_xp_box) or _progress.is_empty():
+		return
+	for c: Node in _xp_box.get_children():
+		c.queue_free()
+	var xp := int(_progress.get("xp", 0))
+	var chip := UiKit.chip(tr("RESULT_XP") % xp if xp > 0 else tr("RESULT_NO_XP"), Color(UiPalette.MANGO_500, 0.25), UiPalette.MANGO_300)
+	chip.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	_xp_box.add_child(chip)
+	var before := int(_progress.get("level_before", 1))
+	var after := int(_progress.get("level_after", before))
+	if after > before and not _celebrated:
+		_celebrated = true
+		var lines: Array = []
+		if int(_progress.get("gold", 0)) > 0:
+			lines.append(["bag", tr("REWARD_GOLD") % int(_progress["gold"])])
+		await get_tree().create_timer(0.6).timeout
+		if is_inside_tree():
+			Celebration.pop(self, tr("LEVEL_UP_TITLE") % after, tr("LEVEL_UP_SUB"), lines)
 

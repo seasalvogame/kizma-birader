@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "xp": {
+    "quick_2p": [40, 15],
+    "quick_4p": [50, 35, 25, 15],
+    "private_percent": 50,
+    "left": 0
+  },
+  "level_curve": {"base": 100, "step": 25, "flat_from": 50, "max_level": 100},
+  "level_gold": {"base": 50, "per_level": 10, "max": 300},
+  "level_unlocks": {
+    "5":   [{"kind": "badge", "id": "level_5"}],
+    "10":  [{"kind": "badge", "id": "level_10"}],
+    "25":  [{"kind": "badge", "id": "level_25"}],
+    "50":  [{"kind": "badge", "id": "level_50"}],
+    "100": [{"kind": "badge", "id": "level_100"}]
+  }
+}
