@@ -95,6 +95,7 @@ async function guest() {
   const j = await r.json();
   if (!j.access_token) throw new Error(`guest sign-in failed (${r.status})`);
   createdUsers.push(j.user.id);
+  tokenOf.set(j.user.id, j.access_token);
   return { id: j.user.id, token: j.access_token };
 }
 function deleteUsers() {
@@ -155,8 +156,10 @@ class Client {
   close() { try { this.ws.close(); } catch { /* ignore */ } }
 }
 
-async function createMatch(token, seats, extra = {}) {
-  const r = await fetch(`${BASE}/v1/dev/matches`, { method: "POST", headers: { authorization: `Bearer ${token}`, "content-type": "application/json" }, body: JSON.stringify({ seats, ...extra }) });
+const tokenOf = new Map();   // user id -> JWT of the test guests (each seated human consents)
+async function createMatch(token, seats, extra = {}, consent = true) {
+  const others = consent ? seats.filter((s) => s.user_id && tokenOf.has(s.user_id)).map((s) => tokenOf.get(s.user_id)).filter((t) => t !== token) : [];
+  const r = await fetch(`${BASE}/v1/dev/matches`, { method: "POST", headers: { authorization: `Bearer ${token}`, "content-type": "application/json", "x-seat-tokens": others.join(",") }, body: JSON.stringify({ seats, ...extra }) });
   return { status: r.status, body: await r.json() };
 }
 
@@ -182,6 +185,7 @@ try {
   check((await createMatch("not-a-jwt", seatsAB)).status === 401, "match creation without a valid JWT is refused (401)");
   check((await createMatch(A.token, [{ color: "red", user_id: A.id }, { color: "green", user_id: B.id }])).body.error === "COLOR_INVALID", "2 players must sit opposite (red–green refused)");
   check((await createMatch(C.token, seatsAB)).status === 403, "a user cannot create a match they are not in (403)");
+  check((await createMatch(A.token, seatsAB, {}, false)).body.error === "SEAT_NOT_CONSENTED", "a user cannot put another player into a match without that player's token (403)");
   const created = await createMatch(A.token, seatsAB, REMOTE
     ? { first_seat: 0, ruleset: { turn_roll_seconds: 240, turn_move_seconds: 240 } }
     : { first_seat: 0 });

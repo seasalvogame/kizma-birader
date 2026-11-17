@@ -23,6 +23,22 @@ func _init() -> void:
 
 
 func _ready() -> void:
+	_build()
+	button_down.connect(queue_redraw)
+	button_up.connect(queue_redraw)
+
+
+## Rebuilds the card after title / subtitle / badge changed (e.g. a live counter).
+func refresh() -> void:
+	if not is_inside_tree():
+		return
+	for c: Node in get_children():
+		remove_child(c)
+		c.queue_free()
+	_build()
+
+
+func _build() -> void:
 	custom_minimum_size = Vector2(0, 156 if wide else 232)
 	_face.bg_color = UiPalette.GLASS
 	_face.border_color = UiPalette.GLASS_EDGE
@@ -90,8 +106,6 @@ func _ready() -> void:
 		col.add_child(top)
 		col.add_child(texts)
 		margin.add_child(col)
-	button_down.connect(queue_redraw)
-	button_up.connect(queue_redraw)
 
 
 func _chip() -> PanelContainer:

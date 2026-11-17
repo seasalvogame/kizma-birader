@@ -24,6 +24,8 @@ import { ClientMessage, parseClientMessage, ProtocolError } from "./protocol.js"
 export interface Env {
   MATCH_ROOM: DurableObjectNamespace<MatchRoom>;
   MATCHMAKER: DurableObjectNamespace;
+  SOCIAL_HUB: DurableObjectNamespace;
+  PRIVATE_ROOM: DurableObjectNamespace;
   SUPABASE_URL: string;
   ALLOW_DEV_ROUTES: string;
   BOT_DELAY_MS: string;
@@ -59,6 +61,7 @@ interface MatchRecord {
   log: string[];               // compact actions: r6 m0 t3 t l1 (replayable with the engine)
   ended_at?: number;
   db?: { status: "pending" | "done" | "skipped"; attempts: number; error?: string };
+  room?: string;               // private room code (the room becomes a lobby again at game over)
 }
 
 interface Attachment { authed: boolean; userId?: string; seat?: number }
@@ -108,7 +111,7 @@ export class MatchRoom extends DurableObject<Env> {
   private async init(body: unknown): Promise<Response> {
     const existing = await this.load();
     if (existing) return Response.json({ created: false, id: existing.id });
-    const b = body as { id?: string; mode?: MatchMode; seats?: SeatInfo[]; first_seat?: number; ruleset?: Record<string, unknown> };
+    const b = body as { id?: string; mode?: MatchMode; seats?: SeatInfo[]; first_seat?: number; ruleset?: Record<string, unknown>; room?: string };
     const seats = b.seats ?? [];
     let state: GameState;
     try {
@@ -124,9 +127,11 @@ export class MatchRoom extends DurableObject<Env> {
     this.record = {
       id: b.id ?? this.ctx.id.toString(), state, seats, seq: 0, deadline: 0, seen: {}, created_at: Date.now(),
       mode, db_id: crypto.randomUUID(), log: [],
+      ...(mode === "private" && typeof b.room === "string" ? { room: b.room } : {}),
     };
     await this.scheduleTurn(this.record);
     await this.save();
+    if (mode !== "test") await this.tellHub(this.record, this.record.id);   // players are now "in a match"
     return Response.json({ created: true, id: this.record.id });
   }
 
@@ -293,6 +298,16 @@ export class MatchRoom extends DurableObject<Env> {
     }
   }
 
+  /** Presence / directory: matchId = the human players are in this match, null = it is over. */
+  private async tellHub(m: MatchRecord, matchId: string | null): Promise<void> {
+    const users = m.seats.filter((x) => !x.is_bot && x.user_id).map((x) => x.user_id!);
+    try {
+      await this.env.SOCIAL_HUB.get(this.env.SOCIAL_HUB.idFromName("hub")).fetch("https://hub/status", {
+        method: "POST", body: JSON.stringify({ users, matchId }),
+      });
+    } catch { /* presence only; the match is not affected */ }
+  }
+
   // ------------------------------------------------------ match record
   /** At game over: mark the result as pending in storage, then record it. */
   private async finishRecord(m: MatchRecord): Promise<void> {
@@ -300,6 +315,14 @@ export class MatchRoom extends DurableObject<Env> {
     m.ended_at = Date.now();
     m.db = { status: dbConfigured(this.env) ? "pending" : "skipped", attempts: 0 };
     await this.save();
+    if (m.mode !== "test") await this.tellHub(m, null);
+    if (m.room) {
+      try {
+        await this.env.PRIVATE_ROOM.get(this.env.PRIVATE_ROOM.idFromName(`room:${m.room}`)).fetch("https://room/match-ended", {
+          method: "POST", body: JSON.stringify({ matchId: m.id }),
+        });
+      } catch { /* the room times out on its own */ }
+    }
     if (m.db.status === "pending") await this.flushRecord(m);
   }
 

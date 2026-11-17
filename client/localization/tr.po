@@ -466,7 +466,7 @@ msgid "BETA"
 msgstr "TEST"
 
 msgid "MODE_ONLINE_4P_SUB"
-msgstr "4 kişilik çevrimiçi maç yakında"
+msgstr "4 kişilik hızlı eşleşme yakında · özel odada 4 kişi oynanabilir"
 
 msgid "ONLINE_TITLE"
 msgstr "Çevrimiçi Maç"
@@ -746,3 +746,381 @@ msgstr "E-posta ya da parola hatalı."
 
 msgid "ACCOUNT_ERR_NOT_CONFIRMED"
 msgstr "Bu e-posta henüz doğrulanmamış."
+
+msgid "FRIENDS_TITLE"
+msgstr "Arkadaşlar"
+
+msgid "FRIENDS_LOADING"
+msgstr "Yükleniyor…"
+
+msgid "FRIENDS_EMPTY_TITLE"
+msgstr "Henüz arkadaşın yok"
+
+msgid "FRIENDS_EMPTY"
+msgstr "Oyuncu adını ya da ad#etiket bilgisini arayıp arkadaşlık isteği gönder."
+
+msgid "FRIENDS_COUNT"
+msgstr "Arkadaşların (%d)"
+
+msgid "FRIENDS_SINCE"
+msgstr "Arkadaşsınız · %s"
+
+msgid "SEARCH_TITLE"
+msgstr "Oyuncu Ara"
+
+msgid "SEARCH_SUB"
+msgstr "Ad ya da ad#etiket"
+
+msgid "SEARCH_HINT_TITLE"
+msgstr "Oyuncu adı ya da ad#etiket"
+
+msgid "SEARCH_HINT"
+msgstr "Örn. Ayşe ya da Ayşe#1234"
+
+msgid "SEARCH_GO"
+msgstr "Ara"
+
+msgid "SEARCH_YOUR_TAG"
+msgstr "Senin adın: %s — arkadaşların seni böyle bulur."
+
+msgid "SEARCH_TOO_SHORT"
+msgstr "En az 2 karakter yaz."
+
+msgid "SEARCH_LOADING"
+msgstr "Aranıyor…"
+
+msgid "SEARCH_EMPTY"
+msgstr "Bu adla oyuncu bulunamadı."
+
+msgid "REL_NONE"
+msgstr "Arkadaş değil"
+
+msgid "REL_FRIEND"
+msgstr "Arkadaşın"
+
+msgid "REL_OUTGOING"
+msgstr "İstek gönderildi"
+
+msgid "REL_INCOMING"
+msgstr "Sana istek gönderdi"
+
+msgid "FRIEND_ADD"
+msgstr "Ekle"
+
+msgid "FRIEND_ADDED"
+msgstr "Arkadaş ✓"
+
+msgid "FRIEND_ACCEPT"
+msgstr "Kabul et"
+
+msgid "FRIEND_REMOVE"
+msgstr "Arkadaşlıktan çıkar"
+
+msgid "REQUEST_SENT"
+msgstr "İstek gönderildi"
+
+msgid "DECLINE"
+msgstr "Reddet"
+
+msgid "BLOCK"
+msgstr "Engelle"
+
+msgid "UNBLOCK"
+msgstr "Engeli kaldır"
+
+msgid "REQUESTS_TITLE"
+msgstr "İstekler"
+
+msgid "REQUESTS_COUNT"
+msgstr "%d yeni istek"
+
+msgid "REQUESTS_NONE"
+msgstr "Yeni istek yok"
+
+msgid "REQUESTS_IN"
+msgstr "Gelen istekler"
+
+msgid "REQUESTS_IN_EMPTY"
+msgstr "Gelen arkadaşlık isteği yok."
+
+msgid "REQUESTS_OUT"
+msgstr "Gönderilen istekler"
+
+msgid "REQUESTS_OUT_EMPTY"
+msgstr "Bekleyen gönderilmiş istek yok."
+
+msgid "BLOCKED_TITLE"
+msgstr "Engellenenler"
+
+msgid "BLOCKED_EMPTY"
+msgstr "Kimseyi engellemedin."
+
+msgid "PLAYER_TITLE"
+msgstr "Oyuncu"
+
+msgid "PLAYER_NOT_FOUND"
+msgstr "Bu oyuncu bulunamadı."
+
+msgid "STATUS_ONLINE"
+msgstr "Çevrimiçi"
+
+msgid "STATUS_ROOM"
+msgstr "Odada"
+
+msgid "STATUS_MATCH"
+msgstr "Maçta"
+
+msgid "STATUS_OFFLINE"
+msgstr "Çevrimdışı"
+
+msgid "INVITES_TITLE"
+msgstr "Davetler"
+
+msgid "INVITES_COUNT"
+msgstr "%d maç daveti seni bekliyor"
+
+msgid "INVITES_NONE"
+msgstr "Şu an davet yok"
+
+msgid "INVITES_EMPTY"
+msgstr "Bekleyen maç davetin yok. Arkadaşların seni özel odaya davet edince burada görünür."
+
+msgid "INVITES_CONNECTING"
+msgstr "Davetlere bağlanılıyor…"
+
+msgid "INVITES_NEED_ACCOUNT"
+msgstr "Davetler için önce bir çevrimiçi maç oyna ya da arkadaş ekle."
+
+msgid "INVITE"
+msgstr "Davet et"
+
+msgid "INVITE_SENT"
+msgstr "Davet gönderildi"
+
+msgid "INVITE_TO_ROOM"
+msgstr "Odama davet et"
+
+msgid "INVITE_TO"
+msgstr "%s · oda daveti"
+
+msgid "INVITE_LEFT"
+msgstr "%d sn kaldı"
+
+msgid "INVITE_EXPIRED"
+msgstr "Süresi doldu"
+
+msgid "JOIN"
+msgstr "Katıl"
+
+msgid "PRIVATE_TITLE"
+msgstr "Özel Oda"
+
+msgid "PRIVATE_IN_ROOM"
+msgstr "Zaten bir odadasın"
+
+msgid "PRIVATE_BACK_TO_ROOM"
+msgstr "Odaya dön"
+
+msgid "PRIVATE_CREATE"
+msgstr "Oda oluştur"
+
+msgid "PRIVATE_CREATE_INFO"
+msgstr "Kodu arkadaşlarınla paylaş ya da onları davet et. Maç, çevrimiçi maçla aynı sunucuda oynanır ve geçmişine kaydedilir."
+
+msgid "PRIVATE_JOIN"
+msgstr "Kodla katıl"
+
+msgid "PRIVATE_JOIN_INFO"
+msgstr "Arkadaşının verdiği 6 karakterli oda kodunu yaz."
+
+msgid "PRIVATE_INVITES_SUB"
+msgstr "Sana gelen maç davetleri"
+
+msgid "PRIVATE_CREATING"
+msgstr "Oda hazırlanıyor…"
+
+msgid "ROOM_TITLE"
+msgstr "Oda"
+
+msgid "ROOM_CODE"
+msgstr "Oda kodu"
+
+msgid "ROOM_CODE_INVALID"
+msgstr "Oda kodu 6 karakter olmalı (harf ve rakam)."
+
+msgid "ROOM_INFO"
+msgstr "%s · %d / %d oyuncu"
+
+msgid "ROOM_COPY"
+msgstr "Kodu kopyala"
+
+msgid "ROOM_COPIED"
+msgstr "Kod kopyalandı"
+
+msgid "ROOM_PLAYERS"
+msgstr "Oyuncular"
+
+msgid "ROOM_HOST"
+msgstr "Oda sahibi"
+
+msgid "ROOM_IS_READY"
+msgstr "Hazır"
+
+msgid "ROOM_NOT_READY"
+msgstr "Bekliyor"
+
+msgid "ROOM_DISCONNECTED"
+msgstr "bağlantı koptu"
+
+msgid "ROOM_WAITING_SLOT"
+msgstr "Boş koltuk · oyuncu bekleniyor"
+
+msgid "ROOM_COLOR"
+msgstr "Rengini seç"
+
+msgid "ROOM_COLOR_2P"
+msgstr "Rengini seç · rakibin karşı rengi alır"
+
+msgid "ROOM_INVITE_FRIENDS"
+msgstr "Çevrimiçi arkadaşlarını davet et"
+
+msgid "ROOM_NO_ONLINE_FRIENDS"
+msgstr "Şu an çevrimiçi arkadaşın yok. Oda kodunu paylaşabilirsin."
+
+msgid "ROOM_FRIENDS_NOT_LOADED"
+msgstr "Arkadaş listesi yükleniyor…"
+
+msgid "ROOM_LEAVE"
+msgstr "Odadan ayrıl"
+
+msgid "ROOM_READY"
+msgstr "Hazırım"
+
+msgid "ROOM_NOT_READY_BTN"
+msgstr "Hazır değilim"
+
+msgid "ROOM_START"
+msgstr "Maçı başlat"
+
+msgid "ROOM_WAIT_FULL"
+msgstr "Oda dolunca maçı başlatabilirsin."
+
+msgid "ROOM_WAIT_READY"
+msgstr "Herkes hazır olunca maçı başlatabilirsin."
+
+msgid "ROOM_WAIT_HOST"
+msgstr "Oda sahibinin maçı başlatması bekleniyor."
+
+msgid "ROOM_PRESS_READY"
+msgstr "Hazır olunca «Hazırım»a bas."
+
+msgid "ROOM_CAN_START"
+msgstr "Herkes hazır · maçı başlatabilirsin!"
+
+msgid "ROOM_STARTING"
+msgstr "Maç başlıyor…"
+
+msgid "ROOM_CONNECTING"
+msgstr "Odaya bağlanılıyor…"
+
+msgid "ROOM_RECONNECTING"
+msgstr "Bağlantı koptu · yeniden bağlanılıyor…"
+
+msgid "ROOM_NONE"
+msgstr "Şu an bir odada değilsin."
+
+msgid "ROOM_CLOSED"
+msgstr "Oda kapandı."
+
+msgid "ROOM_CLOSED_TIMEOUT"
+msgstr "Oda uzun süre kullanılmadığı için kapandı."
+
+msgid "ERR_GENERIC"
+msgstr "Bir şeyler ters gitti, tekrar dene."
+
+msgid "ERR_GENERIC_SHORT"
+msgstr "Hata"
+
+msgid "ERR_OFFLINE_SHORT"
+msgstr "Bağlantı yok"
+
+msgid "ERR_OFFLINE"
+msgstr "İnternet bağlantısı yok."
+
+msgid "ERR_ALREADY_FRIENDS"
+msgstr "Zaten arkadaşsınız"
+
+msgid "ERR_NOT_ALLOWED"
+msgstr "Bu oyuncuyla etkileşim yok"
+
+msgid "ERR_LIMIT"
+msgstr "Sınıra ulaşıldı"
+
+msgid "ERR_ROOM_NOT_FOUND"
+msgstr "Bu kodla açık bir oda yok."
+
+msgid "ERR_ROOM_FULL"
+msgstr "Oda dolu."
+
+msgid "ERR_ROOM_IN_GAME"
+msgstr "Bu odada maç oynanıyor."
+
+msgid "ERR_ROOM_CLOSED"
+msgstr "Oda artık açık değil."
+
+msgid "ERR_RATE_LIMITED"
+msgstr "Çok fazla deneme. Birkaç dakika sonra tekrar dene."
+
+msgid "ERR_ALREADY_IN_ROOM"
+msgstr "Zaten başka bir odadasın."
+
+msgid "ERR_IN_MATCH"
+msgstr "Şu an bir maçtasın. Maç bitince tekrar dene."
+
+msgid "ERR_NOT_HOST"
+msgstr "Maçı yalnızca oda sahibi başlatabilir."
+
+msgid "ERR_NOT_READY"
+msgstr "Herkes hazır değil."
+
+msgid "ERR_ROOM_NOT_FULL"
+msgstr "Oda henüz dolmadı."
+
+msgid "ERR_COLOR_TAKEN"
+msgstr "Bu renk başka bir oyuncuda."
+
+msgid "ERR_COLOR_INVALID"
+msgstr "Renkler karşılıklı olmalı."
+
+msgid "ERR_NOT_FRIENDS"
+msgstr "Yalnızca arkadaşlarını davet edebilirsin."
+
+msgid "ERR_NOT_IN_ROOM"
+msgstr "Önce bir odada olmalısın."
+
+msgid "ERR_INVITE_EXPIRED"
+msgstr "Davetin süresi doldu."
+
+msgid "ERR_INVITE_CLOSED"
+msgstr "Bu davet artık geçerli değil."
+
+msgid "ERR_INVITE_NOT_FOUND"
+msgstr "Davet bulunamadı."
+
+msgid "ERR_INVITE_LIMIT"
+msgstr "Çok fazla bekleyen davet var."
+
+msgid "ERR_SESSION_REPLACED"
+msgstr "Bu odaya başka bir cihazdan bağlandın."
+
+msgid "ERR_DB_UNAVAILABLE"
+msgstr "Sunucu şu an davet gönderemiyor."
+
+msgid "ERR_TIMEOUT"
+msgstr "Sunucu yanıt vermedi."
+
+msgid "ERR_AUTH"
+msgstr "Oturum açılamadı."
+
+msgid "ERR_SESSION_EXPIRED"
+msgstr "Oturumun geçersiz oldu. Hesap ekranına bak."

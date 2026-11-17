@@ -76,11 +76,37 @@ export async function recordMatch(env: DbEnv, r: MatchRecordInput): Promise<bool
 }
 
 /** Profile names of players (for the matchmaker); missing ids are simply absent. */
-export async function playerNames(env: DbEnv, ids: string[]): Promise<Map<string, string>> {
+export interface PlayerCard { name: string; tag: number; avatar: string }
+
+/** Profile cards (name, tag, avatar) of up to 4 players. */
+export async function playerCards(env: DbEnv, ids: string[]): Promise<Map<string, PlayerCard>> {
   return withDb(env, async (sql) => {
     // array as a Postgres literal: without fetched types postgres.js cannot serialise uuid[] itself
     const uuids = ids.filter((id) => /^[0-9a-f-]{36}$/i.test(id));
-    const rows = await sql`select user_id, display_name from game.player_names(${"{" + uuids.join(",") + "}"}::uuid[])`;
-    return new Map(rows.map((r) => [String(r.user_id), String(r.display_name)]));
+    const rows = await sql`select user_id, display_name, tag, avatar_id from game.player_names(${"{" + uuids.join(",") + "}"}::uuid[])`;
+    return new Map(rows.map((r) => [String(r.user_id), { name: String(r.display_name), tag: Number(r.tag), avatar: String(r.avatar_id) }]));
+  });
+}
+
+export async function playerNames(env: DbEnv, ids: string[]): Promise<Map<string, string>> {
+  const cards = await playerCards(env, ids);
+  return new Map([...cards].map(([id, c]) => [id, c.name]));
+}
+
+/** Friends / blocked between two players (invites). */
+export async function socialCheck(env: DbEnv, from: string, to: string): Promise<{ friends: boolean; blocked: boolean }> {
+  return withDb(env, async (sql) => {
+    const rows = await sql`select game.social_check(${from}::uuid, ${to}::uuid) as r`;
+    const r = (typeof rows[0]!.r === "string" ? JSON.parse(rows[0]!.r) : rows[0]!.r) as { friends: boolean; blocked: boolean };
+    return { friends: !!r.friends, blocked: !!r.blocked };
+  });
+}
+
+/** Ids of a player's friends (presence goes to friends only). */
+export async function friendIds(env: DbEnv, user: string): Promise<string[]> {
+  return withDb(env, async (sql) => {
+    const rows = await sql`select array_to_string(game.friend_ids(${user}::uuid), ',') as ids`;
+    const ids = String(rows[0]!.ids ?? "");
+    return ids ? ids.split(",") : [];
   });
 }

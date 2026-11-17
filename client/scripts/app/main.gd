@@ -22,6 +22,7 @@ func _ready() -> void:
 		if arg == "--no-ui":
 			return
 	go("home")
+	Online.start_social()   # friends' status and invites (only if this device already has an account)
 
 
 func route() -> String:
@@ -58,9 +59,23 @@ func _show(direction: int) -> void:
 	match String(entry["route"]):
 		"home":
 			screen = HomeScreen.new()
-		"friends", "store", "quests", "ranking":
+		"store", "quests", "ranking":
 			screen = InfoScreen.new()
 			params = {"kind": entry["route"]}
+		"friends":
+			screen = FriendsScreen.new()
+		"search":
+			screen = PlayerSearchScreen.new()
+		"requests":
+			screen = FriendRequestsScreen.new()
+		"player":
+			screen = PlayerProfileScreen.new()
+		"invites":
+			screen = InvitesScreen.new()
+		"private":
+			screen = PrivateRoomScreen.new()
+		"room":
+			screen = RoomLobbyScreen.new()
 		"modes":
 			screen = ModeSelectScreen.new()
 		"queue":
@@ -104,10 +119,22 @@ func _show(direction: int) -> void:
 func _match_screen(config: Dictionary) -> MatchScreen:
 	var screen := MatchScreen.new()
 	screen.config = config
-	screen.exit_requested.connect(func() -> void:
-		stack = [{"route": "home", "params": {}}]
-		_show(-1))
-	if config.has("online"):
+	var in_room: bool = config.has("online") and (config["online"] as Dictionary).has("room")
+	if not in_room:
+		screen.exit_requested.connect(func() -> void:
+			stack = [{"route": "home", "params": {}}]
+			_show(-1))
+	if in_room:
+		# private room: "play again" and "exit" both go back to the room lobby
+		var back_to_room := func() -> void:
+			stack = [{"route": "home", "params": {}}, {"route": "private", "params": {}}]
+			if Online.room != null:
+				go("room")
+			else:
+				_show(-1)
+		screen.restart_requested.connect(back_to_room)
+		screen.exit_requested.connect(back_to_room)
+	elif config.has("online"):
 		# "Play again" online = back into the queue (a new opponent, a new match).
 		screen.restart_requested.connect(func() -> void:
 			stack = [{"route": "home", "params": {}}]

@@ -2,16 +2,23 @@
 //   GET  /v1/health                 liveness
 //   GET  /v1/queue       (Upgrade)  2-player quick match queue (Matchmaker Durable Object)
 //   GET  /v1/match/:id   (Upgrade)  WebSocket to that match (auth = first message "hello")
-//   POST /v1/dev/matches            DEV ONLY (ALLOW_DEV_ROUTES): create a match; needs a
-//                                   valid Supabase JWT of one of the seated humans.
+//   GET  /v1/hub         (Upgrade)  social hub: presence of friends, live hints, match invites
+//   POST /v1/rooms                  create a private room {players: 2|4} (Bearer JWT) -> {code}
+//   GET  /v1/rooms/mine             the caller's current room / match (Bearer JWT)
+//   GET  /v1/room/:code  (Upgrade)  private room lobby (auth = first message "hello")
+//   POST /v1/dev/matches            DEV ONLY (ALLOW_DEV_ROUTES): create a test match; needs the
+//                                   JWT of every seated human (caller + x-seat-tokens).
 // The dev route stays for tests and tools; players use the queue.
 
 import { verifySupabaseJwt } from "./auth.js";
 import { dbConfigured, playerNames } from "./db.js";
 import { Env, MatchRoom, SeatInfo } from "./match_room.js";
 import { Matchmaker } from "./matchmaker.js";
+import { PrivateRoom } from "./private_room.js";
+import { ROOM_CODE } from "./protocol.js";
+import { SocialHub } from "./social_hub.js";
 
-export { MatchRoom, Matchmaker };
+export { MatchRoom, Matchmaker, PrivateRoom, SocialHub };
 
 const COLORS = ["red", "green", "yellow", "blue"] as const;
 const OPPOSITE: Record<string, string> = { red: "yellow", yellow: "red", green: "blue", blue: "green" };
@@ -59,6 +66,29 @@ export default {
       return env.MATCHMAKER.get(env.MATCHMAKER.idFromName("q:2p:classic_v1")).fetch(request);
     }
 
+    const hub = () => env.SOCIAL_HUB.get(env.SOCIAL_HUB.idFromName("hub"));
+    if (url.pathname === "/v1/hub") {
+      if (request.headers.get("Upgrade") !== "websocket") return json({ error: "UPGRADE_REQUIRED" }, 426);
+      return hub().fetch(request);
+    }
+    if (url.pathname === "/v1/rooms" || url.pathname === "/v1/rooms/mine") {
+      const identity = await verifySupabaseJwt((request.headers.get("authorization") ?? "").replace(/^Bearer /, ""), env.SUPABASE_URL);
+      if (!identity) return json({ error: "AUTH_INVALID" }, 401);
+      if (url.pathname === "/v1/rooms/mine") return json(await (await hub().fetch(`https://hub/mine?user=${identity.userId}`)).json());
+      if (request.method !== "POST") return json({ error: "NOT_FOUND" }, 404);
+      let body: { players?: unknown };
+      try { body = await request.json(); } catch { return json({ error: "INVALID_MESSAGE" }, 400); }
+      const res = await hub().fetch("https://hub/room/create", { method: "POST", body: JSON.stringify({ userId: identity.userId, players: body.players }) });
+      return json(await res.json(), res.status);
+    }
+    const rm = url.pathname.match(/^\/v1\/room\/([^/]+)$/);
+    if (rm) {
+      if (request.headers.get("Upgrade") !== "websocket") return json({ error: "UPGRADE_REQUIRED" }, 426);
+      const code = rm[1]!.toUpperCase();
+      if (!ROOM_CODE.test(code)) return json({ error: "ROOM_NOT_FOUND" }, 404);
+      return env.PRIVATE_ROOM.get(env.PRIVATE_ROOM.idFromName(`room:${code}`)).fetch(request);
+    }
+
     const m = url.pathname.match(/^\/v1\/match\/([^/]+)$/);
     if (m) {
       if (request.headers.get("Upgrade") !== "websocket") return json({ error: "UPGRADE_REQUIRED" }, 426);
@@ -84,6 +114,14 @@ export default {
       if (seats.some((s) => !COLORS.includes(s.color))) return json({ error: "BAD_SEATS" }, 400);
       if (seats.length === 2 && OPPOSITE[seats[0]!.color] !== seats[1]!.color) return json({ error: "COLOR_INVALID" }, 400);
       if (!seats.some((s) => s.user_id === identity.userId)) return json({ error: "NOT_IN_MATCH" }, 403);
+      // Every other human seat must consent with its own JWT (header x-seat-tokens, comma separated):
+      // nobody can put another player into a match.
+      const consenting = new Set<string>([identity.userId]);
+      for (const t of (request.headers.get("x-seat-tokens") ?? "").split(",").map((x) => x.trim()).filter(Boolean).slice(0, 3)) {
+        const other = await verifySupabaseJwt(t, env.SUPABASE_URL);
+        if (other) consenting.add(other.userId);
+      }
+      if (seats.some((s) => s.user_id !== null && !consenting.has(s.user_id))) return json({ error: "SEAT_NOT_CONSENTED" }, 403);
       const doId = env.MATCH_ROOM.newUniqueId();
       const res = await env.MATCH_ROOM.get(doId).fetch("https://match/init", {
         method: "POST",

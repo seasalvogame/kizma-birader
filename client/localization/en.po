@@ -466,7 +466,7 @@ msgid "BETA"
 msgstr "BETA"
 
 msgid "MODE_ONLINE_4P_SUB"
-msgstr "4-player online matches are coming"
+msgstr "4-player quick match is coming · play 4 players in a private room"
 
 msgid "ONLINE_TITLE"
 msgstr "Online Match"
@@ -746,3 +746,381 @@ msgstr "Wrong e-mail or password."
 
 msgid "ACCOUNT_ERR_NOT_CONFIRMED"
 msgstr "This e-mail is not confirmed yet."
+
+msgid "FRIENDS_TITLE"
+msgstr "Friends"
+
+msgid "FRIENDS_LOADING"
+msgstr "Loading…"
+
+msgid "FRIENDS_EMPTY_TITLE"
+msgstr "No friends yet"
+
+msgid "FRIENDS_EMPTY"
+msgstr "Search a player's name or name#tag and send a friend request."
+
+msgid "FRIENDS_COUNT"
+msgstr "Your friends (%d)"
+
+msgid "FRIENDS_SINCE"
+msgstr "Friends since %s"
+
+msgid "SEARCH_TITLE"
+msgstr "Find Players"
+
+msgid "SEARCH_SUB"
+msgstr "Name or name#tag"
+
+msgid "SEARCH_HINT_TITLE"
+msgstr "Player name or name#tag"
+
+msgid "SEARCH_HINT"
+msgstr "e.g. Ayşe or Ayşe#1234"
+
+msgid "SEARCH_GO"
+msgstr "Search"
+
+msgid "SEARCH_YOUR_TAG"
+msgstr "Your name: %s — friends find you with it."
+
+msgid "SEARCH_TOO_SHORT"
+msgstr "Type at least 2 characters."
+
+msgid "SEARCH_LOADING"
+msgstr "Searching…"
+
+msgid "SEARCH_EMPTY"
+msgstr "No player with this name."
+
+msgid "REL_NONE"
+msgstr "Not a friend"
+
+msgid "REL_FRIEND"
+msgstr "Your friend"
+
+msgid "REL_OUTGOING"
+msgstr "Request sent"
+
+msgid "REL_INCOMING"
+msgstr "Sent you a request"
+
+msgid "FRIEND_ADD"
+msgstr "Add"
+
+msgid "FRIEND_ADDED"
+msgstr "Friends ✓"
+
+msgid "FRIEND_ACCEPT"
+msgstr "Accept"
+
+msgid "FRIEND_REMOVE"
+msgstr "Remove friend"
+
+msgid "REQUEST_SENT"
+msgstr "Request sent"
+
+msgid "DECLINE"
+msgstr "Decline"
+
+msgid "BLOCK"
+msgstr "Block"
+
+msgid "UNBLOCK"
+msgstr "Unblock"
+
+msgid "REQUESTS_TITLE"
+msgstr "Requests"
+
+msgid "REQUESTS_COUNT"
+msgstr "%d new requests"
+
+msgid "REQUESTS_NONE"
+msgstr "No new requests"
+
+msgid "REQUESTS_IN"
+msgstr "Incoming requests"
+
+msgid "REQUESTS_IN_EMPTY"
+msgstr "No incoming friend requests."
+
+msgid "REQUESTS_OUT"
+msgstr "Sent requests"
+
+msgid "REQUESTS_OUT_EMPTY"
+msgstr "No pending sent requests."
+
+msgid "BLOCKED_TITLE"
+msgstr "Blocked players"
+
+msgid "BLOCKED_EMPTY"
+msgstr "You have not blocked anyone."
+
+msgid "PLAYER_TITLE"
+msgstr "Player"
+
+msgid "PLAYER_NOT_FOUND"
+msgstr "This player was not found."
+
+msgid "STATUS_ONLINE"
+msgstr "Online"
+
+msgid "STATUS_ROOM"
+msgstr "In a room"
+
+msgid "STATUS_MATCH"
+msgstr "In a match"
+
+msgid "STATUS_OFFLINE"
+msgstr "Offline"
+
+msgid "INVITES_TITLE"
+msgstr "Invites"
+
+msgid "INVITES_COUNT"
+msgstr "%d match invites waiting"
+
+msgid "INVITES_NONE"
+msgstr "No invites right now"
+
+msgid "INVITES_EMPTY"
+msgstr "No match invites. When friends invite you to a private room it shows up here."
+
+msgid "INVITES_CONNECTING"
+msgstr "Connecting to invites…"
+
+msgid "INVITES_NEED_ACCOUNT"
+msgstr "Play an online match or add a friend first to get invites."
+
+msgid "INVITE"
+msgstr "Invite"
+
+msgid "INVITE_SENT"
+msgstr "Invite sent"
+
+msgid "INVITE_TO_ROOM"
+msgstr "Invite to my room"
+
+msgid "INVITE_TO"
+msgstr "%s · room invite"
+
+msgid "INVITE_LEFT"
+msgstr "%d s left"
+
+msgid "INVITE_EXPIRED"
+msgstr "Expired"
+
+msgid "JOIN"
+msgstr "Join"
+
+msgid "PRIVATE_TITLE"
+msgstr "Private Room"
+
+msgid "PRIVATE_IN_ROOM"
+msgstr "You are already in a room"
+
+msgid "PRIVATE_BACK_TO_ROOM"
+msgstr "Back to the room"
+
+msgid "PRIVATE_CREATE"
+msgstr "Create a room"
+
+msgid "PRIVATE_CREATE_INFO"
+msgstr "Share the code or invite friends. The match runs on the same server as online matches and is saved to your history."
+
+msgid "PRIVATE_JOIN"
+msgstr "Join with a code"
+
+msgid "PRIVATE_JOIN_INFO"
+msgstr "Type the 6-character room code from your friend."
+
+msgid "PRIVATE_INVITES_SUB"
+msgstr "Match invites you received"
+
+msgid "PRIVATE_CREATING"
+msgstr "Creating the room…"
+
+msgid "ROOM_TITLE"
+msgstr "Room"
+
+msgid "ROOM_CODE"
+msgstr "Room code"
+
+msgid "ROOM_CODE_INVALID"
+msgstr "A room code has 6 characters (letters and digits)."
+
+msgid "ROOM_INFO"
+msgstr "%s · %d / %d players"
+
+msgid "ROOM_COPY"
+msgstr "Copy code"
+
+msgid "ROOM_COPIED"
+msgstr "Code copied"
+
+msgid "ROOM_PLAYERS"
+msgstr "Players"
+
+msgid "ROOM_HOST"
+msgstr "Host"
+
+msgid "ROOM_IS_READY"
+msgstr "Ready"
+
+msgid "ROOM_NOT_READY"
+msgstr "Waiting"
+
+msgid "ROOM_DISCONNECTED"
+msgstr "disconnected"
+
+msgid "ROOM_WAITING_SLOT"
+msgstr "Empty seat · waiting for a player"
+
+msgid "ROOM_COLOR"
+msgstr "Pick your colour"
+
+msgid "ROOM_COLOR_2P"
+msgstr "Pick your colour · your opponent gets the opposite one"
+
+msgid "ROOM_INVITE_FRIENDS"
+msgstr "Invite online friends"
+
+msgid "ROOM_NO_ONLINE_FRIENDS"
+msgstr "No friends online right now. You can share the room code."
+
+msgid "ROOM_FRIENDS_NOT_LOADED"
+msgstr "Loading friends…"
+
+msgid "ROOM_LEAVE"
+msgstr "Leave the room"
+
+msgid "ROOM_READY"
+msgstr "I'm ready"
+
+msgid "ROOM_NOT_READY_BTN"
+msgstr "Not ready"
+
+msgid "ROOM_START"
+msgstr "Start the match"
+
+msgid "ROOM_WAIT_FULL"
+msgstr "You can start when the room is full."
+
+msgid "ROOM_WAIT_READY"
+msgstr "You can start when everyone is ready."
+
+msgid "ROOM_WAIT_HOST"
+msgstr "Waiting for the host to start."
+
+msgid "ROOM_PRESS_READY"
+msgstr "Press «I'm ready» when you are."
+
+msgid "ROOM_CAN_START"
+msgstr "Everyone is ready · start the match!"
+
+msgid "ROOM_STARTING"
+msgstr "Starting the match…"
+
+msgid "ROOM_CONNECTING"
+msgstr "Connecting to the room…"
+
+msgid "ROOM_RECONNECTING"
+msgstr "Connection lost · reconnecting…"
+
+msgid "ROOM_NONE"
+msgstr "You are not in a room."
+
+msgid "ROOM_CLOSED"
+msgstr "The room was closed."
+
+msgid "ROOM_CLOSED_TIMEOUT"
+msgstr "The room closed after a long time without activity."
+
+msgid "ERR_GENERIC"
+msgstr "Something went wrong, try again."
+
+msgid "ERR_GENERIC_SHORT"
+msgstr "Error"
+
+msgid "ERR_OFFLINE_SHORT"
+msgstr "Offline"
+
+msgid "ERR_OFFLINE"
+msgstr "No internet connection."
+
+msgid "ERR_ALREADY_FRIENDS"
+msgstr "Already friends"
+
+msgid "ERR_NOT_ALLOWED"
+msgstr "Not available"
+
+msgid "ERR_LIMIT"
+msgstr "Limit reached"
+
+msgid "ERR_ROOM_NOT_FOUND"
+msgstr "No open room with this code."
+
+msgid "ERR_ROOM_FULL"
+msgstr "The room is full."
+
+msgid "ERR_ROOM_IN_GAME"
+msgstr "A match is being played in this room."
+
+msgid "ERR_ROOM_CLOSED"
+msgstr "The room is no longer open."
+
+msgid "ERR_RATE_LIMITED"
+msgstr "Too many attempts. Try again in a few minutes."
+
+msgid "ERR_ALREADY_IN_ROOM"
+msgstr "You are already in another room."
+
+msgid "ERR_IN_MATCH"
+msgstr "You are in a match. Try again when it is over."
+
+msgid "ERR_NOT_HOST"
+msgstr "Only the host can start the match."
+
+msgid "ERR_NOT_READY"
+msgstr "Not everyone is ready."
+
+msgid "ERR_ROOM_NOT_FULL"
+msgstr "The room is not full yet."
+
+msgid "ERR_COLOR_TAKEN"
+msgstr "Another player has this colour."
+
+msgid "ERR_COLOR_INVALID"
+msgstr "Colours must be opposite."
+
+msgid "ERR_NOT_FRIENDS"
+msgstr "You can only invite friends."
+
+msgid "ERR_NOT_IN_ROOM"
+msgstr "You need to be in a room first."
+
+msgid "ERR_INVITE_EXPIRED"
+msgstr "The invite has expired."
+
+msgid "ERR_INVITE_CLOSED"
+msgstr "This invite is no longer valid."
+
+msgid "ERR_INVITE_NOT_FOUND"
+msgstr "Invite not found."
+
+msgid "ERR_INVITE_LIMIT"
+msgstr "Too many pending invites."
+
+msgid "ERR_SESSION_REPLACED"
+msgstr "You connected to this room from another device."
+
+msgid "ERR_DB_UNAVAILABLE"
+msgstr "The server cannot send invites right now."
+
+msgid "ERR_TIMEOUT"
+msgstr "The server did not answer."
+
+msgid "ERR_AUTH"
+msgstr "Could not sign in."
+
+msgid "ERR_SESSION_EXPIRED"
+msgstr "Your session expired. See the account screen."

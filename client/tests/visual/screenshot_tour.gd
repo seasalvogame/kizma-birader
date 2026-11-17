@@ -44,6 +44,7 @@ func _ready() -> void:
 		await _frames(12)
 		await _shot(step[2])
 	await _phase4_screens()
+	await _phase5_screens()
 	main.call("go", "modes", {"players": 2})
 	await _frames(12)
 	await _shot("00i_modes_online")
@@ -170,4 +171,61 @@ func _phase4_screens() -> void:
 	Online.profile.reset()
 	Online.session.user_id = ""
 	Settings.set_value("profile_avatar", 0)
+
+
+## Phase 5 screens. Offline states are real; the "sample" shots use SAMPLE rows
+## injected here (screenshots only — the app never shows fake data).
+func _phase5_screens() -> void:
+	for step: Array in [["friends", {}, "50_friends_offline"], ["private", {}, "51_private_room"], ["invites", {}, "52_invites_offline"]]:
+		main.call("go", step[0], step[1])
+		await _frames(14)
+		await _shot(step[2])
+	var me := "11111111-1111-4111-8111-111111111111"
+	Online.session.user_id = me
+	var f := func(i: int, n: String, tag: int, av: int) -> Dictionary:
+		return {"user_id": "2222222%d-2222-4222-8222-222222222222" % i, "display_name": n, "tag": tag, "avatar_id": "fill:%d" % av, "since": "2026-11-10T10:00:00+00:00"}
+	Online.social.friends = [f.call(1, "Mert", 77, 1), f.call(2, "Zeynep", 4120, 2), f.call(3, "Can", 905, 4), f.call(4, "Elif", 3311, 5)]
+	Online.social.incoming = [{"id": 1, "direction": "in", "user_id": "33333333-3333-4333-8333-333333333331", "display_name": "Deniz", "tag": 18, "avatar_id": "fill:0", "created_at": "2026-11-17T09:12:00+00:00"}]
+	Online.social.outgoing = [{"id": 2, "direction": "out", "user_id": "33333333-3333-4333-8333-333333333332", "display_name": "Ali", "tag": 2001, "avatar_id": "fill:3", "created_at": "2026-11-17T08:40:00+00:00"}]
+	Online.social.loaded = true
+	Online.hub.statuses = {Online.social.friends[0]["user_id"]: "online", Online.social.friends[1]["user_id"]: "match", Online.social.friends[2]["user_id"]: "room"}
+	Online.hub.connected = true
+	var now := Time.get_unix_time_from_system() * 1000.0
+	Online.hub.invites = [{"id": "inv-sample-1", "from": Online.social.friends[0]["user_id"], "fromName": "Mert", "fromTag": 77, "fromAvatar": "fill:1",
+		"to": me, "code": "K7MPQ3", "players": 4, "created": now, "expires": now + 95000.0, "status": "pending"}]
+	main.call("go", "friends")
+	await _frames(14)
+	await _shot("53_friends_sample")
+	main.call("go", "requests")
+	await _frames(4)
+	Online.social.loaded = true
+	(main.get("current") as Node).call("_render")
+	(main.get("current") as Node).get("status").clear()
+	await _frames(10)
+	await _shot("54_requests_sample")
+	main.call("go", "invites")
+	await _frames(14)
+	await _shot("55_invites_sample")
+	var room := OnlineRoom.new()
+	room.session = Online.session
+	room.code = "K7MPQ3"
+	room.connected = true
+	room.state = {"code": "K7MPQ3", "players": 4, "host": me, "phase": "lobby", "games": 0, "members": [
+		{"userId": me, "name": "Ayşe", "tag": 1234, "avatar": "fill:3", "color": "red", "ready": false, "connected": true, "host": true},
+		{"userId": Online.social.friends[0]["user_id"], "name": "Mert", "tag": 77, "avatar": "fill:1", "color": "green", "ready": true, "connected": true, "host": false},
+		{"userId": Online.social.friends[2]["user_id"], "name": "Can", "tag": 905, "avatar": "fill:4", "color": "blue", "ready": false, "connected": false, "host": false}]}
+	Online.add_child(room)
+	Online.room = room
+	main.call("go", "room")
+	await _frames(14)
+	await _shot("56_room_lobby_sample")
+	var sc: ScrollContainer = (main.get("current") as Node).find_children("*", "ScrollContainer", true, false)[0]
+	sc.scroll_vertical = 1100
+	await _frames(6)
+	await _shot("57_room_lobby_sample_scrolled")
+	Online.room = null
+	room.queue_free()
+	Online.social.friends = []; Online.social.incoming = []; Online.social.outgoing = []; Online.social.loaded = false
+	Online.hub.statuses = {}; Online.hub.invites = []; Online.hub.connected = false
+	Online.session.user_id = ""
 

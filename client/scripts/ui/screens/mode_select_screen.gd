@@ -23,8 +23,8 @@ func _build() -> void:
 	else:
 		_row("globe", "MODE_ONLINE", "MODE_ONLINE_4P_SUB", true, UiPalette.MINT_500,
 			func() -> void: navigate.emit("info", {"kind": "online"}))
-	_row("lock", "MODE_PRIVATE", "MODE_PRIVATE_SUB", true, Color.WHITE,
-		func() -> void: navigate.emit("info", {"kind": "private"}))
+	_row("lock", "MODE_PRIVATE", "MODE_PRIVATE_SUB", false, Color.WHITE,
+		func() -> void: navigate.emit("room" if Online.room != null else "private", {}))
 
 
 func _row(icon: String, title_key: String, sub_key: String, soon: bool, tint: Color, action: Callable, badge: String = "") -> void:

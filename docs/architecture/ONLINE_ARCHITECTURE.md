@@ -113,8 +113,8 @@ sequenceDiagram
 ```
 
 **Ayrıntılar:**
-- **Özel oda:** Oda kodu bir MatchRoom'a doğrudan eşlenir (`idFromName("room:" + kod)`). Oda "bekleme" aşamasında renk seçimi ve hazır olma burada yürür; sonra aynı nesne maça geçer (CLOUDFLARE_ARCHITECTURE §3.3).
-- **Davet:** Davet Supabase Realtime ile iletilir (ve kalıcı izi `notifications` tablosundadır). Daveti kabul eden oyuncu oda koduyla MatchRoom'a bağlanır.
+- **Özel oda (Faz 5'te uygulandı):** Oda kodu bir **PrivateRoom** nesnesine eşlenir (`idFromName("room:" + kod)`). Lobi (oyuncular, renk, hazır, oda sahibi) burada yürür. Oda sahibi başlatınca oda **yeni bir MatchRoom** (`mode: "private"`) oluşturur; maç hızlı maçla aynı nesne türünde, aynı motor, protokol ve istemci ekranıyla oynanır ve Faz 4'teki gibi kaydedilir. Maç bitince MatchRoom odaya haber verir, oda yeniden lobi olur. (İlk tasarımdaki "aynı nesne maça geçer" yerine bu yol seçildi: MatchRoom değişmeden yeniden kullanılır.)
+- **Davet ve çevrimiçi durum (Faz 5'te uygulandı):** Tek bir **SocialHub** nesnesi (WebSocket): arkadaşların durumu (çevrimiçi / odada / maçta), içeriksiz "değişti" bildirimleri ve maç davetleri (yalnızca arkadaşa, engel yok, 120 sn). Oda dizini, oyuncunun hangi oda / maçta olduğu ve oda kodu deneme sınırı da burada. Arkadaşlık verisi Supabase'te (RLS, `auth.uid()` kullanan işlevler). Supabase Realtime kullanılmadı (K-64).
 - **Zar:** Yalnızca MatchRoom üretir. İstemciden zar değeri **hiçbir koşulda kabul edilmez** (protokolde böyle bir alan yok).
 
 ## 4. Kesinleşen oyun kurallarının sunucudaki yeri

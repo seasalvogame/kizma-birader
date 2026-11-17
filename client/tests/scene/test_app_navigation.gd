@@ -241,3 +241,36 @@ func test_session_survives_restart_and_auth_errors_map() -> void:
 	assert_eq(OnlineSession.auth_error(429, {}), "RATE_LIMITED", "rate limit")
 	assert_eq(OnlineSession.auth_error(422, {"error_code": "weak_password"}), "WEAK_PASSWORD", "weak password")
 	assert_eq(OnlineSession.auth_error(400, {"error_code": "email_address_not_authorized"}), "EMAIL_NOT_ALLOWED", "smtp restriction")
+
+
+## Phase 5 screens open offline without the network, show honest states and no fake data.
+func test_social_and_room_screens_open_offline() -> void:
+	assert_true(OnlineRoom.valid_code("AB2C3D"), "valid room code")
+	for bad: String in ["AB2C3", "ABOC3D", "AB1C3D", "ab2c3d"]:
+		assert_false(OnlineRoom.valid_code(bad), "invalid room code: " + bad)
+	assert_eq(OnlineRoom.normalize(" ab2-c3d "), "AB2C3D", "codes are normalised (case, spaces, dashes)")
+	var vp := _viewport(Vector2i(720, 1560))
+	var main := _main(vp)
+	await _frames(2)
+	var routes := [
+		["friends", {}, "FriendsScreen"], ["search", {}, "PlayerSearchScreen"], ["requests", {}, "FriendRequestsScreen"],
+		["player", {"user_id": "11111111-1111-4111-8111-111111111111"}, "PlayerProfileScreen"],
+		["invites", {}, "InvitesScreen"], ["private", {}, "PrivateRoomScreen"], ["room", {}, "RoomLobbyScreen"],
+	]
+	for r: Array in routes:
+		main.call("go", r[0], r[1])
+		await _frames(4)
+		var cur: Node = main.get("current")
+		assert_eq(cur.get_script().get_global_name(), r[2], "route %s" % r[0])
+		var st: StatusCard = cur.get("status")
+		if r[0] != "search" and r[0] != "private":   # these show a state only after an action
+			assert_true(st != null and st.visible, "%s shows a loading / offline / empty state" % r[0])
+	var friends_rows := (main.get("current") as Node).find_children("*", "PersonRow", true, false)
+	assert_eq(friends_rows.size(), 0, "no rows without server data")
+	main.call("go", "home")
+	await _frames(3)
+	var home: HomeScreen = main.get("current")
+	assert_true(home._invites != null, "home has the invites card")
+	vp.queue_free()
+	await _frames(1)
+

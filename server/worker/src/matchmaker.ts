@@ -103,6 +103,9 @@ export class Matchmaker extends DurableObject<Env> {
       const i2 = waiting.findIndex((x) => x.a!.userId !== p1.a!.userId);
       if (i2 < 0) break;
       const p2 = waiting.splice(i2, 1)[0]!;
+      // Take both out of the queue BEFORE any await: a concurrent pairUp() (another
+      // message arriving meanwhile) must not pair them a second time.
+      for (const p of [p1, p2]) p.ws.serializeAttachment({ ...p.a!, waiting: false } satisfies Waiting);
       const colors = pick(PAIRS);
       const players = pick([[p1, p2], [p2, p1]] as const);
       // Names from the players' profiles (database), not from the client; client names only as a fallback.
@@ -122,8 +125,10 @@ export class Matchmaker extends DurableObject<Env> {
         for (const p of [p1, p2]) this.send(p.ws, { t: "error", p: { code: "TRY_AGAIN" } });
         continue;
       }
+      // A player who disconnected meanwhile still gets the match (the server plays for an
+      // absent player and they can reconnect); a closed socket simply misses the message.
       for (const [seat, p] of players.entries()) {
-        p.ws.serializeAttachment({ ...p.a!, waiting: false } satisfies Waiting);
+        if (p.ws.readyState !== WebSocket.READY_STATE_OPEN) continue;
         this.send(p.ws, { t: "match.found", p: { matchId: id.toString(), seat, color: seats[seat]!.color, seats } });
       }
     }

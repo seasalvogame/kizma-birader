@@ -9,6 +9,7 @@ extends AppScreen
 var avatar: Avatar
 var card_2p: PlayCard
 var card_4p: PlayCard
+var _invites: MenuCard
 
 
 func _nav_tab() -> String:
@@ -24,8 +25,8 @@ func _build() -> void:
 	cards.add_child(card_4p)
 	content.add_child(cards)
 	var tiles := UiKit.hbox(UiTokens.S3)
-	var private_room := _tile("lock", "HOME_PRIVATE", "HOME_PRIVATE_SUB", true)
-	private_room.pressed.connect(func() -> void: navigate.emit("info", {"kind": "private"}))
+	var private_room := _tile("lock", "HOME_PRIVATE", "HOME_PRIVATE_SUB", false)
+	private_room.pressed.connect(func() -> void: navigate.emit("room" if Online.room != null else "private", {}))
 	var practice := _tile("robot", "HOME_PRACTICE", "HOME_PRACTICE_SUB", false)
 	practice.pressed.connect(func() -> void: navigate.emit("setup", {"players": int(Settings.get_value("last_players")), "mode": "bots"}))
 	tiles.add_child(private_room)
@@ -40,6 +41,15 @@ func _build() -> void:
 	online.badge = tr("BETA")
 	online.pressed.connect(func() -> void: navigate.emit("queue", {}))
 	content.add_child(online)
+	_invites = MenuCard.new()
+	_invites.wide = true
+	_invites.icon_name = "chat"
+	_invites.title = tr("INVITES_TITLE")
+	_invites.tint = UiPalette.MANGO_500
+	_invites.pressed.connect(func() -> void: navigate.emit("invites", {}))
+	content.add_child(_invites)
+	_update_invites()
+	Online.hub.invites_changed.connect(_update_invites)
 	_stats_card()
 
 
@@ -126,3 +136,12 @@ func _stats_card() -> void:
 		row.add_child(cell)
 	col.add_child(row)
 	col.add_child(wrapped(UiKit.label(tr("HOME_STATS_NOTE"), "InkDimLabel", HORIZONTAL_ALIGNMENT_CENTER)))
+
+
+func _update_invites() -> void:
+	if not is_instance_valid(_invites):
+		return
+	var n := Online.hub.open_invites().size()
+	_invites.subtitle = tr("INVITES_COUNT") % n if n > 0 else tr("INVITES_NONE")
+	_invites.badge = str(n) if n > 0 else ""
+	_invites.refresh()

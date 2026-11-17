@@ -1,7 +1,7 @@
 # Faz 4 Kapanış Raporu
 
 > **Tarih:** 2026-11-17 · **Sürüm:** 0.5.0 (versionCode 5) · Ayrıntılar: [PHASE_4_REPORT.md](PHASE_4_REPORT.md)
-> **Commit:** bu raporla birlikte oluşturulan Faz 3.4 + Faz 4 commit'i (SHA `git log` ve Faz 5 raporunda). Push yapılmadı.
+> **Commit:** `34050a8` (feat: complete persistent player profiles and match history). Push yapılmadı.
 
 ## Tamamlanan özellikler
 

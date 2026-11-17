@@ -31,7 +31,7 @@ async function waitHealth() {
 }
 
 let users = [];
-let recorded = "";
+const recorded = [];
 try {
   if (!REMOTE) {
     dev = spawn(npx, ["wrangler", "dev", "--port", String(PORT), "--ip", "127.0.0.1", "--var", "DB_DISABLED:true"], { cwd: workerDir, shell: WIN, stdio: "ignore" });
@@ -44,10 +44,8 @@ try {
   const godot = spawnSync("godot_console", args,
     { cwd: repo, encoding: "utf8", shell: WIN, timeout: 900000 });
   const out = (godot.stdout ?? "") + (godot.stderr ?? "");
-  const m = out.match(/ONLINE_USERS ([0-9a-f-]+),([0-9a-f-]+)/);
-  if (m) users = [m[1], m[2]];
-  const rec = out.match(/ONLINE_RECORDED ([0-9a-f-]{36})/);
-  if (rec) recorded = rec[1];
+  for (const m of out.matchAll(/ONLINE_USERS ([0-9a-f-]+),([0-9a-f-]+)/g)) users.push(m[1], m[2]);
+  for (const r of out.matchAll(/ONLINE_RECORDED ([0-9a-f-]{36})/g)) recorded.push(r[1]);
   for (const line of out.split(/\r?\n/)) {
     if (/^(PASS|FAIL|      |ONLINE_MATCH|\d+ test)/.test(line)) console.log(line);
   }
@@ -60,10 +58,10 @@ try {
   if (users.length) {
     const dir = mkdtempSync(join(tmpdir(), "kb-godot-"));
     const file = join(dir, "cleanup.sql");
-    writeFileSync(file, (recorded ? `delete from public.matches where id = '${recorded}';\n` : "") +
+    writeFileSync(file, (recorded.length ? `delete from public.matches where id in (${recorded.map((r) => `'${r}'`).join(",")});\n` : "") +
       `delete from auth.users where id in (${users.map((u) => `'${u}'`).join(",")});\n`);
     try { execFileSync(npx, ["supabase", "db", "query", "--remote", "--yes", "-f", file], { cwd: repo, shell: WIN, stdio: "ignore" }); }
     finally { rmSync(dir, { recursive: true, force: true }); }
-    console.log(`cleanup: deleted ${users.length} guest accounts${recorded ? " and the test match record" : ""}`);
+    console.log(`cleanup: deleted ${users.length} guest accounts and ${recorded.length} test match records`);
   }
 }

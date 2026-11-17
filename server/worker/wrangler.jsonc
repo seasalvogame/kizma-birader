@@ -24,6 +24,14 @@
 			{
 				"name": "MATCHMAKER",
 				"class_name": "Matchmaker"
+			},
+			{
+				"name": "SOCIAL_HUB",
+				"class_name": "SocialHub"
+			},
+			{
+				"name": "PRIVATE_ROOM",
+				"class_name": "PrivateRoom"
 			}
 		]
 	},
@@ -40,13 +48,20 @@
 			"new_sqlite_classes": [
 				"Matchmaker"
 			]
+		},
+		{
+			"tag": "v3",
+			"new_sqlite_classes": [
+				"SocialHub",
+				"PrivateRoom"
+			]
 		}
 	],
 	"vars": {
 		// Public values only. Secrets go through `wrangler secret put` (never in this file).
 		"SUPABASE_URL": "https://eoujnamlwgbtlwigtjxx.supabase.co",
 		// Development match creation for tests and tools (players use /v1/queue). Requires a
-		// valid Supabase JWT of one of the seated players. Must be "false" in production.
+		// JWT of every seated human. Must be "false" in production.
 		"ALLOW_DEV_ROUTES": "true",
 		"BOT_DELAY_MS": "900"
 	},
