@@ -146,7 +146,7 @@ export class PrivateRoom extends DurableObject<Env> {
       case "room.start": {
         if (r.phase !== "lobby") return fail("ROOM_IN_GAME");
         if (r.host !== me.userId) return fail("NOT_HOST");
-        if (r.members.length < r.players) return fail("ROOM_NOT_FULL");
+        if (r.members.length !== r.players) return fail("ROOM_NOT_FULL");
         if (r.members.some((m) => m.userId !== r.host && !m.ready)) return fail("NOT_READY");
         if (new Set(r.members.map((m) => m.color)).size !== r.members.length) return fail("COLOR_TAKEN");
         if (r.players === 2 && OPPOSITE[r.members[0]!.color] !== r.members[1]!.color) return fail("COLOR_INVALID");
@@ -182,13 +182,14 @@ export class PrivateRoom extends DurableObject<Env> {
       if (r!.members.length >= r!.players) { this.send(ws, { t: "error", re, p: { code: "ROOM_FULL" } }); ws.close(4004, "room"); return; }
       const j = await this.hubPost("/room/join", { userId: id.userId, code: r!.code });
       if (!j.ok) { this.send(ws, { t: "error", re, p: { code: j.error, room: j.code ?? null } }); ws.close(4004, "room"); return; }
-      const fresh = (await this.load())!;            // state may have changed during the awaits
+      const card = await this.card(id.userId);       // last await before the final check
+      // From here to the push there is no await: the capacity check and the insert are atomic.
+      const fresh = this.room ?? (await this.load())!;   // in-memory state (loaded above)
       if (fresh.members.length >= fresh.players || fresh.phase !== "lobby") {
         await this.hubPost("/room/left", { userId: id.userId, code: fresh.code });
         this.send(ws, { t: "error", re, p: { code: "ROOM_FULL" } }); ws.close(4004, "room"); return;
       }
       if (!fresh.members.some((m) => m.userId === id.userId)) {
-        const card = await this.card(id.userId);
         const taken = new Set(fresh.members.map((m) => m.color));
         const color: Color = fresh.players === 2 ? OPPOSITE[fresh.members[0]!.color] : COLORS.find((c) => !taken.has(c))!;
         const now = Date.now();

@@ -233,6 +233,7 @@ export class MatchRoom extends DurableObject<Env> {
     for (const other of this.ctx.getWebSockets()) {
       const a = other.deserializeAttachment() as Attachment | null;
       if (other !== ws && a?.authed && a.seat === seat.seat) {
+        other.serializeAttachment({ authed: false } satisfies Attachment);   // in-flight messages of the old socket no longer act
         this.send(other, { t: "error", p: { code: "SESSION_REPLACED" } });
         other.close(4009, "replaced");
       }

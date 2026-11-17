@@ -14,7 +14,7 @@ import { dbConfigured, playerNames } from "./db.js";
 import type { Env, SeatInfo } from "./match_room.js";
 import { ClientMessage, parseClientMessage, ProtocolError } from "./protocol.js";
 
-interface Waiting { authed: boolean; userId?: string; name?: string; waiting?: boolean; since?: number }
+interface Waiting { authed: boolean; userId?: string; name?: string; waiting?: boolean; since?: number; replaced?: boolean }
 
 const PAIRS: [SeatInfo["color"], SeatInfo["color"]][] = [["red", "yellow"], ["green", "blue"]];
 
@@ -48,6 +48,9 @@ export class Matchmaker extends DurableObject<Env> {
       return;
     }
     const att = (ws.deserializeAttachment() ?? { authed: false }) as Waiting;
+    // A connection replaced by a newer one of the same player is finished: messages it
+    // still had in flight must not act (they would cancel the newer connection).
+    if (att.replaced) return;
     if (msg.t === "hello") {
       const identity = await verifySupabaseJwt(msg.p.token, this.env.SUPABASE_URL);
       if (!identity) {
@@ -79,7 +82,8 @@ export class Matchmaker extends DurableObject<Env> {
     // One place in the queue per user: an older connection of the same user is dropped.
     for (const other of this.ctx.getWebSockets()) {
       const o = other.deserializeAttachment() as Waiting | null;
-      if (other !== ws && o?.userId === att.userId) {
+      if (other !== ws && o?.userId === att.userId && !o.replaced) {
+        other.serializeAttachment({ ...o, waiting: false, replaced: true } satisfies Waiting);
         this.send(other, { t: "queue.cancelled", p: { reason: "replaced" } });
         other.close(4009, "replaced");
       }

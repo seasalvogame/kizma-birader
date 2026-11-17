@@ -14,7 +14,7 @@ Klasik yıldızlı Kızma Birader / Ludo tahtasında oynanan, çevrimiçi çok o
 > - **Faz 2 sonrası güncelleme (2026-11-17):** Kararlar güncellendi ve çevrimiçi mimari Cloudflare Workers + Durable Objects + Supabase olarak yeniden planlandı (yalnızca belgeler). Rapor: [PHASE_2_POST_UPDATE_REPORT.md](PHASE_2_POST_UPDATE_REPORT.md).
 > - **Faz 3:** 3.1 ve 3.2 tamam; 3.3 oynanabilir sürüm; 3.4 ilk 2 kişilik çevrimiçi maç (0.4.0). Raporlar: [PHASE_3_3_REPORT.md](PHASE_3_3_REPORT.md), [PHASE_3_4_REPORT.md](PHASE_3_4_REPORT.md).
 > - **Faz 4 (0.5.0):** kalıcı hesaplar, sunucunun yazdığı maç kayıtları, istatistikler, profil / maç geçmişi / hesap ekranları. Raporlar: [PHASE_4_REPORT.md](PHASE_4_REPORT.md), [PHASE_4_FINAL_REPORT.md](PHASE_4_FINAL_REPORT.md).
-> - **Faz 5 (0.6.0):** arkadaşlar (arama, istekler, engelleme, canlı durum), maç davetleri, 2 ve 4 kişilik özel odalar (aynı MatchRoom ve maç ekranı). Rapor: [PHASE_5_REPORT.md](PHASE_5_REPORT.md).
+> - **Faz 5 (0.6.1):** arkadaşlar (arama, istekler, engelleme, canlı durum), maç davetleri, 2 ve 4 kişilik özel odalar (aynı MatchRoom ve maç ekranı). Raporlar: [PHASE_5_REPORT.md](PHASE_5_REPORT.md), [PHASE_5_FINAL_REPORT.md](PHASE_5_FINAL_REPORT.md).
 > - Rapor: [PHASE_2_REPORT.md](PHASE_2_REPORT.md) · Plan: [docs/PHASE_2_PLAN.md](docs/PHASE_2_PLAN.md) · Faz 1: [PHASE_1_REPORT.md](PHASE_1_REPORT.md)
 > - Karar bekleyen konular: [docs/DECISIONS_AND_OPEN_QUESTIONS.md](docs/DECISIONS_AND_OPEN_QUESTIONS.md)
 

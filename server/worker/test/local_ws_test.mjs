@@ -21,6 +21,7 @@ import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join as joinPath, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { resetSql, testAccounts } from "./test_accounts.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const workerDir = resolve(here, "..");
@@ -89,22 +90,20 @@ const cli = (args) => execFileSync(npx, ["supabase", ...args], { cwd: repo, enco
 const keysOut = cli(["projects", "api-keys", "--project-ref", ref, "-o", "json"]);
 const keys = JSON.parse(keysOut.slice(keysOut.indexOf("[")));
 const publishable = keys.find((k) => k.type === "publishable")?.api_key ?? keys.find((k) => k.name === "anon")?.api_key;
+// Test players: the reusable test accounts (test/test_accounts.mjs), no new guests each run.
 const createdUsers = [];
+let pool = null;
 async function guest() {
-  const r = await fetch(`${SUPABASE}/auth/v1/signup`, { method: "POST", headers: { apikey: publishable, "content-type": "application/json" }, body: JSON.stringify({ data: {} }) });
-  const j = await r.json();
-  if (!j.access_token) throw new Error(`guest sign-in failed (${r.status})`);
-  createdUsers.push(j.user.id);
-  tokenOf.set(j.user.id, j.access_token);
-  return { id: j.user.id, token: j.access_token };
+  pool ??= await testAccounts(SUPABASE, publishable, 3);
+  const acc = pool[createdUsers.length];
+  createdUsers.push(acc.id);
+  tokenOf.set(acc.id, acc.token);
+  return { id: acc.id, token: acc.token };
 }
 function deleteUsers() {
   if (!createdUsers.length) return;
-  const dir = mkdtempSync(joinPath(tmpdir(), "kb-ws-"));
-  const file = joinPath(dir, "cleanup.sql");
-  writeFileSync(file, `delete from auth.users where id in (${createdUsers.map((i) => `'${i}'`).join(",")});\n`);
-  try { cli(["db", "query", "--remote", "--yes", "-f", file]); } finally { rmSync(dir, { recursive: true, force: true }); }
-  console.log(`cleanup: deleted ${createdUsers.length} test users`);
+  sqlRows(resetSql(createdUsers), true);
+  console.log(`cleanup: match records of the ${createdUsers.length} test accounts deleted (accounts kept for reuse)`);
 }
 
 // Read-only SQL on the project (via the Supabase CLI), rows as objects.
@@ -180,6 +179,8 @@ try {
   check(health.ok === true, REMOTE ? "deployed Worker answers /v1/health over HTTPS" : "wrangler dev (local workerd) started and /v1/health answers");
 
   const A = await guest(), B = await guest(), C = await guest();
+  sqlRows(resetSql([A.id, B.id, C.id]), true);   // start clean (late records of an earlier run: bot matches end by alarms)
+  const statsBefore = health.db ? Number(sqlRows(`select coalesce(sum(matches_2p), 0) as n from public.player_stats where user_id in ('${A.id}', '${B.id}')`)[0]?.n ?? 0) : 0;
   console.log("Dev route and colour rules");
   const seatsAB = [{ color: "red", user_id: A.id, name: "A" }, { color: "yellow", user_id: B.id, name: "B" }];
   check((await createMatch("not-a-jwt", seatsAB)).status === 401, "match creation without a valid JWT is refused (401)");
@@ -316,7 +317,7 @@ try {
     const [row] = sqlRows(`select m.mode, m.players, m.status, m.action_count, m.final_state_hash is not null as hashed, m.server_version,
       (select count(*) from public.match_players mp where mp.match_id = m.id) as seats,
       (select string_agg(mp.rank::text, ',' order by mp.rank) from public.match_players mp where mp.match_id = m.id) as ranks,
-      (select coalesce(sum(matches_2p), 0) from public.player_stats where user_id in ('${A.id}', '${B.id}')) as counted
+      (select coalesce(sum(matches_2p), 0) from public.player_stats where user_id in ('${A.id}', '${B.id}')) - ${statsBefore} as counted
       from public.matches m where m.id = '${rid}'`);
     check(row && row.status === "finished" && row.mode === "test" && row.players === 2, "match row stored as finished (dev route = test mode)");
     check(Number(row?.seats) === 2 && row?.ranks === "1,2", "both seats stored with places 1 and 2");

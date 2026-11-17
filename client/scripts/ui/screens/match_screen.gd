@@ -601,7 +601,7 @@ func _show_result(state: Dictionary) -> void:
 	_overlay.add_child(dim)
 	var seats: Array = config["seats"]
 	var ranks: Array = state["ranks"]
-	var my_rank := ranks.find(local_seat) + 1
+	var my_rank := place_of(ranks, local_seat)
 	var col := UiKit.vbox(UiTokens.S3)
 	col.position = Vector2(UiTokens.EDGE, SafeArea.insets(get_viewport_rect().size).x + 80)
 	col.size = Vector2(size.x - UiTokens.EDGE * 2, 0)
@@ -653,3 +653,13 @@ func _show_result(state: Dictionary) -> void:
 		var t := create_tween().set_parallel()
 		t.tween_property(col, "modulate:a", 1.0, 0.24)
 		t.tween_property(col, "scale", Vector2.ONE, 0.3).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+
+
+## 1-based place of a seat in a ranks array (0 = not ranked). Online states come from
+## JSON, so the seats in `ranks` are floats (2.0): Array.find(2) would not match them.
+static func place_of(ranks: Array, seat: int) -> int:
+	for i in ranks.size():
+		if int(ranks[i]) == seat:
+			return i + 1
+	return 0
+

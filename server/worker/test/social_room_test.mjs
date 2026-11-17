@@ -13,6 +13,7 @@ import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join as joinPath, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { resetSql, testAccounts } from "./test_accounts.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const workerDir = resolve(here, "..");
@@ -60,13 +61,14 @@ const cli = (args) => execFileSync(npx, ["supabase", ...args], { cwd: repo, enco
 const keysOut = cli(["projects", "api-keys", "--project-ref", ref, "-o", "json"]);
 const keys = JSON.parse(keysOut.slice(keysOut.indexOf("[")));
 const publishable = keys.find((k) => k.type === "publishable")?.api_key ?? keys.find((k) => k.name === "anon")?.api_key;
+// Test players: the reusable test accounts (test/test_accounts.mjs), no new guests each run.
 const users = [];
+let pool = null;
 async function guest(label) {
-  const r = await fetch(`${SUPABASE}/auth/v1/signup`, { method: "POST", headers: { apikey: publishable, "content-type": "application/json" }, body: JSON.stringify({ data: {} }) });
-  const j = await r.json();
-  if (!j.access_token) throw new Error(`guest sign-in failed (${r.status})`);
-  users.push(j.user.id);
-  return { id: j.user.id, token: j.access_token, label };
+  pool ??= await testAccounts(SUPABASE, publishable, 5);
+  const acc = pool[users.length];
+  users.push(acc.id);
+  return { id: acc.id, token: acc.token, label };
 }
 async function rpc(user, fn, args = {}) {
   const r = await fetch(`${SUPABASE}/rest/v1/rpc/${fn}`, { method: "POST", headers: { apikey: publishable, authorization: `Bearer ${user.token}`, "content-type": "application/json" }, body: JSON.stringify(args) });
@@ -86,10 +88,8 @@ function sql(query, write = false) {
 }
 function cleanup() {
   if (!users.length) return;
-  const ids = users.map((i) => `'${i}'`).join(",");
-  sql(`delete from public.matches where id in (select match_id from public.match_players where user_id in (${ids}))`, true);
-  sql(`delete from auth.users where id in (${ids})`, true);
-  console.log(`cleanup: deleted ${users.length} test users and their match records`);
+  sql(resetSql(users), true);
+  console.log(`cleanup: match records, friendships, requests and blocks of the ${users.length} test accounts deleted (accounts kept)`);
 }
 
 // ------------------------------------------------------------ client
@@ -172,7 +172,12 @@ try {
   console.log(REMOTE ? `Server: Cloudflare ${BASE}` : "Server: local wrangler dev (no database)");
   const health = await startServer();
   const DB = !!health.db;
-  const [A, B, C, D, E] = await Promise.all(["A", "B", "C", "D", "E"].map(guest));
+  // one after the other: if sign-up fails (e.g. rate limit), no account is created after the cleanup
+  const guests = [];
+  for (const l of ["A", "B", "C", "D", "E"]) guests.push(await guest(l));
+  const [A, B, C, D, E] = guests;
+  if (DB) sql(resetSql(users), true);   // a clean start: nothing left between the test accounts from earlier runs
+  const winsBefore = DB ? (sql(`select coalesce(matches_2p, 0) as m, coalesce(wins_2p, 0) as w from public.player_stats where user_id = '${A.id}'`)[0] ?? { m: 0, w: 0 }) : { m: 0, w: 0 };
 
   console.log("Private room, 2 players");
   check((await createRoom({ token: "bad" }, 2)).status === 401, "room creation without a valid JWT is refused");
@@ -228,7 +233,7 @@ try {
     }
     check(row && row.mode === "private" && row.players === 2 && row.ranks === "green:1,blue:2", "private match recorded in Supabase (mode private, places)");
     const [stats] = sql(`select matches_2p, wins_2p from public.player_stats where user_id = '${A.id}'`);
-    check(stats.matches_2p === 1 && stats.wins_2p === 1, "private match counted once in the player's stats");
+    check(stats.matches_2p - winsBefore.m === 1 && stats.wins_2p - winsBefore.w === 1, "private match counted once in the player's stats");
   }
 
   console.log("Leaving and host change");

@@ -111,18 +111,26 @@ Yeni Godot özel oda testinde iki gerçek Godot istemcisi şu adımları geçti:
 |---|---|
 | TS kural motoru | **85 / 85** |
 | Godot birim + sahne | **36 / 36** (yeni: 7 sosyal / oda ekranının çevrimdışı açılması, oda kodu biçimi) |
-| Worker yerel (`local_ws_test.mjs`) | **26 / 26** (yeni: başkasını onaysız maça koyamama) |
+| Worker yerel (`local_ws_test.mjs`) | **26 / 26** (yeni: başkasını onaysız maça koyamama; bulutta 31 / 31, §6.3) |
 | Oda testi yerel (`social_room_test.mjs`, veritabanısız) | **32 / 32** (arkadaş, durum ve davet bölümleri veritabanı istediği için yalnızca bulutta) |
 | Godot çevrimiçi (yerel sunucu) | **2 / 2** |
 | `tsc --noEmit` | Temiz |
 
-### 6.3 Bulutta yeniden çalıştırılamayan test
+### 6.3 Güvenlik düzeltmeleri sonrası bulut testleri
 
-- `local_ws_test.mjs --remote` (onay kontrolü ve eşleştirici düzeltmesiyle) bu fazın sonunda başlatıldı. Ancak **Supabase'in IP başına saatte 30 anonim kayıt sınırına** takıldı (`guest sign-in failed (429)`); gün içindeki testler bu sınırı doldurmuştu.
-- Sınır dolduğu için bu test bulutta **yeniden çalıştırılamadı**; iki kez denendi, ikisinde de 429 döndü.
-- Bu iki değişiklik yerelde test edildi (26/26). Eşleştirici düzeltmesi bulutta dolaylı olarak çalıştı: hızlı eşleşme bulut Godot testinden geçti.
-- Onay kontrolünün bulut sonucu yok; sınır sıfırlanınca `local_ws_test.mjs --remote` yeniden çalıştırılmalı.
-- Not: Gerçek kullanıcılar farklı IP'lerden geldiği için bu sınır oyunculara değil, tek bilgisayardan çok sayıda test hesabı açmaya etki ediyor.
+- Faz 5 commit'inden (`2da0a38`) sonra otomatik güvenlik incelemesi üç sorun daha buldu; hepsi düzeltildi:
+  - **Engelden sonra durum sızıntısı:** Hub'daki arkadaş listesi 5 dakikadan eskiyse, durum göndermeden önce veritabanından yeniden okunuyor. Engelleyenin uygulaması bildirim göndermese bile engellenen kişi durumu görmez.
+  - **"Değişti" bildirimleri:** Engel olan oyuncuya hiç gönderilmiyor; hız sınırı artık kullanıcı başına (dakikada 20).
+  - **Odaya katılmada yarış koşulu:** Kapasite kontrolü ile üyenin eklenmesi arasında bekleme kalmadı. Başlatma yalnızca oda tam doluyken.
+- İlk denemede Supabase'in IP başına saatte 30 anonim kayıt sınırına takılındı (429); gün içindeki testler sınırı doldurmuştu. Sınır sıfırlandıktan sonra çalıştırılan sonuçlar:
+
+| Test | Sonuç |
+|---|---|
+| `social_room_test.mjs` (yerel) | **32 / 32** |
+| `social_room_test.mjs --remote` (dağıtılan sürüm `541a33b7`) | **58 / 58** |
+| `local_ws_test.mjs --remote` | **31 / 31** (onaysız oyuncuyu test maçına koyamama dahil) |
+
+Not: 429 sınırı oyunculara değil, tek bilgisayardan çok sayıda test hesabı açmaya etki eder; gerçek oyuncular farklı IP'lerden gelir.
 
 ## 7. Arayüz
 

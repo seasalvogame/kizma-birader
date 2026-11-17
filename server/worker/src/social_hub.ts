@@ -26,7 +26,10 @@ const MATCH_STATUS_TTL_MS = 3 * 3600_000;
 const MAX_OUTGOING_INVITES = 10;
 
 type Status = "online" | "room" | "match";
-interface HubAttachment { authed: boolean; userId?: string; friends?: string[] }
+interface HubAttachment { authed: boolean; userId?: string; friends?: string[]; friendsAt?: number }
+/** A cached friend list is trusted for this long; then it is reloaded before presence is sent to it. */
+const FRIENDS_TTL_MS = 5 * 60_000;
+const HINTS_PER_MINUTE = 20;          // "something changed" hints per sender (all of their sockets)
 interface UserState { room?: string; match?: string; matchUntil?: number }
 interface Invite {
   id: string; from: string; fromName: string; fromTag: number; fromAvatar: string;
@@ -49,6 +52,7 @@ function randomCode(): string {
 
 export class SocialHub extends DurableObject<Env> {
   private buckets = new Map<WebSocket, { tokens: number; at: number }>();
+  private hints = new Map<string, { count: number; since: number }>();
 
   // ---------------------------------------------------------------- HTTP (internal)
   override async fetch(request: Request): Promise<Response> {
@@ -166,7 +170,7 @@ export class SocialHub extends DurableObject<Env> {
       if (!id) { this.send(ws, { t: "error", re: msg.id, p: { code: "AUTH_INVALID" } }); ws.close(4001, "auth"); return; }
       const wasOnline = this.online(id.userId);
       const friends = await this.loadFriends(id.userId);
-      ws.serializeAttachment({ authed: true, userId: id.userId, friends } satisfies HubAttachment);
+      ws.serializeAttachment({ authed: true, userId: id.userId, friends, friendsAt: Date.now() } satisfies HubAttachment);
       this.send(ws, { t: "welcome", re: msg.id, p: { userId: id.userId, serverTime: Date.now(), db: dbConfigured(this.env) } });
       this.send(ws, { t: "presence.list", p: { friends: await this.friendStatuses(friends) } });
       this.send(ws, { t: "invite.list", p: { invites: await this.invitesFor(id.userId) } });
@@ -178,20 +182,22 @@ export class SocialHub extends DurableObject<Env> {
     switch (msg.t) {
       case "presence.sync": {
         const friends = await this.loadFriends(me);
-        ws.serializeAttachment({ ...att, friends } satisfies HubAttachment);
+        ws.serializeAttachment({ ...att, friends, friendsAt: Date.now() } satisfies HubAttachment);
         this.send(ws, { t: "presence.list", re: msg.id, p: { friends: await this.friendStatuses(friends) } });
         return;
       }
       case "friends.changed": {
         // my friend list changed (accept / remove / block): reload mine and the other player's lists
+        // (always: after a block or removal the other side must stop seeing my status)
         for (const user of [me, msg.p.other]) await this.reloadFriendsOf(user);
-        this.notify(msg.p.other, { t: "social.changed", p: { kind: "friends_changed" } });
+        if (await this.mayHint(me, msg.p.other)) this.notify(msg.p.other, { t: "social.changed", p: { kind: "friends_changed" } });
         this.send(ws, { t: "ok", re: msg.id, p: {} });
         return;
       }
       case "poke":
-        // content-free hint; the receiver reloads its data from Supabase (RLS)
-        this.notify(msg.p.to, { t: "social.changed", p: { kind: msg.p.kind } });
+        // content-free hint; the receiver reloads its data from Supabase (RLS).
+        // Never across a block, and rate-limited per sender.
+        if (await this.mayHint(me, msg.p.to)) this.notify(msg.p.to, { t: "social.changed", p: { kind: msg.p.kind } });
         this.send(ws, { t: "ok", re: msg.id, p: {} });
         return;
       case "invite.list":
@@ -235,13 +241,37 @@ export class SocialHub extends DurableObject<Env> {
     return out;
   }
 
-  /** Tells the online friends of userId its current status. */
+  /** Tells the online friends of userId its current status. A friend list older than
+   *  FRIENDS_TTL_MS is reloaded from the database first (removed / blocked players drop out
+   *  even if no client reported the change). */
   private async broadcastStatus(userId: string): Promise<void> {
     const status = await this.statusOf(userId);
+    const now = Date.now();
+    const reloaded = new Map<string, string[]>();
     for (const w of this.ctx.getWebSockets()) {
-      const a = w.deserializeAttachment() as HubAttachment | null;
-      if (a?.authed && a.friends?.includes(userId)) this.send(w, { t: "presence", p: { userId, status } });
+      let a = w.deserializeAttachment() as HubAttachment | null;
+      if (!a?.authed || !a.userId || !a.friends?.includes(userId)) continue;
+      if (now - (a.friendsAt ?? 0) > FRIENDS_TTL_MS) {
+        let fresh = reloaded.get(a.userId);
+        if (!fresh) { fresh = await this.loadFriends(a.userId); reloaded.set(a.userId, fresh); }
+        a = { ...a, friends: fresh, friendsAt: now };
+        w.serializeAttachment(a satisfies HubAttachment);
+        if (!fresh.includes(userId)) continue;
+      }
+      this.send(w, { t: "presence", p: { userId, status } });
     }
+  }
+
+  /** A hint from -> to is allowed when there is no block between them and the sender is within its rate. */
+  private async mayHint(from: string, to: string): Promise<boolean> {
+    const now = Date.now();
+    const h = this.hints.get(from);
+    const cur = h && now - h.since < 60_000 ? h : { count: 0, since: now };
+    if (cur.count >= HINTS_PER_MINUTE) return false;
+    cur.count++;
+    this.hints.set(from, cur);
+    if (!dbConfigured(this.env)) return false;
+    try { return !(await socialCheck(this.env, from, to)).blocked; } catch { return false; }
   }
 
   private async loadFriends(userId: string): Promise<string[]> {
@@ -255,7 +285,7 @@ export class SocialHub extends DurableObject<Env> {
     const friends = await this.loadFriends(userId);
     const list = await this.friendStatuses(friends);
     for (const w of socks) {
-      w.serializeAttachment({ ...(w.deserializeAttachment() as HubAttachment), friends } satisfies HubAttachment);
+      w.serializeAttachment({ ...(w.deserializeAttachment() as HubAttachment), friends, friendsAt: Date.now() } satisfies HubAttachment);
       this.send(w, { t: "presence.list", p: { friends: list } });
     }
   }

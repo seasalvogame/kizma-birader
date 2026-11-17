@@ -23,3 +23,6 @@ supabase/.branches/
 *.pem
 *.mobileprovision
 .wrangler/
+
+# Test account pool (refresh tokens of dedicated test guests); never commit
+.test-accounts.json

@@ -274,3 +274,13 @@ func test_social_and_room_screens_open_offline() -> void:
 	vp.queue_free()
 	await _frames(1)
 
+
+## The result screen finds the player's place also when the ranking came from the
+## server as JSON (floats): online matches showed "0." before this was fixed.
+func test_result_place_with_server_json_ranks() -> void:
+	var from_server: Array = JSON.parse_string("[2, 0, 3, 1]")
+	assert_eq(MatchScreen.place_of(from_server, 2), 1, "seat 2 first")
+	assert_eq(MatchScreen.place_of(from_server, 1), 4, "seat 1 last")
+	assert_eq(MatchScreen.place_of([0, 1], 1), 2, "int ranks still work")
+	assert_eq(MatchScreen.place_of([], 0), 0, "not ranked")
+

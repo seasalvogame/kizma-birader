@@ -152,7 +152,7 @@ func _record(config: Dictionary, state: Dictionary) -> void:
 	var seats: Array = config.get("seats", [])
 	for i in seats.size():
 		if seats[i].get("role", "") == "you":
-			Settings.record_match(seats.size(), (state.get("ranks", []) as Array).find(i) + 1)
+			Settings.record_match(seats.size(), MatchScreen.place_of(state.get("ranks", []), i))
 			return
 
 
