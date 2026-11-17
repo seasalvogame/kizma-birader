@@ -685,9 +685,12 @@ func _render_xp() -> void:
 	for c: Node in _xp_box.get_children():
 		c.queue_free()
 	var xp := int(_progress.get("xp", 0))
-	var chip := UiKit.chip(tr("RESULT_XP") % xp if xp > 0 else tr("RESULT_NO_XP"), Color(UiPalette.MANGO_500, 0.25), UiPalette.MANGO_300)
-	chip.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	_xp_box.add_child(chip)
+	var line := UiKit.hbox(UiTokens.S1)
+	line.alignment = BoxContainer.ALIGNMENT_CENTER
+	line.add_child(UiKit.chip(tr("RESULT_XP") % xp if xp > 0 else tr("RESULT_NO_XP"), Color(UiPalette.MANGO_500, 0.25), UiPalette.MANGO_300))
+	if int(_progress.get("points", 0)) > 0:
+		line.add_child(UiKit.chip(tr("RESULT_POINTS") % int(_progress["points"]), Color(UiPalette.GOLD_300, 0.25), UiPalette.GOLD_300))
+	_xp_box.add_child(line)
 	for id: Variant in _progress.get("achievements", []):
 		_show_toast(tr("ACH_UNLOCKED") % tr("ACH_" + String(id).to_upper()))
 	if not bool(_progress.get("counted", true)):

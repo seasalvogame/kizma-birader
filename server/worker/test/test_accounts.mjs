@@ -88,6 +88,9 @@ delete from public.player_login where user_id in (${l});
 delete from public.player_achievements where user_id in (${l});
 delete from public.player_counters where user_id in (${l});
 update public.profiles set badge_id = null where user_id in (${l});
+delete from public.leaderboard_scores where user_id in (${l});
+delete from public.leaderboard_daily where user_id in (${l});
+delete from public.leaderboard_rewards where user_id in (${l});
 update public.profiles set xp = 0, level = 1 where user_id in (${l});
 update public.player_stats set matches_2p = 0, wins_2p = 0, matches_4p = 0, wins_4p = 0, leaves = 0 where user_id in (${l})`;
 }

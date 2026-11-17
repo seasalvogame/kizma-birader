@@ -192,6 +192,24 @@ try {
   check([401, 403].includes(await rest(winner.token, "POST", "player_achievements", { user_id: winner.id, achievement_id: "wins_50" })), "client cannot complete an achievement directly");
   check([401, 403].includes(await rest(winner.token, "PATCH", `player_counters?user_id=eq.${winner.id}`, { quick_wins: 999 })), "client cannot change its counters");
 
+  console.log("7. Weekly leaderboard");
+  const loser = winner === A ? B : A;
+  check(g.recorded[winner.id]?.points === 10 && g.recorded[loser.id]?.points === 2, "the match gave 10 / 2 weekly points (told in match.recorded)");
+  const meW = await rpc(winner.token, "leaderboard_me");
+  const top = await rpc(loser.token, "leaderboard_top", { p_week: null, p_limit: 100, p_offset: 0 });
+  const rowW = top.data.rows.find((r) => r.user_id === winner.id);
+  const rowL = top.data.rows.find((r) => r.user_id === loser.id);
+  check(meW.status === 200 && meW.data.points === 10 && rowW?.points === 10 && rowL?.points === 2, "leaderboard_me and leaderboard_top show the points");
+  check(rowW.rank === meW.data.rank && rowW.rank < rowL.rank && rowL.me === true && rowW.me === false, "my rank in the list matches leaderboard_me; 'me' marks my row");
+  check(top.data.rows.length <= 100 && (await rpc(loser.token, "leaderboard_top", { p_week: null, p_limit: 5000, p_offset: 0 })).data.rows.length <= 100, "at most 100 rows per page");
+  check([401, 403].includes(await rest(winner.token, "PATCH", `leaderboard_scores?user_id=eq.${winner.id}`, { points: 99999 })), "client cannot change its weekly points");
+  check([401, 403, 404].includes((await rpc(winner.token, "leaderboard_maintenance")).status), "client cannot run the end of the week");
+  const maint = async () => (await fetch(`${BASE}/v1/dev/leaderboard-maintenance`, { method: "POST", headers: { authorization: `Bearer ${winner.token}` } })).json();
+  const [m1, m2] = await Promise.all([maint(), maint()]);
+  check(typeof m1.closed_weeks === "number" && typeof m2.closed_weeks === "number" && (await maint()).closed_weeks === 0,
+    "week close runs on the server (Worker -> Hyperdrive -> game_server); concurrent runs are safe, a repeat closes nothing");
+  check((await rpc(winner.token, "leaderboard_me")).data.points === 10, "the current week stays open");
+
   console.log("4. Direct writes from the client are refused");
   check([401, 403].includes(await rest(A.token, "PATCH", `profiles?user_id=eq.${A.id}`, { xp: 99999, level: 50 })), "client cannot change its XP / level");
   check([401, 403].includes(await rest(A.token, "PATCH", `player_quests?user_id=eq.${A.id}`, { progress: 99 })), "client cannot change quest progress");

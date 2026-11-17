@@ -440,6 +440,76 @@ begin
   if public.get_player_profile(e)->>'badge_id' <> 'social' then raise exception 'FAIL 10.16 friend sees the badge'; end if; n := n + 1;
   execute format('set local role %I', me);
 
+
+  -------------------------------------------- 11. weekly leaderboard (6.5)
+  delete from public.leaderboard_scores where user_id in (a, b, c, d, e, f);   -- earlier sections already scored; start clean
+  delete from public.leaderboard_daily where user_id in (a, b, c, d, e, f);
+  set local role game_server;
+  v_j := game.record_match(gen_random_uuid(), 'quick', rs, format('[{"seat":0,"color":"red","user_id":"%s","rank":1},{"seat":1,"color":"yellow","user_id":"%s","rank":2}]', e, f)::jsonb,
+    now() - interval '7 minutes', now(), 'finished', '', 1, 200, 't');
+  execute format('set local role %I', me);
+  if (v_j->'progress'->e::text->>'points')::int <> 10 or (v_j->'progress'->f::text->>'points')::int <> 2 then raise exception 'FAIL 11.1 2p points %', v_j; end if; n := n + 1;
+  set local role game_server;
+  perform game.record_match(gen_random_uuid(), 'private', rs, format('[{"seat":0,"color":"red","user_id":"%s","rank":1},{"seat":1,"color":"yellow","user_id":"%s","rank":2}]', e, f)::jsonb,
+    now() - interval '7 minutes', now(), 'finished', '', 1, 200, 't');
+  perform game.record_match(gen_random_uuid(), 'quick', rs, format('[{"seat":0,"color":"red","user_id":"%s","rank":1},{"seat":1,"color":"yellow","user_id":"%s","rank":2,"left":true}]', e, f)::jsonb,
+    now() - interval '30 seconds', now(), 'left', '', 1, 9, 't');
+  execute format('set local role %I', me);
+  select points * 100 + matches into v_i from public.leaderboard_scores where user_id = e and week_key = app_private.tr_week(now());
+  if v_i <> 1001 then raise exception 'FAIL 11.2 private / short matches scored (%)', v_i; end if; n := n + 1;
+  set local role game_server;
+  v_j := game.record_match(gen_random_uuid(), 'quick', rs, format('[{"seat":0,"color":"red","user_id":"%s","rank":2},{"seat":1,"color":"green","user_id":"%s","rank":4},{"seat":2,"color":"yellow","user_id":"%s","rank":1},{"seat":3,"color":"blue","user_id":"%s","rank":3}]', a, b, c, d)::jsonb,
+    now() - interval '20 minutes', now(), 'finished', '', 1, 1500, 't');
+  execute format('set local role %I', me);
+  if (v_j->'progress'->c::text->>'points')::int <> 15 or (v_j->'progress'->a::text->>'points')::int <> 8
+     or (v_j->'progress'->d::text->>'points')::int <> 4 or (v_j->'progress'->b::text->>'points')::int <> 1 then raise exception 'FAIL 11.3 4p points %', v_j; end if; n := n + 1;
+  -- daily cap
+  update public.leaderboard_daily set points = 295 where user_id = e and day = app_private.tr_day(now());
+  set local role game_server;
+  v_j := game.record_match(gen_random_uuid(), 'quick', rs, format('[{"seat":0,"color":"red","user_id":"%s","rank":1},{"seat":1,"color":"yellow","user_id":"%s","rank":2}]', e, f)::jsonb,
+    now() - interval '7 minutes', now(), 'finished', '', 1, 200, 't');
+  execute format('set local role %I', me);
+  if (v_j->'progress'->e::text->>'points')::int <> 5 then raise exception 'FAIL 11.4 daily points cap %', v_j; end if; n := n + 1;
+  -- reads: top list and my place agree
+  perform set_config('request.jwt.claims', json_build_object('sub', a, 'role', 'authenticated')::text, true);
+  set local role authenticated;
+  v_j := public.leaderboard_top(null, 1000, 0);
+  if jsonb_array_length(v_j->'rows') < 6 or jsonb_array_length(v_j->'rows') > 100 then raise exception 'FAIL 11.5 page size %', jsonb_array_length(v_j->'rows'); end if; n := n + 1;
+  -- e and c both have 15 points; e has 2 wins, c 1 -> e first (tie-break: wins)
+  if (v_j->'rows'->0->>'user_id')::uuid <> e or (v_j->'rows'->1->>'user_id')::uuid <> c then raise exception 'FAIL 11.6 order %', v_j->'rows'; end if; n := n + 1;
+  v_i := (select (r->>'rank')::int from jsonb_array_elements(v_j->'rows') r where (r->>'me')::boolean);
+  if (public.leaderboard_me(null)->>'rank')::int <> v_i then raise exception 'FAIL 11.7 my rank % vs list %', public.leaderboard_me(null), v_i; end if; n := n + 1;
+  begin
+    update public.leaderboard_scores set points = 9999 where user_id = a;
+    raise exception 'FAIL 11.8 client changed its score';
+  exception when insufficient_privilege then n := n + 1;
+  end;
+  begin
+    perform game.leaderboard_maintenance();
+    raise exception 'FAIL 11.9 client ran the week end';
+  exception when insufficient_privilege then n := n + 1;
+  end;
+  execute format('set local role %I', me);
+  -- end of a (past) week: rewards once, badge, ledger; second run pays nothing
+  insert into public.leaderboard_weeks (week_key) values ('2026-01-05') on conflict do nothing;
+  insert into public.leaderboard_scores (week_key, user_id, points, wins, matches, reached_at) values
+    ('2026-01-05', e, 50, 5, 6, now() - interval '9 days'), ('2026-01-05', f, 30, 3, 5, now() - interval '9 days'),
+    ('2026-01-05', a, 30, 3, 4, now() - interval '9 days');   -- same points and wins as f, fewer matches -> above f
+  select coins into gold_before from public.wallets where user_id = e;
+  set local role game_server;
+  v_j := game.leaderboard_maintenance();
+  perform game.leaderboard_maintenance();
+  execute format('set local role %I', me);
+  if (select status from public.leaderboard_weeks where week_key = '2026-01-05') <> 'rewarded' then raise exception 'FAIL 11.10 week not closed'; end if; n := n + 1;
+  if (select rank from public.leaderboard_rewards where week_key = '2026-01-05' and user_id = e) <> 1
+     or (select rank from public.leaderboard_rewards where week_key = '2026-01-05' and user_id = a) <> 2
+     or (select rank from public.leaderboard_rewards where week_key = '2026-01-05' and user_id = f) <> 3 then raise exception 'FAIL 11.11 ranking / tie-break'; end if; n := n + 1;
+  select coins - gold_before into v_b from public.wallets where user_id = e;
+  if v_b <> 2000 then raise exception 'FAIL 11.12 champion gold paid once (%)', v_b; end if; n := n + 1;
+  if not exists (select 1 from public.player_unlocks where user_id = e and item_id = 'weekly_champion') then raise exception 'FAIL 11.13 champion badge'; end if; n := n + 1;
+  select count(*) into v_i from public.wallet_transactions where reason = 'leaderboard' and ref_id = '2026-01-05';
+  if v_i <> 3 then raise exception 'FAIL 11.14 ledger rows %', v_i; end if; n := n + 1;
+
   raise exception 'TESTS_PASSED %', n;
 end
 $$;

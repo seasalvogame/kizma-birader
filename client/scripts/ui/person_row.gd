@@ -5,6 +5,7 @@ extends Button
 ## Cream card like the design system; tapping the row (outside the buttons) opens it.
 
 var person_name := ""
+var avatar_name := ""       # letter on the avatar (default: person_name)
 var subtitle := ""
 var avatar_id := "default"
 var status := ""             # "online" | "room" | "match" | "offline" | "" (no dot)
@@ -43,7 +44,7 @@ func _ready() -> void:
 	av.custom_minimum_size = Vector2(88, 88)
 	av.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	av.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	av.setup(person_name, color, false)
+	av.setup(avatar_name if avatar_name != "" else person_name, color, false)
 	av.set_fill(OnlineProfile.avatar_index(avatar_id))
 	row.add_child(av)
 	var col := UiKit.vbox(0)

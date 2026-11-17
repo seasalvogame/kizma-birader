@@ -1433,3 +1433,54 @@ msgstr "Friends' table"
 
 msgid "ACH_FRIENDS_10_DESC"
 msgstr "Play 10 matches with friends (private rooms count)."
+
+msgid "LB_TITLE"
+msgstr "Weekly Ranking"
+
+msgid "LB_LOADING"
+msgstr "Loading the ranking…"
+
+msgid "LB_THIS_WEEK"
+msgstr "This week"
+
+msgid "LB_LAST_WEEK"
+msgstr "Last week"
+
+msgid "LB_MY_POINTS"
+msgstr "%d points"
+
+msgid "LB_MY_LINE"
+msgstr "%d wins · %d matches · %d players ranked"
+
+msgid "LB_ENDS"
+msgstr "Week ends in %s"
+
+msgid "LB_NOT_RANKED"
+msgstr "No points this week yet. Play a quick match to enter the ranking!"
+
+msgid "LB_LAST_REWARD"
+msgstr "Your last weekly reward: rank %d · %d Gold"
+
+msgid "LB_EMPTY"
+msgstr "No ranking for this week yet."
+
+msgid "LB_WINS"
+msgstr "%d wins"
+
+msgid "LB_POINTS"
+msgstr "%d pts"
+
+msgid "LB_RULES_TITLE"
+msgstr "How are points earned?"
+
+msgid "LB_RULES"
+msgstr "Only online quick matches count. 2 players: win 10, loss 2 points. 4 players: 1st 15, 2nd 8, 3rd 4, 4th 1. Leaving or a match that ends too early gives nothing; at most 300 points a day. Ties: more wins, then fewer matches, then who got there first. The week ends Monday 00:00 (Turkey); the top 100 get gold and badges."
+
+msgid "RESULT_POINTS"
+msgstr "+%d ranking points"
+
+msgid "BADGE_WEEKLY_CHAMPION"
+msgstr "Champion of the Week"
+
+msgid "BADGE_WEEKLY_TOP10"
+msgstr "Weekly Top 10"

@@ -490,6 +490,23 @@ T = {
     "ACH_FIRST_4P_WIN_DESC": ('4 kişilik bir hızlı maçta birinci ol.', 'Finish first in a 4-player quick match.'),
     "ACH_FRIENDS_10": ('Arkadaş masası', "Friends' table"),
     "ACH_FRIENDS_10_DESC": ('Arkadaşlarınla 10 maç yap (özel oda da sayılır).', 'Play 10 matches with friends (private rooms count).'),
+    "LB_TITLE": ('Haftalık Sıralama', 'Weekly Ranking'),
+    "LB_LOADING": ('Sıralama yükleniyor…', 'Loading the ranking…'),
+    "LB_THIS_WEEK": ('Bu hafta', 'This week'),
+    "LB_LAST_WEEK": ('Geçen hafta', 'Last week'),
+    "LB_MY_POINTS": ('%d puan', '%d points'),
+    "LB_MY_LINE": ('%d galibiyet · %d maç · %d oyuncu sıralamada', '%d wins · %d matches · %d players ranked'),
+    "LB_ENDS": ('Hafta sonu: %s', 'Week ends in %s'),
+    "LB_NOT_RANKED": ('Bu hafta henüz puanın yok. Bir hızlı maç oyna ve sıralamaya gir!', 'No points this week yet. Play a quick match to enter the ranking!'),
+    "LB_LAST_REWARD": ('Son haftalık ödülün: %d. sıra · %d Altın', 'Your last weekly reward: rank %d · %d Gold'),
+    "LB_EMPTY": ('Bu hafta için henüz sıralama yok.', 'No ranking for this week yet.'),
+    "LB_WINS": ('%d galibiyet', '%d wins'),
+    "LB_POINTS": ('%d puan', '%d pts'),
+    "LB_RULES_TITLE": ('Puanlar nasıl kazanılır?', 'How are points earned?'),
+    "LB_RULES": ("Yalnızca çevrimiçi hızlı maçlar sayılır. 2 kişilik: galibiyet 10, mağlubiyet 2 puan. 4 kişilik: 1. 15, 2. 8, 3. 4, 4. 1 puan. Maçtan ayrılan ya da erken biten maç puan getirmez; günde en çok 300 puan. Eşitlikte daha çok galibiyet, sonra daha az maç, sonra o puana önce ulaşan öne geçer. Hafta pazartesi 00:00'da (TR) biter; ilk 100'e Altın ve rozet ödülü verilir.", 'Only online quick matches count. 2 players: win 10, loss 2 points. 4 players: 1st 15, 2nd 8, 3rd 4, 4th 1. Leaving or a match that ends too early gives nothing; at most 300 points a day. Ties: more wins, then fewer matches, then who got there first. The week ends Monday 00:00 (Turkey); the top 100 get gold and badges.'),
+    "RESULT_POINTS": ('+%d sıralama puanı', '+%d ranking points'),
+    "BADGE_WEEKLY_CHAMPION": ('Haftanın Şampiyonu', 'Champion of the Week'),
+    "BADGE_WEEKLY_TOP10": ("Haftanın İlk 10'u", 'Weekly Top 10'),
 }
 
 

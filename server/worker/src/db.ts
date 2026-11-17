@@ -118,3 +118,13 @@ export async function friendIds(env: DbEnv, user: string): Promise<string[]> {
     return ids ? ids.split(",") : [];
   });
 }
+
+/** End of the weekly leaderboard (Phase 6.5): closes finished weeks once and pays their rewards. */
+export async function leaderboardMaintenance(env: DbEnv): Promise<{ closed_weeks: number; rewards: number }> {
+  return withDb(env, async (sql) => {
+    const rows = await sql`select game.leaderboard_maintenance() as r`;
+    const raw = rows[0]?.r;
+    return (typeof raw === "string" ? JSON.parse(raw) : raw) as { closed_weeks: number; rewards: number };
+  });
+}
+

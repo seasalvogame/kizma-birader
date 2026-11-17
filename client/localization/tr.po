@@ -1433,3 +1433,54 @@ msgstr "Arkadaş masası"
 
 msgid "ACH_FRIENDS_10_DESC"
 msgstr "Arkadaşlarınla 10 maç yap (özel oda da sayılır)."
+
+msgid "LB_TITLE"
+msgstr "Haftalık Sıralama"
+
+msgid "LB_LOADING"
+msgstr "Sıralama yükleniyor…"
+
+msgid "LB_THIS_WEEK"
+msgstr "Bu hafta"
+
+msgid "LB_LAST_WEEK"
+msgstr "Geçen hafta"
+
+msgid "LB_MY_POINTS"
+msgstr "%d puan"
+
+msgid "LB_MY_LINE"
+msgstr "%d galibiyet · %d maç · %d oyuncu sıralamada"
+
+msgid "LB_ENDS"
+msgstr "Hafta sonu: %s"
+
+msgid "LB_NOT_RANKED"
+msgstr "Bu hafta henüz puanın yok. Bir hızlı maç oyna ve sıralamaya gir!"
+
+msgid "LB_LAST_REWARD"
+msgstr "Son haftalık ödülün: %d. sıra · %d Altın"
+
+msgid "LB_EMPTY"
+msgstr "Bu hafta için henüz sıralama yok."
+
+msgid "LB_WINS"
+msgstr "%d galibiyet"
+
+msgid "LB_POINTS"
+msgstr "%d puan"
+
+msgid "LB_RULES_TITLE"
+msgstr "Puanlar nasıl kazanılır?"
+
+msgid "LB_RULES"
+msgstr "Yalnızca çevrimiçi hızlı maçlar sayılır. 2 kişilik: galibiyet 10, mağlubiyet 2 puan. 4 kişilik: 1. 15, 2. 8, 3. 4, 4. 1 puan. Maçtan ayrılan ya da erken biten maç puan getirmez; günde en çok 300 puan. Eşitlikte daha çok galibiyet, sonra daha az maç, sonra o puana önce ulaşan öne geçer. Hafta pazartesi 00:00'da (TR) biter; ilk 100'e Altın ve rozet ödülü verilir."
+
+msgid "RESULT_POINTS"
+msgstr "+%d sıralama puanı"
+
+msgid "BADGE_WEEKLY_CHAMPION"
+msgstr "Haftanın Şampiyonu"
+
+msgid "BADGE_WEEKLY_TOP10"
+msgstr "Haftanın İlk 10'u"

@@ -6,12 +6,14 @@
 //   POST /v1/rooms                  create a private room {players: 2|4} (Bearer JWT) -> {code}
 //   GET  /v1/rooms/mine             the caller's current room / match (Bearer JWT)
 //   GET  /v1/room/:code  (Upgrade)  private room lobby (auth = first message "hello")
+//   POST /v1/dev/leaderboard-maintenance  DEV ONLY: run the weekly close now (the cron does it hourly)
+// Cron (wrangler.jsonc triggers): hourly game.leaderboard_maintenance() — closes finished weeks once.
 //   POST /v1/dev/matches            DEV ONLY (ALLOW_DEV_ROUTES): create a test match; needs the
 //                                   JWT of every seated human (caller + x-seat-tokens).
 // The dev route stays for tests and tools; players use the queue.
 
 import { verifySupabaseJwt } from "./auth.js";
-import { dbConfigured, playerNames } from "./db.js";
+import { dbConfigured, leaderboardMaintenance, playerNames } from "./db.js";
 import { Env, MatchRoom, SeatInfo } from "./match_room.js";
 import { Matchmaker } from "./matchmaker.js";
 import { PrivateRoom } from "./private_room.js";
@@ -99,6 +101,14 @@ export default {
       return env.MATCH_ROOM.get(doId).fetch(request);
     }
 
+    if (url.pathname === "/v1/dev/leaderboard-maintenance" && request.method === "POST") {
+      if (env.ALLOW_DEV_ROUTES !== "true") return json({ error: "NOT_FOUND" }, 404);
+      const identity = await verifySupabaseJwt((request.headers.get("authorization") ?? "").replace(/^Bearer /, ""), env.SUPABASE_URL);
+      if (!identity) return json({ error: "AUTH_INVALID" }, 401);
+      if (!dbConfigured(env)) return json({ error: "DB_UNAVAILABLE" }, 503);
+      return json(await leaderboardMaintenance(env));
+    }
+
     if (url.pathname === "/v1/dev/matches" && request.method === "POST") {
       if (env.ALLOW_DEV_ROUTES !== "true") return json({ error: "NOT_FOUND" }, 404);
       const auth = request.headers.get("authorization") ?? "";
@@ -131,5 +141,13 @@ export default {
       return json({ matchId: doId.toString() });
     }
     return json({ error: "NOT_FOUND" }, 404);
+  },
+
+  /** Cron trigger: weekly leaderboard close (idempotent; safe to run every hour). */
+  async scheduled(_event: ScheduledController, env: Env, ctx: ExecutionContext): Promise<void> {
+    if (!dbConfigured(env)) return;
+    ctx.waitUntil(leaderboardMaintenance(env).then((r) => {
+      if (r.closed_weeks > 0) console.log(`leaderboard: ${r.closed_weeks} week(s) closed, ${r.rewards} reward(s)`);
+    }).catch((e) => console.error(`leaderboard maintenance failed: ${String((e as Error).message ?? e).slice(0, 160)}`)));
   },
 } satisfies ExportedHandler<Env>;

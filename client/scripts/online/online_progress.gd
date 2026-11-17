@@ -84,6 +84,16 @@ func set_badge(badge: String) -> Dictionary:
 	return r
 
 
+## Weekly leaderboard: top rows of a week ("" = this week), paged.
+func leaderboard_top(week: String, limit: int, offset: int) -> Dictionary:
+	return await api.call_rpc("leaderboard_top", {"p_week": week if week != "" else null, "p_limit": limit, "p_offset": offset})
+
+
+## My place, points and last weekly reward.
+func leaderboard_me(week: String) -> Dictionary:
+	return await api.call_rpc("leaderboard_me", {"p_week": week if week != "" else null})
+
+
 func _count() -> void:
 	var n := 0
 	for key: String in ["daily", "weekly", "unclaimed_old"]:

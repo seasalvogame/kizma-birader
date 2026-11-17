@@ -298,4 +298,20 @@ func _phase6_more() -> void:
 	await _frames(12)
 	await _shot("65_achievements_sample")
 	Online.progress.achievements = {}
+	var lb: Node = main.get("current")
+	main.call("go", "ranking")
+	await _frames(3)
+	lb = main.get("current")
+	lb.set("_me", {"rank": 12, "points": 86, "wins": 7, "matches": 15, "players": 240, "ends_at": "2026-11-23T21:00:00+00:00", "previous_week": "2026-11-09",
+		"last_reward": {"rank": 34, "gold": 500, "points": 61}})
+	for c: Node in lb.get("_box").get_children():
+		c.queue_free()
+	lb.call("_render_me")
+	var names := [["Mert", 77, 9, 142], ["Zeynep", 4120, 12, 128], ["Can", 905, 6, 117], ["Elif", 3311, 8, 104], ["Deniz", 18, 5, 99]]
+	for i in names.size():
+		lb.get("_list").add_child(lb.call("_row", {"rank": i + 1, "display_name": names[i][0], "tag": names[i][1], "avatar_id": "fill:%d" % (i + 1),
+			"level": names[i][2], "wins": 10 - i, "points": names[i][3], "me": false, "badge_id": "weekly_top10" if i < 2 else null}))
+	lb.get("status").clear()
+	await _frames(12)
+	await _shot("66_leaderboard_sample")
 
