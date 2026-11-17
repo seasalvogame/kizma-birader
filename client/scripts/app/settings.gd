@@ -15,6 +15,7 @@ const DEFAULTS := {
 	# Local (offline) profile and practice stats; online accounts come later.
 	"profile_name": "",
 	"profile_avatar": 0,
+	"profile_synced": false,   # local name already taken over by the online profile
 	"last_players": 2,
 	"last_color": "red",
 	"stats_matches_2p": 0,

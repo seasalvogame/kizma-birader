@@ -7,6 +7,7 @@
 > | 3.1 Teknik hazırlık ve uyumluluk | ✅ Tamamlandı (2026-11-17) |
 > | 3.2 Supabase altyapısı | ✅ Tamamlandı (2026-11-17); Google / Apple / SMTP senin bilgilerini bekliyor |
 > | 3.3 Cloudflare altyapısı + oynanabilir oyun | 🟡 Yerelde tamam (Worker + DO, 23 test); oyun kabuğu ve APK 0.3.0 hazır; gerçek Cloudflare dağıtımı workers.dev alt alanını bekliyor: [PHASE_3_3_REPORT.md](PHASE_3_3_REPORT.md) |
+> | 3.4 İlk çevrimiçi maç (2 kişi) | 🟡 İstemci + eşleştirici + maç sunucusu hazır, yerelde uçtan uca testli (Godot istemcisiyle); APK 0.4.0; gerçek Cloudflare'de dağıtıldı ve testli (sunucu 25/25 + Godot istemcisi): [PHASE_3_4_REPORT.md](PHASE_3_4_REPORT.md) |
 > | 3.4 Güvenlik | ⏳ (3.2–3.3 ile birlikte) |
 > | 3.5 Test ve doğrulama | ⏳ (her aşamada) |
 >

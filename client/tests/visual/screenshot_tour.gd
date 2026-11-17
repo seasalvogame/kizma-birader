@@ -5,12 +5,15 @@ extends Node
 
 var shots := ""
 var main: Node
+var online := false   # -- --online: really talk to the servers (creates a guest account)
 
 
 func _ready() -> void:
 	for arg: String in OS.get_cmdline_user_args():
 		if arg.begins_with("--shots="):
 			shots = arg.trim_prefix("--shots=")
+		elif arg == "--online":
+			online = true
 		elif arg.begins_with("--locale="):
 			Settings.set_value("locale", arg.trim_prefix("--locale="))
 	if shots == "":
@@ -18,6 +21,7 @@ func _ready() -> void:
 		get_tree().quit(1)
 		return
 	DirAccess.make_dir_recursive_absolute(shots)
+	OnlineConfig.force_offline = not online
 	Settings.set_value("reduced_motion", true)
 	main = (load("res://scenes/main.tscn") as PackedScene).instantiate()
 	add_child(main)
@@ -39,6 +43,17 @@ func _ready() -> void:
 		main.call("go", step[0], step[1])
 		await _frames(12)
 		await _shot(step[2])
+	await _phase4_screens()
+	main.call("go", "modes", {"players": 2})
+	await _frames(12)
+	await _shot("00i_modes_online")
+	main.call("go", "queue", {})
+	await _frames(12)
+	await _shot("00j_queue")
+	await _wait(6.0)
+	await _shot("00k_queue_after")
+	main.call("go", "home")
+	await _frames(6)
 	# 4-player match, scripted dice, local red starts.
 	var config := _config(4)
 	config["first_seat"] = 0
@@ -116,3 +131,43 @@ func _shot(name: String) -> void:
 	var img := get_viewport().get_texture().get_image()
 	img.save_png(shots.path_join(name + ".png"))
 	print("shot ", name)
+
+
+## Phase 4 screens. Offline states are real; the "with data" shots use SAMPLE
+## server rows injected here (screenshots only — the app never shows fake data).
+func _phase4_screens() -> void:
+	for step: Array in [["profile", {}, "40_profile_offline"], ["history", {}, "41_history_offline"], ["account", {}, "42_account_guest"]]:
+		main.call("go", step[0], step[1])
+		await _frames(14)
+		await _shot(step[2])
+	var me := "11111111-1111-4111-8111-111111111111"
+	Online.session.user_id = me
+	var rows: Array = []
+	var opp := [["Mert", 77, "yellow", 1], ["Zeynep", 4120, "green", 2], ["Bot", 0, "blue", 1]]
+	for i in 3:
+		rows.append({"id": "aaaaaaaa-0000-4000-8000-00000000000%d" % i, "mode": "quick", "players": 2, "status": "finished",
+			"started_at": "2026-11-17T1%d:00:00+00:00" % i, "ended_at": "2026-11-17T1%d:14:05+00:00" % i, "end_reason": "left" if i == 1 else "finished",
+			"server_version": "60e35975abcd", "action_count": 180 + i * 7,
+			"match_players": [
+				{"seat": 0, "color": "red", "rank": 2 if opp[i][3] == 1 else 1, "user_id": me, "is_bot": false, "display_name": "Ayşe", "tag": 1234, "left_match": false},
+				{"seat": 1, "color": opp[i][2], "rank": opp[i][3], "user_id": "22222222-2222-4222-8222-22222222222%d" % i, "is_bot": false,
+					"display_name": opp[i][0], "tag": opp[i][1], "left_match": i == 1}]})
+	Online.profile.profile = {"user_id": me, "display_name": "Ayşe", "tag": 1234, "avatar_id": "fill:3", "level": 1}
+	Online.profile.stats = {"matches_2p": 12, "wins_2p": 7, "matches_4p": 0, "wins_4p": 0}
+	Online.profile.recent = rows
+	Online.profile.loaded_at = 1
+	Online.profile._mirror_to_settings()
+	main.call("go", "profile")
+	await _frames(14)
+	await _shot("43_profile_sample")
+	var sc: ScrollContainer = (main.get("current") as Node).find_children("*", "ScrollContainer", true, false)[0]
+	sc.scroll_vertical = 900
+	await _frames(6)
+	await _shot("44_profile_sample_scrolled")
+	main.call("go", "match_detail", {"match": rows[0]})
+	await _frames(14)
+	await _shot("45_match_detail_sample")
+	Online.profile.reset()
+	Online.session.user_id = ""
+	Settings.set_value("profile_avatar", 0)
+

@@ -1,22 +1,61 @@
 {
-  // Kızma Birader game server (docs/architecture/CLOUDFLARE_ARCHITECTURE.md).
-  // Local:  npx wrangler dev   (secrets / dev switches in .dev.vars, never committed)
-  "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "kizmabirader-game-dev",
-  "main": "src/index.ts",
-  "compatibility_date": "2026-11-01",
-  "observability": { "enabled": true },
-  "durable_objects": {
-    "bindings": [{ "name": "MATCH_ROOM", "class_name": "MatchRoom" }]
-  },
-  // Free plan: Durable Objects need the SQLite storage backend.
-  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["MatchRoom"] }],
-  "vars": {
-    // Public values only. Secrets go through `wrangler secret put` (never in this file).
-    "SUPABASE_URL": "https://eoujnamlwgbtlwigtjxx.supabase.co",
-    // Development match creation (no matchmaker yet). Requires a valid Supabase JWT
-    // of one of the seated players. Must be "false" in production.
-    "ALLOW_DEV_ROUTES": "true",
-    "BOT_DELAY_MS": "900"
-  }
+	// Kızma Birader game server (docs/architecture/CLOUDFLARE_ARCHITECTURE.md).
+	// Local:  npx wrangler dev   (secrets / dev switches in .dev.vars, never committed)
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "kizmabirader-game-dev",
+	"main": "src/index.ts",
+	"compatibility_date": "2026-11-01",
+	// nodejs_compat: postgres.js uses Workers TCP sockets for the database connection.
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	"version_metadata": {
+		"binding": "CF_VERSION_METADATA"
+	},
+	"observability": {
+		"enabled": true
+	},
+	"durable_objects": {
+		"bindings": [
+			{
+				"name": "MATCH_ROOM",
+				"class_name": "MatchRoom"
+			},
+			{
+				"name": "MATCHMAKER",
+				"class_name": "Matchmaker"
+			}
+		]
+	},
+	// Free plan: Durable Objects need the SQLite storage backend.
+	"migrations": [
+		{
+			"tag": "v1",
+			"new_sqlite_classes": [
+				"MatchRoom"
+			]
+		},
+		{
+			"tag": "v2",
+			"new_sqlite_classes": [
+				"Matchmaker"
+			]
+		}
+	],
+	"vars": {
+		// Public values only. Secrets go through `wrangler secret put` (never in this file).
+		"SUPABASE_URL": "https://eoujnamlwgbtlwigtjxx.supabase.co",
+		// Development match creation for tests and tools (players use /v1/queue). Requires a
+		// valid Supabase JWT of one of the seated players. Must be "false" in production.
+		"ALLOW_DEV_ROUTES": "true",
+		"BOT_DELAY_MS": "900"
+	},
+	"hyperdrive": [
+		{
+			"binding": "HYPERDRIVE",
+			"id": "ac6ffecf8b7a4bc49cddc5c12e3a4fe4",
+			// wrangler dev only (no secret): local tests run with DB_DISABLED=true
+			"localConnectionString": "postgres://local:local@127.0.0.1:5432/postgres"
+		}
+	]
 }

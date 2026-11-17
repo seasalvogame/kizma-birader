@@ -241,10 +241,10 @@ msgid "HOME_PRACTICE_SUB"
 msgstr "Against bots, offline"
 
 msgid "HOME_ONLINE_TITLE"
-msgstr "Online matches are coming"
+msgstr "Online match"
 
 msgid "HOME_ONLINE_SUB"
-msgstr "Quick matches with real players, private rooms and invites are on the way."
+msgstr "2 players: get matched with a real opponent. Test version; private rooms and invites are coming."
 
 msgid "HOME_STATS_TITLE"
 msgstr "Your stats"
@@ -461,3 +461,288 @@ msgstr "You have 10 seconds to roll and 12 to move; when time runs out the move 
 
 msgid "RULES_END"
 msgstr "In a 2-player match the first to finish wins. A 4-player match ends when three players have finished."
+
+msgid "BETA"
+msgstr "BETA"
+
+msgid "MODE_ONLINE_4P_SUB"
+msgstr "4-player online matches are coming"
+
+msgid "ONLINE_TITLE"
+msgstr "Online Match"
+
+msgid "ONLINE_CONNECTING"
+msgstr "Connecting to the server…"
+
+msgid "ONLINE_SEARCHING"
+msgstr "Looking for an opponent…"
+
+msgid "ONLINE_FOUND"
+msgstr "Opponent found! Joining the match…"
+
+msgid "ONLINE_ELAPSED"
+msgstr "Waiting %s"
+
+msgid "ONLINE_RETRY"
+msgstr "Try again"
+
+msgid "ONLINE_INFO"
+msgstr "2-player classic match. The server assigns opposite colours. The result goes to your match history and stats; no rewards and no ranking."
+
+msgid "ONLINE_ERR_NETWORK"
+msgstr "The server could not be reached. Check your internet connection and try again."
+
+msgid "ONLINE_ERR_AUTH"
+msgstr "The guest account could not be created. Try again in a moment."
+
+msgid "ONLINE_ERR_SERVER"
+msgstr "The server is not responding right now. Try again in a moment."
+
+msgid "ONLINE_RECONNECTING"
+msgstr "Connection lost · reconnecting…"
+
+msgid "ONLINE_RECONNECTED"
+msgstr "Reconnected"
+
+msgid "ONLINE_FATAL"
+msgstr "The match cannot continue on this device (%s)"
+
+msgid "CONFIRM_LEAVE_ONLINE"
+msgstr "If you leave, your opponent wins. Leave the match?"
+
+msgid "MATCH_MODE_2P_ONLINE"
+msgstr "2 Players · Classic · Online"
+
+msgid "RESULT_ONLINE_NOTE"
+msgstr "Online match · saved to your history and stats"
+
+msgid "ONLINE_RECORDED"
+msgstr "Saved to your match history ✓"
+
+msgid "STAT_LOSSES"
+msgstr "Losses"
+
+msgid "PROFILE_LOADING"
+msgstr "Loading your profile…"
+
+msgid "PROFILE_OFFLINE"
+msgstr "The server could not be reached. Check your connection and try again."
+
+msgid "PROFILE_OFFLINE_CACHED"
+msgstr "Offline · showing the last known data"
+
+msgid "PROFILE_NO_DATA"
+msgstr "Shows up here when you are online."
+
+msgid "PROFILE_ONLINE_STATS"
+msgstr "Online stats"
+
+msgid "PROFILE_MODE_LINE"
+msgstr "%d matches · %d wins"
+
+msgid "PROFILE_RECENT"
+msgstr "Recent matches"
+
+msgid "PROFILE_NAME_RULES"
+msgstr "3–16 characters: letters, digits, space, _ . -"
+
+msgid "PROFILE_NAME_INVALID_RULES"
+msgstr "The name must be 3–16 characters and start and end with a letter or digit (allowed: space _ . -)."
+
+msgid "PROFILE_NAME_TAKEN"
+msgstr "This name is not available right now, try another one."
+
+msgid "PROFILE_EDIT_ONLINE_ONLY"
+msgstr "Name and avatar can be changed while online."
+
+msgid "PROFILE_OFFLINE_SAVE"
+msgstr "Offline: the change could not be saved."
+
+msgid "PROFILE_SAVING"
+msgstr "Saving…"
+
+msgid "HISTORY_TITLE"
+msgstr "Match History"
+
+msgid "HISTORY_LOADING"
+msgstr "Loading your matches…"
+
+msgid "HISTORY_EMPTY"
+msgstr "No online matches yet. Play your first one!"
+
+msgid "HISTORY_PLAY_ONLINE"
+msgstr "Play an online match"
+
+msgid "HISTORY_ALL"
+msgstr "All matches"
+
+msgid "HISTORY_MORE"
+msgstr "Show more"
+
+msgid "HISTORY_WIN"
+msgstr "Win"
+
+msgid "HISTORY_PLACE"
+msgstr "Finished %d."
+
+msgid "HISTORY_LEFT"
+msgstr "You left"
+
+msgid "HISTORY_VS"
+msgstr "vs %s"
+
+msgid "HISTORY_DELETED"
+msgstr "Deleted player"
+
+msgid "HISTORY_DURATION"
+msgstr "%d min %d s"
+
+msgid "DETAIL_TITLE"
+msgstr "Match Details"
+
+msgid "DETAIL_PLACES"
+msgstr "Places"
+
+msgid "DETAIL_INFO"
+msgstr "Details"
+
+msgid "DETAIL_DURATION"
+msgstr "Duration"
+
+msgid "DETAIL_END"
+msgstr "Ended"
+
+msgid "DETAIL_END_FINISHED"
+msgstr "Game completed"
+
+msgid "DETAIL_END_LEFT"
+msgstr "A player left"
+
+msgid "DETAIL_MOVES"
+msgstr "Moves"
+
+msgid "DETAIL_ID"
+msgstr "Match id"
+
+msgid "DETAIL_SERVER"
+msgstr "Server version"
+
+msgid "DETAIL_VERIFIED"
+msgstr "The game server recorded this result from the match state it verified itself."
+
+msgid "ACCOUNT_TITLE"
+msgstr "Account & Security"
+
+msgid "ACCOUNT_OPEN"
+msgstr "Account screen"
+
+msgid "ACCOUNT_STATUS"
+msgstr "Account status"
+
+msgid "ACCOUNT_STATE_GUEST"
+msgstr "Guest account"
+
+msgid "ACCOUNT_STATE_PENDING"
+msgstr "Waiting for e-mail confirmation"
+
+msgid "ACCOUNT_STATE_EMAIL"
+msgstr "Permanent account · %s"
+
+msgid "ACCOUNT_GUEST_LONG"
+msgstr "You are playing with a guest account. Your profile and match history are tied to this device and can be lost if you delete the app. Protect it with an e-mail."
+
+msgid "ACCOUNT_PENDING_LONG"
+msgstr "A confirmation link was sent to %s. Tap the link in the e-mail, then press \"Check\" here."
+
+msgid "ACCOUNT_CHECK"
+msgstr "Check"
+
+msgid "ACCOUNT_CREATING"
+msgstr "Preparing your account…"
+
+msgid "ACCOUNT_SESSION_EXPIRED"
+msgstr "The session on this device is no longer valid. Sign in with your e-mail or start with a new guest account."
+
+msgid "ACCOUNT_NEW_GUEST"
+msgstr "Start with a new guest account"
+
+msgid "ACCOUNT_LINK_EMAIL"
+msgstr "Protect your account with an e-mail"
+
+msgid "ACCOUNT_LINK_EMAIL_INFO"
+msgstr "Your profile, stats and match history stay the same. After confirming you can set a password and sign in on another device."
+
+msgid "ACCOUNT_EMAIL_HINT"
+msgstr "Your e-mail address"
+
+msgid "ACCOUNT_SEND_LINK"
+msgstr "Send confirmation link"
+
+msgid "ACCOUNT_SENDING"
+msgstr "Sending…"
+
+msgid "ACCOUNT_LINK_SENT"
+msgstr "The link was sent to %s. Check your e-mail."
+
+msgid "ACCOUNT_PASSWORD"
+msgstr "Password"
+
+msgid "ACCOUNT_PASSWORD_INFO"
+msgstr "Set a password to sign in on another device with your e-mail (at least 8 characters)."
+
+msgid "ACCOUNT_PASSWORD_HINT"
+msgstr "Password"
+
+msgid "ACCOUNT_PASSWORD_SET"
+msgstr "Save password"
+
+msgid "ACCOUNT_PASSWORD_DONE"
+msgstr "Password saved."
+
+msgid "ACCOUNT_SOCIAL"
+msgstr "Google and Apple"
+
+msgid "ACCOUNT_LINK_WITH"
+msgstr "Link with %s"
+
+msgid "ACCOUNT_SOCIAL_SOON"
+msgstr "Linking with Google and Apple is not in this test build; it comes with the store release."
+
+msgid "ACCOUNT_SIGN_IN"
+msgstr "Sign in to another account"
+
+msgid "ACCOUNT_SIGN_IN_INFO"
+msgstr "Switch to another account on this device with its e-mail and password."
+
+msgid "ACCOUNT_SIGN_IN_WARN_GUEST"
+msgstr "Careful: if you switch before protecting this guest account with an e-mail, you cannot come back to it."
+
+msgid "ACCOUNT_SIGN_IN_BUTTON"
+msgstr "Sign in"
+
+msgid "ACCOUNT_SIGNED_IN"
+msgstr "Signed in."
+
+msgid "ACCOUNT_SIGN_OUT"
+msgstr "Sign out on this device"
+
+msgid "ACCOUNT_ERR_EMAIL_TAKEN"
+msgstr "This e-mail belongs to another account. You can sign in to it below; accounts are not merged."
+
+msgid "ACCOUNT_ERR_EMAIL_INVALID"
+msgstr "Enter a valid e-mail address."
+
+msgid "ACCOUNT_ERR_EMAIL_NOT_ALLOWED"
+msgstr "In this test build confirmation e-mails can only be sent to allowed addresses."
+
+msgid "ACCOUNT_ERR_RATE"
+msgstr "Too many attempts. Try again later."
+
+msgid "ACCOUNT_ERR_WEAK_PASSWORD"
+msgstr "The password must be at least 8 characters."
+
+msgid "ACCOUNT_ERR_BAD_LOGIN"
+msgstr "Wrong e-mail or password."
+
+msgid "ACCOUNT_ERR_NOT_CONFIRMED"
+msgstr "This e-mail is not confirmed yet."

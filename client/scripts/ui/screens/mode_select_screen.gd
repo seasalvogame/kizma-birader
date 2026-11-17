@@ -17,19 +17,24 @@ func _build() -> void:
 		func() -> void: navigate.emit("setup", {"players": players, "mode": "bots"}))
 	_row("phone", "MODE_LOCAL", "MODE_LOCAL_SUB", false, UiPalette.ON_NIGHT,
 		func() -> void: navigate.emit("setup", {"players": players, "mode": "local"}))
-	_row("globe", "MODE_ONLINE", "MODE_ONLINE_SUB", true, UiPalette.MINT_500,
-		func() -> void: navigate.emit("info", {"kind": "online"}))
+	if players == 2:
+		_row("globe", "MODE_ONLINE", "MODE_ONLINE_SUB", false, UiPalette.MINT_500,
+			func() -> void: navigate.emit("queue", {}), tr("BETA"))
+	else:
+		_row("globe", "MODE_ONLINE", "MODE_ONLINE_4P_SUB", true, UiPalette.MINT_500,
+			func() -> void: navigate.emit("info", {"kind": "online"}))
 	_row("lock", "MODE_PRIVATE", "MODE_PRIVATE_SUB", true, Color.WHITE,
 		func() -> void: navigate.emit("info", {"kind": "private"}))
 
 
-func _row(icon: String, title_key: String, sub_key: String, soon: bool, tint: Color, action: Callable) -> void:
+func _row(icon: String, title_key: String, sub_key: String, soon: bool, tint: Color, action: Callable, badge: String = "") -> void:
 	var c := MenuCard.new()
 	c.wide = true
 	c.icon_name = icon
 	c.title = tr(title_key)
 	c.subtitle = tr(sub_key)
 	c.soon = soon
+	c.badge = badge
 	c.tint = tint
 	c.pressed.connect(action)
 	content.add_child(c)

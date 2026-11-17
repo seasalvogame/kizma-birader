@@ -33,14 +33,26 @@ var _toast_busy := false
 var _overlay: Control
 var _closing := false
 var _compact := false
+## Online match (server authority): no restart, no pause, leaving tells the server.
+var online := false
 
 
 func _ready() -> void:
 	add_child(NightBackground.new())
-	controller = MatchController.new()
+	online = config.has("online")
+	controller = OnlineMatchController.new() if online else MatchController.new()
 	add_child(controller)
 	controller.applied.connect(_on_applied)
 	controller.finished.connect(_on_finished)
+	if online:
+		var oc := controller as OnlineMatchController
+		oc.resynced.connect(_on_resynced)
+		oc.connection_changed.connect(func(c: bool) -> void:
+			_show_toast(tr("ONLINE_RECONNECTED") if c else tr("ONLINE_RECONNECTING")))
+		oc.fatal.connect(func(code: String) -> void: _show_toast(tr("ONLINE_FATAL") % code))
+		oc.recorded.connect(func(_id: String) -> void:
+			_show_toast(tr("ONLINE_RECORDED"))
+			Online.profile.loaded_at = 0)   # profile reloads with the new stats
 	var seats: Array = config.get("seats", [])
 	two_players = seats.size() == 2
 	for i in seats.size():
@@ -78,7 +90,7 @@ func _build() -> void:
 	_menu_button = UiKit.icon_button("menu", tr("MATCH_MENU"))
 	_menu_button.pressed.connect(_open_menu)
 	_top_bar.add_child(_menu_button)
-	_mode_chip = UiKit.chip(tr("MATCH_MODE_2P") if two_players else tr("MATCH_MODE_4P"))
+	_mode_chip = UiKit.chip(tr("MATCH_MODE_2P_ONLINE") if online else (tr("MATCH_MODE_2P") if two_players else tr("MATCH_MODE_4P")))
 	_top_bar.add_child(_mode_chip)
 	for i in seats.size():
 		var corner := _corner_of(seats[i]["color"])
@@ -456,12 +468,14 @@ func _open_menu() -> void:
 	col.add_child(resume)
 	for key: String in ["fast_animations", "auto_single_move", "color_symbols"]:
 		col.add_child(_toggle_row(key))
-	var restart := UiKit.button(tr("MENU_RESTART"), "secondary")
-	restart.pressed.connect(func() -> void: _confirm(tr("CONFIRM_RESTART"), tr("MENU_RESTART"), func() -> void: _leave(true)))
-	col.add_child(restart)
+	if not online:
+		var restart := UiKit.button(tr("MENU_RESTART"), "secondary")
+		restart.pressed.connect(func() -> void: _confirm(tr("CONFIRM_RESTART"), tr("MENU_RESTART"), func() -> void: _leave(true)))
+		col.add_child(restart)
 	var leave := UiKit.button(tr("MENU_LEAVE"), "secondary")
 	leave.add_theme_color_override("font_color", Color("#c03a3f"))
-	leave.pressed.connect(func() -> void: _confirm(tr("CONFIRM_LEAVE"), tr("MENU_LEAVE"), func() -> void: _leave(false)))
+	var confirm_text := tr("CONFIRM_LEAVE_ONLINE") if online else tr("CONFIRM_LEAVE")
+	leave.pressed.connect(func() -> void: _confirm(confirm_text, tr("MENU_LEAVE"), func() -> void: _leave(false)))
 	col.add_child(leave)
 
 
@@ -551,11 +565,21 @@ func _confirm(text: String, action_text: String, on_yes: Callable) -> void:
 
 func _leave(restart: bool) -> void:
 	_closing = true
+	if online and controller.state().get("turn", {}).get("phase", "") != "game_over":
+		controller.leave(local_seat)   # the server ends my part of the match
 	controller.stop()
 	if restart:
 		restart_requested.emit()
 	else:
 		exit_requested.emit()
+
+
+## Online: after a reconnect the server's full state replaces the screen.
+func _on_resynced(state: Dictionary) -> void:
+	if _closing or not is_inside_tree():
+		return
+	_place_all(state)
+	_sync(state)
 
 
 func _on_finished(state: Dictionary) -> void:
@@ -584,7 +608,7 @@ func _show_result(state: Dictionary) -> void:
 	var title := UiKit.label(tr("RESULT_PLACE") % my_rank if my_rank == 1 else tr("RESULT_PLACE_OTHER") % my_rank, "DisplayLabel", HORIZONTAL_ALIGNMENT_CENTER)
 	title.add_theme_color_override("font_color", UiPalette.GOLD_300 if my_rank == 1 else UiPalette.ON_NIGHT)
 	col.add_child(title)
-	col.add_child(UiKit.label(tr("RESULT_PRACTICE_NOTE"), "DimLabel", HORIZONTAL_ALIGNMENT_CENTER))
+	col.add_child(UiKit.label(tr("RESULT_ONLINE_NOTE") if online else tr("RESULT_PRACTICE_NOTE"), "DimLabel", HORIZONTAL_ALIGNMENT_CENTER))
 	var card := PanelContainer.new()
 	card.theme_type_variation = "CreamCard"
 	var list := UiKit.vbox(UiTokens.S1)

@@ -86,22 +86,26 @@ npx supabase config diff                       # yerel config.toml ile uzak ayar
   - **Birleştirme yok** (K-54, öneri).
   - İstemci "Bu hesap zaten kayıtlı → o hesaba geç" kartını gösterir ve misafir ilerlemesinin kaybolacağını açıkça söyler.
   - Platform satın alımları geri yükleme ile yeni hesaba atanır. **Tüketilmiş altın ve Elmas geri yüklenemez** (USER_FLOWS §3). Bu yüzden satın almadan önce hesap bağlama önerilir (K-63).
-- **Doğrulanacak (Faz 4, istemciyle):**
-  - gerçek bağlama akışı;
-  - çakışma hata kodu;
-  - bağlamadan sonra JWT'de `is_anonymous = false` olması.
+- **Faz 4'te uygulanan (istemci `OnlineSession`, ekran "Hesap ve Güvenlik"):**
+  - E-posta: `PUT /auth/v1/user {email}` + `redirect_to` → doğrulama bağlantısı → "Kontrol et" (`GET /auth/v1/user`) → parola (`PUT /auth/v1/user {password}`). Kullanıcı kimliği değişmez.
+  - Çakışma: `email_exists` vb. → `EMAIL_TAKEN` → "Bu e-posta başka bir hesaba ait; hesaplar birleştirilmez, aşağıdan giriş yapabilirsin."
+  - Başka hesapla giriş (`grant_type=password`): yalnızca **başarılı** girişten sonra mevcut oturum değişir; misafir için uyarı gösterilir.
+  - Yarım kalan bağlama (e-posta gönderildi, tıklanmadı) misafir hesabı bozmaz: hesap misafir kalır, `new_email` bekler.
+  - Yenileme belirteci reddedilirse hesap **sessizce değiştirilmez** (`SESSION_EXPIRED`); oyuncu açıkça seçer.
+  - Google / Apple: `link_id_token()` hazır (`/auth/v1/token?grant_type=id_token` + `link_identity`), ancak yerel eklenti ve sağlayıcı ayarları olmadığı için **denenmedi**; düğmeler "bu sürümde yok" olarak kapalı.
+- **Hâlâ doğrulanacak:** Gerçek e-posta ile uçtan uca bağlama (yerleşik SMTP yalnızca kuruluş üyelerine gönderir → testte kendi adresin), bağlamadan sonra JWT'de `is_anonymous = false`.
 - **Açık konu:** Hiç bağlanmamış eski misafir hesaplarının temizliği (Supabase otomatik silmiyor). Süre ve yöntem kararı gerekiyor (öneri: 180 gün hareketsiz ve satın alması olmayan misafir).
 
-## 5. Oyun sunucusu bağlantısı (3.3'te)
+## 5. Oyun sunucusu bağlantısı (Faz 4'te kuruldu ve bulutta doğrulandı)
 
-`game_server` şu an **giriş yapamaz** (NOLOGIN). Cloudflare bağlanırken parolayı **sen** belirleyeceksin:
-- Panelde: SQL Editor → `alter role game_server with login password '<parola>';`
-- Parolayı ben görmeyeceğim. Cloudflare tarafına `wrangler` ile terminalden gizli değer olarak gireceksin.
-
-**Doğrulanacak:**
-- Supabase'in doğrudan bağlantısı IPv6 kullanıyor; havuz (Supavisor) üzerinden özel rolle bağlanmak gerekebilir.
-- Kullanıcı adı biçimi muhtemelen `game_server.<proje-ref>`.
-- Hyperdrive ile uyum.
+- Rol: `game_server` (LOGIN, bağlantı sınırı 20). Yalnızca `game.record_match` ve `game.player_names` çalıştırabilir; tabloları okuyamaz / yazamaz.
+- Parola **kurulum betiğiyle** üretilir ve yalnızca SCRAM özeti olarak Supabase'e yazılır:
+  `node server/worker/scripts/setup_game_server_db.mjs` (yeniden çalıştırmak parolayı yeniler).
+- Worker → **Cloudflare Hyperdrive** (`kizmabirader-db`, önbellek kapalı, doğrudan bağlantı `db.<ref>.supabase.co:5432`, kullanıcı `game_server`) → Postgres.
+  - Neden Hyperdrive: Supabase veritabanı sertifikaları kendi kök CA'sıyla ("Supabase Root 2021 CA") imzalı; Workers TCP soketleri yalnızca genel CA'lara güvendiği için doğrudan bağlantı TLS'te reddediliyor (yerelde `UnknownIssuer`).
+  - Hyperdrive Workers Free planında var (günde 100.000 sorgu). Sunucu veritabanına yalnızca maç başında (adlar) ve sonunda (kayıt) gider.
+  - Kimlik bilgisi Hyperdrive yapılandırmasında durur; Git'te, istemcide ve Worker değişkenlerinde yok. Service Role anahtarı kullanılmıyor.
+- Yerel `wrangler dev`: `localConnectionString` sahte bir yerel adres; testler `DB_DISABLED=true` ile veritabanısız çalışır.
 
 ## 6. Dış sağlayıcıların yapılandırılması (senin hesap bilgilerin gerekiyor)
 
@@ -143,10 +147,10 @@ npx supabase config diff                       # yerel config.toml ile uzak ayar
 - **Üretim için gerekenler:**
   - Özel SMTP sağlayıcısı: Authentication → SMTP Settings. Ücretli olabilir; senin onayınla seçilir.
   - Gönderen alan adı için SPF / DKIM kayıtları.
-- **Doğrulama ve şifre sıfırlama bağlantıları:**
-  - Şu an `site_url = http://localhost:3000`.
-  - Mobil derin bağlantı (App Links / Universal Links) hazır olunca güncellenecek (Faz 4).
-  - "Redirect URLs" listesine uygulamanın şeması eklenecek.
+- **Doğrulama bağlantıları (Faz 4):**
+  - `site_url` ve "Redirect URLs" = `https://kizmabirader-game-dev.kizmabirader.workers.dev/auth/confirmed` (Worker'daki sabit "E-postan doğrulandı, oyuna dön" sayfası; URL'deki belirteçleri okumaz).
+  - Oyuncu uygulamaya dönüp "Kontrol et"e basar. Mobil derin bağlantı (App Links / Universal Links) mağaza alan adıyla sonra.
+  - Parola en az 8 karakter (`minimum_password_length = 8`).
 
 ## 7. Plan ve kota notları
 

@@ -6,20 +6,35 @@
 // Persistence: the whole match record is written after every accepted action
 // (strategy B, K-60: one storage write per action, timers in one alarm).
 // WebSockets use the Hibernation API; nothing important lives only in memory.
+//
+// Match result (Phase 4): at game over the server builds the result from its
+// own state and records it with game.record_match (one database transaction,
+// idempotent per match). The pending record lives in this object's storage and
+// is retried by the alarm until the database confirms it, so neither a dropped
+// connection nor a restart can lose it or store it twice.
 
 import { DurableObject } from "cloudflare:workers";
 import {
-  Action, cryptoDice, createGame, GameEngine, GameEvent, GameState, maxDiceValue,
+  Action, cryptoDice, createGame, GameEngine, GameEvent, GameState, maxDiceValue, stateHash,
 } from "../../game-engine/src/index.js";
 import { verifySupabaseJwt } from "./auth.js";
+import { dbConfigured, recordMatch } from "./db.js";
 import { ClientMessage, parseClientMessage, ProtocolError } from "./protocol.js";
 
 export interface Env {
   MATCH_ROOM: DurableObjectNamespace<MatchRoom>;
+  MATCHMAKER: DurableObjectNamespace;
   SUPABASE_URL: string;
   ALLOW_DEV_ROUTES: string;
   BOT_DELAY_MS: string;
+  /** Worker secret: postgres connection of the restricted game_server role (never in git). */
+  DATABASE_URL?: string;
+  HYPERDRIVE?: Hyperdrive;          // Postgres via Cloudflare Hyperdrive (game_server role)
+  DB_DISABLED?: string;
+  CF_VERSION_METADATA?: { id: string; tag?: string };
 }
+
+export type MatchMode = "quick" | "private" | "test";
 
 export interface SeatInfo {
   seat: number;
@@ -39,6 +54,11 @@ interface MatchRecord {
   deadline: number;            // epoch ms of the current turn timer (0 = none)
   seen: Record<string, Record<string, StoredResult>>;   // seat -> request id -> first result (idempotency)
   created_at: number;
+  mode: MatchMode;
+  db_id: string;               // uuid of the database record (fixed at creation: idempotent recording)
+  log: string[];               // compact actions: r6 m0 t3 t l1 (replayable with the engine)
+  ended_at?: number;
+  db?: { status: "pending" | "done" | "skipped"; attempts: number; error?: string };
 }
 
 interface Attachment { authed: boolean; userId?: string; seat?: number }
@@ -61,6 +81,8 @@ const MAX_PINGS = 3;
 
 export class MatchRoom extends DurableObject<Env> {
   private engine = new GameEngine();
+  /** Changes whenever this object starts (cold start, eviction, new deploy): lets tests prove a restart. */
+  private readonly boot = crypto.randomUUID().slice(0, 8);
   private record: MatchRecord | null = null;
   private buckets = new Map<WebSocket, { tokens: number; at: number; pings: number }>();
 
@@ -86,7 +108,7 @@ export class MatchRoom extends DurableObject<Env> {
   private async init(body: unknown): Promise<Response> {
     const existing = await this.load();
     if (existing) return Response.json({ created: false, id: existing.id });
-    const b = body as { id?: string; seats?: SeatInfo[]; first_seat?: number; ruleset?: Record<string, unknown> };
+    const b = body as { id?: string; mode?: MatchMode; seats?: SeatInfo[]; first_seat?: number; ruleset?: Record<string, unknown> };
     const seats = b.seats ?? [];
     let state: GameState;
     try {
@@ -98,7 +120,11 @@ export class MatchRoom extends DurableObject<Env> {
     } catch (e) {
       return Response.json({ error: "BAD_SEATS", detail: (e as Error).message }, { status: 400 });
     }
-    this.record = { id: b.id ?? this.ctx.id.toString(), state, seats, seq: 0, deadline: 0, seen: {}, created_at: Date.now() };
+    const mode: MatchMode = b.mode === "quick" || b.mode === "private" ? b.mode : "test";
+    this.record = {
+      id: b.id ?? this.ctx.id.toString(), state, seats, seq: 0, deadline: 0, seen: {}, created_at: Date.now(),
+      mode, db_id: crypto.randomUUID(), log: [],
+    };
     await this.scheduleTurn(this.record);
     await this.save();
     return Response.json({ created: true, id: this.record.id });
@@ -140,6 +166,10 @@ export class MatchRoom extends DurableObject<Env> {
       return;
     }
     if (msg.t === "hello") return this.hello(ws, msg);
+    if (msg.t === "queue.join" || msg.t === "queue.leave") {
+      this.send(ws, { t: "error", re: msg.id, p: { code: "INVALID_MESSAGE" } });
+      return;
+    }
     if (!att.authed || att.seat === undefined) {
       this.send(ws, { t: "error", re: msg.id, p: { code: "AUTH_REQUIRED" } });
       return;
@@ -177,6 +207,7 @@ export class MatchRoom extends DurableObject<Env> {
     }
     this.send(ws, { t: "ok", re: msg.id, p: { seq: m.seq } });
     this.broadcast(m, result.events);
+    await this.finishRecord(m);
   }
 
   private async hello(ws: WebSocket, msg: Extract<ClientMessage, { t: "hello" }>): Promise<void> {
@@ -217,6 +248,8 @@ export class MatchRoom extends DurableObject<Env> {
     if (!r.ok) return { ok: false, error: r.error };
     m.state = r.state;
     m.seq++;
+    (m.log ??= []).push(action.type === "roll" ? `r${dice}` : action.type === "move" ? `m${action.pawn}`
+      : action.type === "timeout" ? (dice ? `t${dice}` : "t") : `l${action.seat}`);
     return { ok: true, events: r.events };
   }
 
@@ -238,6 +271,10 @@ export class MatchRoom extends DurableObject<Env> {
 
   override async alarm(): Promise<void> {
     const m = await this.load();
+    if (m?.state.turn.phase === "game_over" && m.db?.status === "pending") {
+      await this.flushRecord(m);   // retry of the result record
+      return;
+    }
     if (!m || m.state.turn.phase === "game_over") return;
     const s = m.state;
     const p = s.players[s.turn.seat]!;
@@ -250,16 +287,69 @@ export class MatchRoom extends DurableObject<Env> {
     const r = this.applyAction(m, { type: "timeout", seat: s.turn.seat, turn_id: s.turn.turn_id });
     if (r.ok) await this.scheduleTurn(m);
     await this.save();
-    if (r.ok) this.broadcast(m, r.events);
+    if (r.ok) {
+      this.broadcast(m, r.events);
+      await this.finishRecord(m);
+    }
+  }
+
+  // ------------------------------------------------------ match record
+  /** At game over: mark the result as pending in storage, then record it. */
+  private async finishRecord(m: MatchRecord): Promise<void> {
+    if (m.state.turn.phase !== "game_over" || m.db) return;
+    m.ended_at = Date.now();
+    m.db = { status: dbConfigured(this.env) ? "pending" : "skipped", attempts: 0 };
+    await this.save();
+    if (m.db.status === "pending") await this.flushRecord(m);
+  }
+
+  private async flushRecord(m: MatchRecord): Promise<void> {
+    if (!m.db || m.db.status !== "pending") return;
+    const s = m.state;
+    try {
+      await recordMatch(this.env, {
+        matchId: m.db_id,
+        mode: m.mode ?? "test",
+        ruleset: s.ruleset,
+        seats: m.seats.map((seat) => ({
+          seat: seat.seat, color: seat.color, user_id: seat.is_bot ? null : seat.user_id, is_bot: seat.is_bot,
+          rank: s.ranks.indexOf(seat.seat) + 1, left: s.players[seat.seat]?.status === "left", name: seat.name,
+        })),
+        startedAt: m.created_at,
+        endedAt: m.ended_at ?? Date.now(),
+        endReason: s.left_order.length > 0 ? "left" : "finished",
+        actions: (m.log ?? []).join(" "),
+        finalStateHash: stateHash(s),
+        actionCount: m.seq,
+        serverVersion: this.env.CF_VERSION_METADATA?.id ?? "local",
+      });
+      // applied now, or already stored by an earlier attempt: either way it is in the database once
+      m.db = { status: "done", attempts: m.db.attempts + 1 };
+      await this.save();
+      for (const ws of this.ctx.getWebSockets()) {
+        const a = ws.deserializeAttachment() as Attachment | null;
+        if (a?.authed) this.send(ws, { t: "match.recorded", p: { matchId: m.db_id } });
+      }
+    } catch (e) {
+      const attempts = m.db.attempts + 1;
+      const error = String((e as Error).message ?? e).replace(/postgres(ql)?:\/\/\S+/g, "<db>").slice(0, 200);
+      m.db = { status: attempts >= 40 ? "skipped" : "pending", attempts, error };
+      console.error(`match record failed (attempt ${attempts}): ${error}`);
+      await this.save();
+      if (m.db.status === "pending") {
+        // 2 s, 4 s, ... capped at 30 min; ~40 attempts cover about a day
+        await this.ctx.storage.setAlarm(Date.now() + Math.min(1800000, 2000 * 2 ** Math.min(attempts, 10)));
+      }
+    }
   }
 
   // ------------------------------------------------------------- helpers
   private snapshot(m: MatchRecord, seat: number) {
-    return { t: "match.snapshot", seq: m.seq, p: { matchId: m.id, yourSeat: seat, seats: m.seats, state: m.state, deadline: m.deadline, serverTime: Date.now() } };
+    return { t: "match.snapshot", seq: m.seq, p: { matchId: m.id, yourSeat: seat, seats: m.seats, state: m.state, deadline: m.deadline, serverTime: Date.now(), boot: this.boot, record: m.db?.status ?? null, recordId: m.db?.status === "done" ? m.db_id : null } };
   }
 
   private broadcast(m: MatchRecord, events: GameEvent[]): void {
-    const msg = { t: "match.events", seq: m.seq, p: { events, version: m.state.version, turn: m.state.turn, legal: m.state.legal, deadline: m.deadline } };
+    const msg = { t: "match.events", seq: m.seq, p: { events, version: m.state.version, turn: m.state.turn, legal: m.state.legal, state: m.state, deadline: m.deadline } };
     for (const ws of this.ctx.getWebSockets()) {
       const a = ws.deserializeAttachment() as Attachment | null;
       if (a?.authed) this.send(ws, msg);

@@ -8,6 +8,7 @@ var icon_name := ""
 var title := ""
 var subtitle := ""
 var soon := false
+var badge := ""             # custom chip text (e.g. TEST) instead of SOON
 var wide := false
 var tint := Color.WHITE        # icon colour
 
@@ -44,8 +45,8 @@ func _ready() -> void:
 	head.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var t := UiKit.label(title, "H3Label")
 	head.add_child(t)
-	if soon and wide:
-		var chip := UiKit.chip(tr("SOON"), Color(UiPalette.MANGO_500, 0.22), UiPalette.MANGO_300)
+	if (soon or badge != "") and wide:
+		var chip := _chip()
 		chip.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		head.add_child(chip)
 	texts.add_child(head)
@@ -82,8 +83,8 @@ func _ready() -> void:
 		top.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		top.add_child(ic)
 		top.add_child(UiKit.spacer(false))
-		if soon:
-			var chip := UiKit.chip(tr("SOON"), Color(UiPalette.MANGO_500, 0.22), UiPalette.MANGO_300)
+		if soon or badge != "":
+			var chip := _chip()
 			chip.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
 			top.add_child(chip)
 		col.add_child(top)
@@ -91,6 +92,12 @@ func _ready() -> void:
 		margin.add_child(col)
 	button_down.connect(queue_redraw)
 	button_up.connect(queue_redraw)
+
+
+func _chip() -> PanelContainer:
+	if badge != "":
+		return UiKit.chip(badge, Color(UiPalette.MINT_500, 0.2), UiPalette.MINT_500)
+	return UiKit.chip(tr("SOON"), Color(UiPalette.MANGO_500, 0.22), UiPalette.MANGO_300)
 
 
 func _draw() -> void:

@@ -12,7 +12,8 @@ Klasik yıldızlı Kızma Birader / Ludo tahtasında oynanan, çevrimiçi çok o
 
 > **Durum:** **Faz 2 — Oyun motoru, Godot iskeleti ve çevrimdışı oynanabilir oyun** tamamlandı (2026-11-17, sürüm 0.2.0).
 > - **Faz 2 sonrası güncelleme (2026-11-17):** Kararlar güncellendi ve çevrimiçi mimari Cloudflare Workers + Durable Objects + Supabase olarak yeniden planlandı (yalnızca belgeler). Rapor: [PHASE_2_POST_UPDATE_REPORT.md](PHASE_2_POST_UPDATE_REPORT.md).
-> - **Faz 3 sürüyor:** 3.1 ve 3.2 tamam; 3.3 oynanabilir sürüm 0.3.0 ve yerel sunucu iskeleti hazır. Rapor: [PHASE_3_3_REPORT.md](PHASE_3_3_REPORT.md).
+> - **Faz 3:** 3.1 ve 3.2 tamam; 3.3 oynanabilir sürüm; 3.4 ilk 2 kişilik çevrimiçi maç (0.4.0). Raporlar: [PHASE_3_3_REPORT.md](PHASE_3_3_REPORT.md), [PHASE_3_4_REPORT.md](PHASE_3_4_REPORT.md).
+> - **Faz 4 (0.5.0):** kalıcı hesaplar, sunucunun yazdığı maç kayıtları, istatistikler, profil / maç geçmişi / hesap ekranları. Rapor: [PHASE_4_REPORT.md](PHASE_4_REPORT.md).
 > - Rapor: [PHASE_2_REPORT.md](PHASE_2_REPORT.md) · Plan: [docs/PHASE_2_PLAN.md](docs/PHASE_2_PLAN.md) · Faz 1: [PHASE_1_REPORT.md](PHASE_1_REPORT.md)
 > - Karar bekleyen konular: [docs/DECISIONS_AND_OPEN_QUESTIONS.md](docs/DECISIONS_AND_OPEN_QUESTIONS.md)
 
@@ -30,8 +31,12 @@ Klasik yıldızlı Kızma Birader / Ludo tahtasında oynanan, çevrimiçi çok o
 | `build/` | Derleme çıktıları (APK) |
 
 ```sh
-cd server/game-engine && npm install && npm test                          # 73 test
-godot_console --headless --path client res://tests/test_runner.tscn     # 27 test
+cd server/game-engine && npm install && npm test                          # 85 test
+godot_console --headless --path client res://tests/test_runner.tscn     # 35 test (çevrimdışı, ağa çıkmaz)
+npx supabase db query --remote --yes -f supabase/tests/phase4_test.sql   # TESTS_PASSED 35 (bulut, geri alınır)
+node supabase/tests/api_e2e_test.mjs <ref>                               # 26 (bulut REST)
+cd server/worker && node test/local_ws_test.mjs <ref> [--remote <url>]   # 25 yerel / 30 bulut
+cd server/worker && node test/godot_online_test.mjs [--remote <url>]     # iki Godot istemcisi, gerçek maç
 ```
 
 ## Belgeler (`docs/`)

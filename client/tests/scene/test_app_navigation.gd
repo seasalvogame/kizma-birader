@@ -136,30 +136,108 @@ func test_two_player_colours_are_always_opposite() -> void:
 
 
 func test_profile_name_and_practice_stats() -> void:
-	assert_true(Settings.valid_name("Ayşe"), "4 letters is valid")
-	assert_false(Settings.valid_name("  A "), "too short")
-	assert_false(Settings.valid_name("x".repeat(17)), "too long")
+	# same rule as the database function update_my_profile (tested in supabase/tests/phase4_test.sql)
+	for ok: String in ["Ayşe", "Ali Can", "çağrı_42", "Jo.ke-1"]:
+		assert_true(OnlineProfile.valid_name(ok), "valid name: " + ok)
+	for bad: String in ["Al", "x".repeat(17), "a  b", "-abc", "abc.", "a<b"]:
+		assert_false(OnlineProfile.valid_name(bad), "invalid name: " + bad)
 	assert_eq(Settings.display_name(), tr("DEFAULT_NAME"), "default name")
 	var vp := _viewport(Vector2i(720, 1560))
 	var main := _main(vp)
 	await _frames(2)
+	# offline (tests never reach the servers): clear state, no editing, no fake data
 	main.call("go", "profile")
-	await _frames(2)
+	await _frames(4)
 	var profile: ProfileScreen = main.get("current")
-	profile.name_edit.text = "Al"
-	profile._save_name()
-	assert_eq(String(Settings.get_value("profile_name")), "", "an invalid name is not saved")
-	profile.name_edit.text = "  Mehmet  "
-	profile._save_name()
-	assert_eq(Settings.display_name(), "Mehmet", "a valid name is saved trimmed")
-	# a finished practice match counts for the local seat only
+	assert_true(profile.status.visible, "offline state is shown")
+	assert_false(profile.name_edit.editable, "the name can only be changed online")
+	# a finished practice match counts for the local seat only, never for online stats
 	var seats := [{"color": "green", "role": "bot"}, {"color": "blue", "role": "you"}]
 	main.call("_record", {"seats": seats}, {"ranks": [1, 0]})
 	main.call("_record", {"seats": seats}, {"ranks": [0, 1]})
-	assert_eq(int(Settings.get_value("stats_matches_2p")), 2, "two 2-player matches")
+	main.call("_record", {"seats": seats, "online": true}, {"ranks": [1, 0]})
+	assert_eq(int(Settings.get_value("stats_matches_2p")), 2, "two 2-player practice matches")
 	assert_eq(int(Settings.get_value("stats_wins_2p")), 1, "one win")
 	main.call("go", "home")
 	await _frames(2)
 	assert_true(main.get("current") is HomeScreen, "home shows after the profile")
 	vp.queue_free()
 	await _frames(1)
+
+
+## Server data (as returned by Supabase) is shown in the profile, history row and detail screen.
+func test_online_profile_history_and_detail_render() -> void:
+	var me := "11111111-1111-4111-8111-111111111111"
+	var saved_uid := Online.session.user_id
+	var saved := [Online.profile.profile, Online.profile.stats, Online.profile.recent, Online.profile.loaded_at]
+	Online.session.user_id = me
+	var m := {"id": "aaaaaaaa-0000-4000-8000-000000000001", "mode": "quick", "players": 2, "status": "finished",
+		"started_at": "2026-11-17T10:00:00+00:00", "ended_at": "2026-11-17T10:12:30+00:00", "end_reason": "finished",
+		"server_version": "abcdef1234", "action_count": 140,
+		"match_players": [
+			{"seat": 0, "color": "red", "rank": 2, "user_id": me, "is_bot": false, "display_name": "Ayşe", "tag": 1234, "left_match": false},
+			{"seat": 1, "color": "yellow", "rank": 1, "user_id": "22222222-2222-4222-8222-222222222222", "is_bot": false, "display_name": "Mert", "tag": 77, "left_match": false}]}
+	Online.profile.profile = {"user_id": me, "display_name": "Ayşe", "tag": 1234, "avatar_id": "fill:3", "level": 1}
+	Online.profile.stats = {"matches_2p": 3, "wins_2p": 2, "matches_4p": 1, "wins_4p": 0}
+	Online.profile.recent = [m]
+	Online.profile.loaded_at = 1
+	Online.profile._mirror_to_settings()   # what a successful refresh does
+	var t := Online.profile.totals()
+	assert_eq(t["matches"], 4, "total matches")
+	assert_eq(t["losses"], 2, "losses = matches - wins")
+	assert_eq(t["rate"], 50, "win rate")
+	assert_eq(MatchRow.result_text(m, 2), tr("HISTORY_PLACE") % 2, "second place text")
+	assert_eq(MatchRow.opponents(m, me), "Mert#77", "opponent with tag")
+	assert_eq(MatchRow.duration(m), tr("HISTORY_DURATION") % [12, 30], "duration")
+	var vp := _viewport(Vector2i(720, 1560))
+	var main := _main(vp)
+	await _frames(2)
+	main.call("go", "profile")
+	await _frames(4)
+	var profile: ProfileScreen = main.get("current")
+	assert_true(profile.name_edit.text == "Ayşe", "server name in the editor")
+	assert_eq(int(Settings.get_value("profile_avatar")), 3, "server avatar mirrored for offline play")
+	assert_true(profile.status.visible, "offline: the last known data is marked")
+	var rows := profile.find_children("*", "MatchRow", true, false)
+	assert_eq(rows.size(), 1, "one recent match row")
+	main.call("go", "match_detail", {"match": m})
+	await _frames(3)
+	assert_true(main.get("current") is MatchDetailScreen, "match details open")
+	main.call("go", "history")
+	await _frames(4)
+	var history: MatchHistoryScreen = main.get("current")
+	assert_true(history.status.visible, "offline history shows an error state, not fake rows")
+	main.call("go", "account")
+	await _frames(4)
+	assert_true(main.get("current") is AccountScreen, "account screen opens")
+	vp.queue_free()
+	await _frames(1)
+	Online.profile.profile = saved[0]; Online.profile.stats = saved[1]; Online.profile.recent = saved[2]; Online.profile.loaded_at = saved[3]
+	Online.session.user_id = saved_uid
+
+
+## The account survives an app restart: a new session object reads the same account back.
+func test_session_survives_restart_and_auth_errors_map() -> void:
+	var path := "user://test_session_%d.cfg" % Time.get_ticks_usec()
+	var a := OnlineSession.new()
+	a.path = path
+	a.refresh_token = "rt-test"
+	a.user_id = "33333333-3333-4333-8333-333333333333"
+	a._apply_user({"id": a.user_id, "is_anonymous": false, "email": "x@example.com", "email_confirmed_at": "2026-11-17T10:00:00Z", "new_email": null})
+	var b := OnlineSession.new()
+	b.path = path
+	b._load()
+	assert_eq(b.user_id, a.user_id, "same user after restart")
+	assert_eq(b.refresh_token, "rt-test", "refresh token kept")
+	assert_false(b.is_anonymous, "permanent account kept")
+	assert_eq(b.email, "x@example.com", "confirmed e-mail kept")
+	assert_true(b.has_account(), "has an account")
+	assert_false(b.has_valid_token(), "the access token is never stored")
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
+	a.free()
+	b.free()
+	assert_eq(OnlineSession.auth_error(422, {"error_code": "email_exists"}), "EMAIL_TAKEN", "email taken")
+	assert_eq(OnlineSession.auth_error(400, {"error_code": "invalid_credentials"}), "BAD_LOGIN", "bad login")
+	assert_eq(OnlineSession.auth_error(429, {}), "RATE_LIMITED", "rate limit")
+	assert_eq(OnlineSession.auth_error(422, {"error_code": "weak_password"}), "WEAK_PASSWORD", "weak password")
+	assert_eq(OnlineSession.auth_error(400, {"error_code": "email_address_not_authorized"}), "EMAIL_NOT_ALLOWED", "smtp restriction")

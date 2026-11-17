@@ -1,14 +1,17 @@
 // Worker entry: routes requests to the right MatchRoom Durable Object.
 //   GET  /v1/health                 liveness
+//   GET  /v1/queue       (Upgrade)  2-player quick match queue (Matchmaker Durable Object)
 //   GET  /v1/match/:id   (Upgrade)  WebSocket to that match (auth = first message "hello")
 //   POST /v1/dev/matches            DEV ONLY (ALLOW_DEV_ROUTES): create a match; needs a
 //                                   valid Supabase JWT of one of the seated humans.
-// The matchmaker (Phase 4) will replace the dev route.
+// The dev route stays for tests and tools; players use the queue.
 
 import { verifySupabaseJwt } from "./auth.js";
+import { dbConfigured, playerNames } from "./db.js";
 import { Env, MatchRoom, SeatInfo } from "./match_room.js";
+import { Matchmaker } from "./matchmaker.js";
 
-export { MatchRoom };
+export { MatchRoom, Matchmaker };
 
 const COLORS = ["red", "green", "yellow", "blue"] as const;
 const OPPOSITE: Record<string, string> = { red: "yellow", yellow: "red", green: "blue", blue: "green" };
@@ -18,10 +21,43 @@ function json(body: unknown, status = 200): Response {
   return Response.json(body, { status, headers: { "cache-control": "no-store" } });
 }
 
+function confirmedPage(): Response {
+  const html = `<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kızma Birader</title><style>body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;
+background:radial-gradient(circle at 50% 38%,#3a2a6b,#1d1438 70%,#140e2b);font-family:system-ui,sans-serif;color:#f6efff}
+.c{background:#fff3e2;color:#2a1f3d;border-radius:28px;padding:32px 28px;max-width:360px;margin:24px;text-align:center;
+box-shadow:0 10px 0 #e8d3b4}h1{margin:0 0 12px;font-size:24px}p{margin:0;line-height:1.5}</style></head><body><div class="c">
+<h1>E-posta doğrulandı ✓</h1><p>Hesabın artık kalıcı. Kızma Birader uygulamasına dönüp <b>Hesap</b> ekranında “Kontrol et”e dokunabilirsin.</p>
+<p style="margin-top:14px;color:#7a6d91;font-size:14px">Email confirmed. Go back to the app and tap “Check”.</p></div></body></html>`;
+  return new Response(html, { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store",
+    "content-security-policy": "default-src 'none'; style-src 'unsafe-inline'", "x-frame-options": "DENY", "referrer-policy": "no-referrer" } });
+}
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
-    if (url.pathname === "/v1/health") return json({ ok: true, service: "kizmabirader-game" });
+    if (url.pathname === "/v1/health") {
+      // ?db=1 (dev only): one round trip as game_server, to check the database path end to end.
+      if (url.searchParams.get("db") === "1" && env.ALLOW_DEV_ROUTES === "true" && dbConfigured(env)) {
+        const t0 = Date.now();
+        try {
+          await playerNames(env, []);
+          return json({ ok: true, db: true, db_ok: true, ms: Date.now() - t0 });
+        } catch (e) {
+          return json({ ok: true, db: true, db_ok: false, error: String((e as Error).message ?? e).replace(/postgres(ql)?:\/\/\S+/g, "<db>").slice(0, 160) });
+        }
+      }
+      return json({ ok: true, service: "kizmabirader-game", db: dbConfigured(env) });
+    }
+
+    // Landing page after the e-mail confirmation link (Supabase redirect target).
+    // Static; it does not read the tokens in the URL fragment.
+    if (url.pathname === "/auth/confirmed") return confirmedPage();
+
+    if (url.pathname === "/v1/queue") {
+      if (request.headers.get("Upgrade") !== "websocket") return json({ error: "UPGRADE_REQUIRED" }, 426);
+      return env.MATCHMAKER.get(env.MATCHMAKER.idFromName("q:2p:classic_v1")).fetch(request);
+    }
 
     const m = url.pathname.match(/^\/v1\/match\/([^/]+)$/);
     if (m) {
@@ -51,7 +87,7 @@ export default {
       const doId = env.MATCH_ROOM.newUniqueId();
       const res = await env.MATCH_ROOM.get(doId).fetch("https://match/init", {
         method: "POST",
-        body: JSON.stringify({ id: doId.toString(), seats, first_seat: body.first_seat, ruleset: body.ruleset }),
+        body: JSON.stringify({ id: doId.toString(), mode: "test", seats, first_seat: body.first_seat, ruleset: body.ruleset }),
       });
       if (!res.ok) return json(await res.json(), res.status);
       return json({ matchId: doId.toString() });

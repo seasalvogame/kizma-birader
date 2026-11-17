@@ -114,6 +114,30 @@ try {
   const cfg = await api("/rest/v1/app_config?select=key");
   check(cfg.status === 200 && cfg.json.some((r) => r.key === "features"), "no session: public config readable");
 
+  console.log("Phase 4: profile, records, history");
+  const upd = await api("/rest/v1/rpc/update_my_profile", { method: "POST", token: A.token, body: { p_display_name: "  Çağrı Test ", p_avatar_id: "fill:4" } });
+  check(upd.status === 200 && upd.json.display_name === "Çağrı Test" && upd.json.avatar_id === "fill:4", "player renames itself through the validated RPC (Turkish letters, trimmed)");
+  const badName = await api("/rest/v1/rpc/update_my_profile", { method: "POST", token: A.token, body: { p_display_name: "<script>" } });
+  check(badName.status >= 400 && JSON.stringify(badName.json).includes("NAME_INVALID"), `invalid name refused with NAME_INVALID (HTTP ${badName.status})`);
+  const otherPatch = await api(`/rest/v1/profiles?user_id=eq.${B.id}`, { method: "PATCH", token: A.token, body: { display_name: "Hacked" } });
+  check(otherPatch.status === 401 || otherPatch.status === 403, `player cannot edit another profile directly (HTTP ${otherPatch.status})`);
+  const ownPatch = await api(`/rest/v1/profiles?user_id=eq.${A.id}`, { method: "PATCH", token: A.token, body: { display_name: "x" } });
+  check(ownPatch.status === 401 || ownPatch.status === 403, `profile changes only go through the RPC (HTTP ${ownPatch.status})`);
+  const bCard = await api("/rest/v1/rpc/get_profile_cards", { method: "POST", token: A.token, body: { p_ids: [B.id] } });
+  check(bCard.json?.[0]?.display_name === "Oyuncu", "the other player's name is unchanged");
+  const rec = await api("/rest/v1/rpc/record_match", { method: "POST", token: A.token, body: { p_match_id: crypto.randomUUID() } });
+  check(rec.status === 404 || rec.status === 401 || rec.status === 403, `client cannot record a match result (HTTP ${rec.status})`);
+  const insMatch = await api("/rest/v1/matches", { method: "POST", token: A.token, body: { mode: "quick", players: 2, ruleset: {}, status: "finished" } });
+  check(insMatch.status === 401 || insMatch.status === 403, `client cannot insert a match (HTTP ${insMatch.status})`);
+  const stPatch = await api(`/rest/v1/player_stats?user_id=eq.${A.id}`, { method: "PATCH", token: A.token, body: { wins_2p: 50 } });
+  check(stPatch.status === 401 || stPatch.status === 403, `client cannot change its stats (HTTP ${stPatch.status})`);
+  const stats = await api("/rest/v1/player_stats?select=user_id,matches_2p,wins_2p", { token: A.token });
+  check(stats.status === 200 && stats.json.length === 1 && stats.json[0].user_id === A.id && stats.json[0].wins_2p === 0, "player reads only own stats, unchanged");
+  const hist = await api("/rest/v1/matches?select=id,match_players(user_id)&status=eq.finished", { token: A.token });
+  check(hist.status === 200 && hist.json.every((m) => m.match_players.some((p) => p.user_id === A.id)), "match history: only matches the player took part in");
+  const fake = await api("/auth/v1/user", { token: A.token.split(".").slice(0, 2).join(".") + ".invalidsignature" });
+  check(fake.status === 401 || fake.status === 403, `Auth rejects a forged JWT (HTTP ${fake.status})`);
+
   console.log(`API_E2E_PASSED ${passed}`);
 } finally {
   if (created.length) {

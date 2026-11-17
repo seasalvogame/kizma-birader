@@ -1,0 +1,6 @@
+{
+  "_comment": "Public client configuration (safe to ship): Supabase URL + publishable key + game server. Never put a secret / service role key here.",
+  "supabase_url": "https://eoujnamlwgbtlwigtjxx.supabase.co",
+  "publishable_key": "sb_publishable_SFUorMMEnyXAmt25UjCvPA_GmO4j2VR",
+  "game_url": "https://kizmabirader-game-dev.kizmabirader.workers.dev"
+}

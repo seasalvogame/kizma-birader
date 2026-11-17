@@ -241,10 +241,10 @@ msgid "HOME_PRACTICE_SUB"
 msgstr "Botlara karşı, çevrimdışı"
 
 msgid "HOME_ONLINE_TITLE"
-msgstr "Çevrimiçi maçlar yakında"
+msgstr "Çevrimiçi maç"
 
 msgid "HOME_ONLINE_SUB"
-msgstr "Gerçek rakiplerle hızlı maç, özel oda ve arkadaş daveti hazırlanıyor."
+msgstr "2 kişilik: gerçek bir rakiple eşleş. Test sürümü; özel oda ve davetler yakında."
 
 msgid "HOME_STATS_TITLE"
 msgstr "İstatistiklerin"
@@ -461,3 +461,288 @@ msgstr "Zar atmak için 10, piyon seçmek için 12 saniyen var; süre dolarsa ha
 
 msgid "RULES_END"
 msgstr "2 kişilikte dört piyonunu ilk bitiren kazanır. 4 kişilik maç ilk üç oyuncu bitirince sona erer."
+
+msgid "BETA"
+msgstr "TEST"
+
+msgid "MODE_ONLINE_4P_SUB"
+msgstr "4 kişilik çevrimiçi maç yakında"
+
+msgid "ONLINE_TITLE"
+msgstr "Çevrimiçi Maç"
+
+msgid "ONLINE_CONNECTING"
+msgstr "Sunucuya bağlanılıyor…"
+
+msgid "ONLINE_SEARCHING"
+msgstr "Rakip aranıyor…"
+
+msgid "ONLINE_FOUND"
+msgstr "Rakip bulundu! Maça bağlanılıyor…"
+
+msgid "ONLINE_ELAPSED"
+msgstr "Bekleme süresi %s"
+
+msgid "ONLINE_RETRY"
+msgstr "Tekrar dene"
+
+msgid "ONLINE_INFO"
+msgstr "2 kişilik klasik maç. Renkleri sunucu karşılıklı olarak atar. Sonuç maç geçmişine ve istatistiklerine kaydedilir; ödül ve sıralama yok."
+
+msgid "ONLINE_ERR_NETWORK"
+msgstr "Sunucuya ulaşılamadı. İnternet bağlantını kontrol edip tekrar dene."
+
+msgid "ONLINE_ERR_AUTH"
+msgstr "Misafir hesabı açılamadı. Biraz sonra tekrar dene."
+
+msgid "ONLINE_ERR_SERVER"
+msgstr "Sunucu şu anda yanıt vermiyor. Biraz sonra tekrar dene."
+
+msgid "ONLINE_RECONNECTING"
+msgstr "Bağlantı koptu · yeniden bağlanılıyor…"
+
+msgid "ONLINE_RECONNECTED"
+msgstr "Yeniden bağlandı"
+
+msgid "ONLINE_FATAL"
+msgstr "Maç bu cihazda sürdürülemiyor (%s)"
+
+msgid "CONFIRM_LEAVE_ONLINE"
+msgstr "Maçtan çıkarsan rakibin kazanır. Çıkılsın mı?"
+
+msgid "MATCH_MODE_2P_ONLINE"
+msgstr "2 Kişi · Klasik · Çevrimiçi"
+
+msgid "RESULT_ONLINE_NOTE"
+msgstr "Çevrimiçi maç · geçmişine ve istatistiklerine kaydedilir"
+
+msgid "ONLINE_RECORDED"
+msgstr "Maç geçmişine kaydedildi ✓"
+
+msgid "STAT_LOSSES"
+msgstr "Mağlubiyet"
+
+msgid "PROFILE_LOADING"
+msgstr "Profilin yükleniyor…"
+
+msgid "PROFILE_OFFLINE"
+msgstr "Sunucuya ulaşılamadı. İnternet bağlantını kontrol edip tekrar dene."
+
+msgid "PROFILE_OFFLINE_CACHED"
+msgstr "Çevrimdışı · son bilinen bilgiler gösteriliyor"
+
+msgid "PROFILE_NO_DATA"
+msgstr "Çevrimiçi olunca burada görünecek."
+
+msgid "PROFILE_ONLINE_STATS"
+msgstr "Çevrimiçi istatistikler"
+
+msgid "PROFILE_MODE_LINE"
+msgstr "%d maç · %d galibiyet"
+
+msgid "PROFILE_RECENT"
+msgstr "Son maçlar"
+
+msgid "PROFILE_NAME_RULES"
+msgstr "3–16 karakter: harf, rakam, boşluk, _ . -"
+
+msgid "PROFILE_NAME_INVALID_RULES"
+msgstr "Ad 3–16 karakter olmalı; harf ya da rakamla başlayıp bitmeli (izinli: boşluk _ . -)."
+
+msgid "PROFILE_NAME_TAKEN"
+msgstr "Bu ad şu anda alınamıyor, başka bir ad dene."
+
+msgid "PROFILE_EDIT_ONLINE_ONLY"
+msgstr "Ad ve avatar çevrimiçiyken değiştirilebilir."
+
+msgid "PROFILE_OFFLINE_SAVE"
+msgstr "Çevrimdışı: değişiklik kaydedilemedi."
+
+msgid "PROFILE_SAVING"
+msgstr "Kaydediliyor…"
+
+msgid "HISTORY_TITLE"
+msgstr "Maç Geçmişi"
+
+msgid "HISTORY_LOADING"
+msgstr "Maçların yükleniyor…"
+
+msgid "HISTORY_EMPTY"
+msgstr "Henüz çevrimiçi maçın yok. İlk maçını oyna!"
+
+msgid "HISTORY_PLAY_ONLINE"
+msgstr "Çevrimiçi maç oyna"
+
+msgid "HISTORY_ALL"
+msgstr "Tüm maçlar"
+
+msgid "HISTORY_MORE"
+msgstr "Daha fazla göster"
+
+msgid "HISTORY_WIN"
+msgstr "Galibiyet"
+
+msgid "HISTORY_PLACE"
+msgstr "%d. oldun"
+
+msgid "HISTORY_LEFT"
+msgstr "Maçtan ayrıldın"
+
+msgid "HISTORY_VS"
+msgstr "Rakip: %s"
+
+msgid "HISTORY_DELETED"
+msgstr "Silinmiş oyuncu"
+
+msgid "HISTORY_DURATION"
+msgstr "%d dk %d sn"
+
+msgid "DETAIL_TITLE"
+msgstr "Maç Ayrıntısı"
+
+msgid "DETAIL_PLACES"
+msgstr "Sıralama"
+
+msgid "DETAIL_INFO"
+msgstr "Bilgiler"
+
+msgid "DETAIL_DURATION"
+msgstr "Süre"
+
+msgid "DETAIL_END"
+msgstr "Bitiş"
+
+msgid "DETAIL_END_FINISHED"
+msgstr "Oyun tamamlandı"
+
+msgid "DETAIL_END_LEFT"
+msgstr "Bir oyuncu ayrıldı"
+
+msgid "DETAIL_MOVES"
+msgstr "Hamle sayısı"
+
+msgid "DETAIL_ID"
+msgstr "Maç kimliği"
+
+msgid "DETAIL_SERVER"
+msgstr "Sunucu sürümü"
+
+msgid "DETAIL_VERIFIED"
+msgstr "Sonucu oyun sunucusu kendi doğruladığı maç durumundan kaydetti."
+
+msgid "ACCOUNT_TITLE"
+msgstr "Hesap ve Güvenlik"
+
+msgid "ACCOUNT_OPEN"
+msgstr "Hesap ekranı"
+
+msgid "ACCOUNT_STATUS"
+msgstr "Hesap durumu"
+
+msgid "ACCOUNT_STATE_GUEST"
+msgstr "Misafir hesap"
+
+msgid "ACCOUNT_STATE_PENDING"
+msgstr "E-posta doğrulaması bekleniyor"
+
+msgid "ACCOUNT_STATE_EMAIL"
+msgstr "Kalıcı hesap · %s"
+
+msgid "ACCOUNT_GUEST_LONG"
+msgstr "Misafir hesapla oynuyorsun. Profilin ve maç geçmişin bu cihaza bağlı; uygulamayı silersen kaybolabilir. Hesabını e-postayla koru."
+
+msgid "ACCOUNT_PENDING_LONG"
+msgstr "%s adresine bir doğrulama bağlantısı gönderildi. E-postadaki bağlantıya dokun, sonra burada \"Kontrol et\"e bas."
+
+msgid "ACCOUNT_CHECK"
+msgstr "Kontrol et"
+
+msgid "ACCOUNT_CREATING"
+msgstr "Hesabın hazırlanıyor…"
+
+msgid "ACCOUNT_SESSION_EXPIRED"
+msgstr "Bu cihazdaki oturumun geçersiz oldu. E-postanla giriş yapabilir ya da yeni bir misafir hesapla başlayabilirsin."
+
+msgid "ACCOUNT_NEW_GUEST"
+msgstr "Yeni misafir hesapla başla"
+
+msgid "ACCOUNT_LINK_EMAIL"
+msgstr "Hesabını e-postayla koru"
+
+msgid "ACCOUNT_LINK_EMAIL_INFO"
+msgstr "Profilin, istatistiklerin ve maç geçmişin aynı kalır. Doğrulamadan sonra bir parola belirleyip başka cihazda da giriş yapabilirsin."
+
+msgid "ACCOUNT_EMAIL_HINT"
+msgstr "E-posta adresin"
+
+msgid "ACCOUNT_SEND_LINK"
+msgstr "Doğrulama bağlantısı gönder"
+
+msgid "ACCOUNT_SENDING"
+msgstr "Gönderiliyor…"
+
+msgid "ACCOUNT_LINK_SENT"
+msgstr "Bağlantı %s adresine gönderildi. E-postanı kontrol et."
+
+msgid "ACCOUNT_PASSWORD"
+msgstr "Parola"
+
+msgid "ACCOUNT_PASSWORD_INFO"
+msgstr "Başka bir cihazda e-posta ve parolanla giriş yapabilmek için bir parola belirle (en az 8 karakter)."
+
+msgid "ACCOUNT_PASSWORD_HINT"
+msgstr "Parola"
+
+msgid "ACCOUNT_PASSWORD_SET"
+msgstr "Parolayı kaydet"
+
+msgid "ACCOUNT_PASSWORD_DONE"
+msgstr "Parola kaydedildi."
+
+msgid "ACCOUNT_SOCIAL"
+msgstr "Google ve Apple"
+
+msgid "ACCOUNT_LINK_WITH"
+msgstr "%s ile bağla"
+
+msgid "ACCOUNT_SOCIAL_SOON"
+msgstr "Google ve Apple ile bağlama bu test sürümünde yok; mağaza sürümüyle gelecek."
+
+msgid "ACCOUNT_SIGN_IN"
+msgstr "Başka bir hesapla giriş"
+
+msgid "ACCOUNT_SIGN_IN_INFO"
+msgstr "Bu cihazda e-posta ve parolanla başka bir hesaba geçebilirsin."
+
+msgid "ACCOUNT_SIGN_IN_WARN_GUEST"
+msgstr "Dikkat: Misafir hesabını e-postayla korumadan başka hesaba geçersen bu misafir hesaba geri dönemezsin."
+
+msgid "ACCOUNT_SIGN_IN_BUTTON"
+msgstr "Giriş yap"
+
+msgid "ACCOUNT_SIGNED_IN"
+msgstr "Giriş yapıldı."
+
+msgid "ACCOUNT_SIGN_OUT"
+msgstr "Bu cihazda çıkış yap"
+
+msgid "ACCOUNT_ERR_EMAIL_TAKEN"
+msgstr "Bu e-posta başka bir hesaba ait. O hesaba geçmek için aşağıdan giriş yapabilirsin; hesaplar birleştirilmez."
+
+msgid "ACCOUNT_ERR_EMAIL_INVALID"
+msgstr "Geçerli bir e-posta adresi gir."
+
+msgid "ACCOUNT_ERR_EMAIL_NOT_ALLOWED"
+msgstr "Bu test sürümünde doğrulama e-postası yalnızca izin verilen adreslere gönderilebiliyor."
+
+msgid "ACCOUNT_ERR_RATE"
+msgstr "Çok fazla deneme. Biraz sonra tekrar dene."
+
+msgid "ACCOUNT_ERR_WEAK_PASSWORD"
+msgstr "Parola en az 8 karakter olmalı."
+
+msgid "ACCOUNT_ERR_BAD_LOGIN"
+msgstr "E-posta ya da parola hatalı."
+
+msgid "ACCOUNT_ERR_NOT_CONFIRMED"
+msgstr "Bu e-posta henüz doğrulanmamış."

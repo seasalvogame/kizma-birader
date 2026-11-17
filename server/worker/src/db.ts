@@ -1,0 +1,86 @@
+// Database access of the game server: the restricted Postgres role
+// `game_server` (K-59) through Cloudflare Hyperdrive (binding HYPERDRIVE; the
+// credentials live in the Hyperdrive config, never in git). Hyperdrive is
+// needed because Workers TCP sockets only trust public CAs and Supabase signs
+// its database certificates with its own CA. postgres.js over nodejs_compat.
+// The role can only EXECUTE a few SECURITY DEFINER functions in schema `game`;
+// it cannot read or write tables. DATABASE_URL (secret) remains as a fallback
+// for a database with a publicly trusted certificate.
+// A connection is opened per call: the server talks to the database only at
+// match start (names) and match end (record), never per move.
+
+import postgres from "postgres";
+
+export interface DbEnv {
+  HYPERDRIVE?: { connectionString: string };
+  DATABASE_URL?: string;
+  DB_DISABLED?: string;      // "true": run without a database (local tests)
+}
+
+function dbUrl(env: DbEnv): string | null {
+  if (env.DB_DISABLED === "true") return null;
+  const url = env.HYPERDRIVE?.connectionString ?? env.DATABASE_URL;
+  return typeof url === "string" && url.startsWith("postgres") ? url : null;
+}
+
+export function dbConfigured(env: DbEnv): boolean {
+  return dbUrl(env) !== null;
+}
+
+/** Runs fn with a short-lived connection; throws on database errors. */
+export async function withDb<T>(env: DbEnv, fn: (sql: postgres.Sql) => Promise<T>): Promise<T> {
+  if (!dbConfigured(env)) throw new Error("DB_NOT_CONFIGURED");
+  const sql = postgres(dbUrl(env)!, { prepare: false, max: 1, connect_timeout: 10, idle_timeout: 2, fetch_types: false });
+  try {
+    return await fn(sql);
+  } finally {
+    await sql.end({ timeout: 2 }).catch(() => undefined);
+  }
+}
+
+export interface RecordSeat {
+  seat: number;
+  color: string;
+  user_id: string | null;
+  is_bot: boolean;
+  rank: number;
+  left: boolean;
+  name: string;
+}
+
+export interface MatchRecordInput {
+  matchId: string;
+  mode: "quick" | "private" | "test";
+  ruleset: unknown;
+  seats: RecordSeat[];
+  startedAt: number;
+  endedAt: number;
+  endReason: string;
+  actions: string;
+  finalStateHash: number;
+  actionCount: number;
+  serverVersion: string;
+}
+
+/** Records a finished free match (idempotent in the database). Returns true if this call stored it. */
+export async function recordMatch(env: DbEnv, r: MatchRecordInput): Promise<boolean> {
+  return withDb(env, async (sql) => {
+    const rows = await sql`
+      select game.record_match(
+        ${r.matchId}::uuid, ${r.mode}, ${sql.json(r.ruleset as postgres.JSONValue)}, ${sql.json(r.seats as unknown as postgres.JSONValue)},
+        ${new Date(r.startedAt).toISOString()}::timestamptz, ${new Date(r.endedAt).toISOString()}::timestamptz, ${r.endReason},
+        ${r.actions}, ${r.finalStateHash}::bigint, ${r.actionCount}::int, ${r.serverVersion}) as result`;
+    const result = rows[0]?.result as { applied?: boolean } | undefined;
+    return result?.applied === true;
+  });
+}
+
+/** Profile names of players (for the matchmaker); missing ids are simply absent. */
+export async function playerNames(env: DbEnv, ids: string[]): Promise<Map<string, string>> {
+  return withDb(env, async (sql) => {
+    // array as a Postgres literal: without fetched types postgres.js cannot serialise uuid[] itself
+    const uuids = ids.filter((id) => /^[0-9a-f-]{36}$/i.test(id));
+    const rows = await sql`select user_id, display_name from game.player_names(${"{" + uuids.join(",") + "}"}::uuid[])`;
+    return new Map(rows.map((r) => [String(r.user_id), String(r.display_name)]));
+  });
+}

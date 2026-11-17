@@ -1,6 +1,6 @@
 extends Node
 ## Headless test runner:
-##   godot_console --headless --path client res://tests/test_runner.tscn [-- --only=<file part>]
+##   godot_console --headless --path client res://tests/test_runner.tscn [-- --only=<file part>] [--online --game-url=<url>]
 ## Runs every test_* method of the scripts in tests/unit and tests/scene.
 ## Exit code 0 = all passed.
 
@@ -14,12 +14,19 @@ func _ready() -> void:
 	for arg: String in OS.get_cmdline_user_args():
 		if arg.begins_with("--only="):
 			only = arg.trim_prefix("--only=")
+	# Online tests need a game server: only with -- --online [--game-url=...]
+	var dirs := DIRS.duplicate()
+	if OS.get_cmdline_user_args().has("--online"):
+		dirs = ["res://tests/online"]
+	else:
+		OnlineConfig.force_offline = true   # never create cloud accounts from offline tests
+	_isolate()
 	var errors := ErrorCounter.new()
 	OS.add_logger(errors)
 	var started := Time.get_ticks_msec()
 	var total := 0
 	var failed := 0
-	for dir: String in DIRS:
+	for dir: String in dirs:
 		var files := DirAccess.get_files_at(dir)
 		files.sort()
 		for file: String in files:
@@ -66,3 +73,19 @@ func _ready() -> void:
 	print("%d test(s), %d failed, %.1f s" % [total, failed, (Time.get_ticks_msec() - started) / 1000.0])
 	OS.remove_logger(errors)
 	get_tree().quit(1 if failed > 0 else 0)
+
+
+## Tests never touch the player's own files: settings, session and profile
+## cache go to user://test_run/ (cleared at the start of every run).
+func _isolate() -> void:
+	DirAccess.make_dir_recursive_absolute("user://test_run")
+	for f: String in DirAccess.get_files_at("user://test_run"):
+		DirAccess.remove_absolute("user://test_run/" + f)
+	if not Settings.path.begins_with("user://test"):
+		Settings.path = "user://test_run/settings.cfg"
+		Settings.load_settings()
+	Online.session.path = "user://test_run/online_session.cfg"
+	Online.session._clear()
+	Online.profile.cache_path = "user://test_run/online_profile_cache.json"
+	Online.profile.reset()
+

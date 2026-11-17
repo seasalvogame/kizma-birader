@@ -63,6 +63,8 @@ func _show(direction: int) -> void:
 			params = {"kind": entry["route"]}
 		"modes":
 			screen = ModeSelectScreen.new()
+		"queue":
+			screen = OnlineQueueScreen.new()
 		"setup":
 			var setup := PracticeSetupScreen.new()
 			if params.has("config"):
@@ -77,6 +79,12 @@ func _show(direction: int) -> void:
 			screen = InfoScreen.new()
 		"profile":
 			screen = ProfileScreen.new()
+		"history":
+			screen = MatchHistoryScreen.new()
+		"match_detail":
+			screen = MatchDetailScreen.new()
+		"account":
+			screen = AccountScreen.new()
 		"settings":
 			var settings := SettingsScreen.new()
 			settings.language_changed.connect(func() -> void: _show(0))
@@ -99,13 +107,21 @@ func _match_screen(config: Dictionary) -> MatchScreen:
 	screen.exit_requested.connect(func() -> void:
 		stack = [{"route": "home", "params": {}}]
 		_show(-1))
-	screen.restart_requested.connect(func() -> void: _show(0))
+	if config.has("online"):
+		# "Play again" online = back into the queue (a new opponent, a new match).
+		screen.restart_requested.connect(func() -> void:
+			stack = [{"route": "home", "params": {}}]
+			go("queue"))
+	else:
+		screen.restart_requested.connect(func() -> void: _show(0))
 	screen.match_over.connect(func(state: Dictionary) -> void: _record(config, state))
 	return screen
 
 
 ## Local practice stats: only matches with a "you" seat.
 func _record(config: Dictionary, state: Dictionary) -> void:
+	if config.has("online"):
+		return   # online results belong to the server (Supabase), not to local practice stats
 	var seats: Array = config.get("seats", [])
 	for i in seats.size():
 		if seats[i].get("role", "") == "you":

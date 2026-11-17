@@ -37,7 +37,8 @@ func _build() -> void:
 	online.title = tr("HOME_ONLINE_TITLE")
 	online.subtitle = tr("HOME_ONLINE_SUB")
 	online.tint = UiPalette.MINT_500
-	online.pressed.connect(func() -> void: navigate.emit("info", {"kind": "online"}))
+	online.badge = tr("BETA")
+	online.pressed.connect(func() -> void: navigate.emit("queue", {}))
 	content.add_child(online)
 	_stats_card()
 
