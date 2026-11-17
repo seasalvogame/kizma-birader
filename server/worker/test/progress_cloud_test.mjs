@@ -178,6 +178,20 @@ try {
   const claims = sql(`select count(*)::int as n from public.login_claims where user_id = '${B.id}'`)[0].n;
   check(claims === 1, "exactly one login claim stored");
 
+  console.log("6. Achievements (server-side, from the same match)");
+  const winner = g.recorded[A.id]?.xp === 40 ? A : B;
+  check((g.recorded[winner.id]?.achievements ?? []).includes("first_win") && (g.recorded[A.id]?.achievements ?? []).includes("first_match"),
+    "the match unlocked first_match for both and first_win for the winner (told in match.recorded)");
+  const ach = await rpc(winner.token, "my_achievements");
+  check(ach.status === 200 && ach.data.achievements.some((a) => a.id === "first_win" && a.completed && !a.claimed), "my_achievements: first_win reached, not collected");
+  const achTries = await Promise.all(Array.from({ length: 5 }, () => rpc(winner.token, "claim_achievement", { p_id: "first_win" })));
+  check(achTries.filter((r) => r.status === 200).length === 1 && achTries.filter((r) => /ALREADY_CLAIMED/.test(r.error ?? "")).length === 4,
+    "5 concurrent achievement claims: exactly one reward");
+  check(/NOT_COMPLETED/.test((await rpc(winner.token, "claim_achievement", { p_id: "wins_50" })).error ?? ""), "an achievement not reached cannot be collected");
+  check(/BADGE_LOCKED/.test((await rpc(winner.token, "set_profile_badge", { p_badge: "champion" })).error ?? ""), "a locked badge cannot be shown on the profile");
+  check([401, 403].includes(await rest(winner.token, "POST", "player_achievements", { user_id: winner.id, achievement_id: "wins_50" })), "client cannot complete an achievement directly");
+  check([401, 403].includes(await rest(winner.token, "PATCH", `player_counters?user_id=eq.${winner.id}`, { quick_wins: 999 })), "client cannot change its counters");
+
   console.log("4. Direct writes from the client are refused");
   check([401, 403].includes(await rest(A.token, "PATCH", `profiles?user_id=eq.${A.id}`, { xp: 99999, level: 50 })), "client cannot change its XP / level");
   check([401, 403].includes(await rest(A.token, "PATCH", `player_quests?user_id=eq.${A.id}`, { progress: 99 })), "client cannot change quest progress");

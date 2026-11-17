@@ -48,6 +48,7 @@ func start_social() -> void:
 	if session.has_account() and OnlineConfig.supabase_url() != "":
 		hub.start()
 		progress.refresh_quests()   # the dot on the quests tab
+		progress.refresh_achievements()
 
 
 ## Enters (or re-enters) a private room; the room node lives here, not in a screen.

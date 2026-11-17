@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "achievements": [
+    {"id": "first_match",   "category": "match",  "metric": "quick_matches",   "target": 1,   "gold": 50,   "xp": 20},
+    {"id": "first_win",     "category": "match",  "metric": "quick_wins",      "target": 1,   "gold": 100,  "xp": 30},
+    {"id": "matches_10",    "category": "match",  "metric": "quick_matches",   "target": 10,  "gold": 150,  "xp": 50},
+    {"id": "matches_50",    "category": "match",  "metric": "quick_matches",   "target": 50,  "gold": 400,  "xp": 100},
+    {"id": "matches_100",   "category": "match",  "metric": "quick_matches",   "target": 100, "gold": 800,  "xp": 200, "badge": "veteran"},
+    {"id": "wins_10",       "category": "match",  "metric": "quick_wins",      "target": 10,  "gold": 200,  "xp": 60},
+    {"id": "wins_50",       "category": "match",  "metric": "quick_wins",      "target": 50,  "gold": 1000, "xp": 200, "badge": "champion"},
+    {"id": "streak_3",      "category": "skill",  "metric": "best_win_streak", "target": 3,   "gold": 300,  "xp": 80},
+    {"id": "streak_5",      "category": "skill",  "metric": "best_win_streak", "target": 5,   "gold": 600,  "xp": 150, "badge": "unstoppable"},
+    {"id": "wins_2p_25",    "category": "skill",  "metric": "wins_2p",         "target": 25,  "gold": 500,  "xp": 120},
+    {"id": "first_4p_win",  "category": "skill",  "metric": "firsts_4p",       "target": 1,   "gold": 300,  "xp": 80},
+    {"id": "friends_10",    "category": "social", "metric": "friend_matches",  "target": 10,  "gold": 300,  "xp": 80,  "badge": "social"}
+  ]
+}

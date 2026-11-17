@@ -282,4 +282,20 @@ func _phase6_more() -> void:
 	await _frames(14)
 	await _shot("64_daily_login_sample")
 	panel.queue_free()
+	var ach := func(id: String, cat: String, target: int, progress: int, gold: int, xp: int, done: bool, claimed: bool, badge: String = "") -> Dictionary:
+		var d := {"id": id, "category": cat, "target": target, "progress": progress, "gold": gold, "xp": xp, "completed": done, "claimed": claimed}
+		if badge != "":
+			d["badge"] = badge
+		return d
+	Online.progress.achievements = {"achievements": [ach.call("first_match", "match", 1, 1, 50, 20, true, true), ach.call("first_win", "match", 1, 1, 100, 30, true, false),
+		ach.call("matches_10", "match", 10, 7, 150, 50, false, false), ach.call("matches_100", "match", 100, 7, 800, 200, false, false, "veteran"),
+		ach.call("streak_3", "skill", 3, 2, 300, 80, false, false), ach.call("first_4p_win", "skill", 1, 0, 300, 80, false, false),
+		ach.call("friends_10", "social", 10, 3, 300, 80, false, false, "social")]}
+	main.call("go", "achievements")
+	await _frames(3)
+	(main.get("current") as Node).get("status").clear()
+	(main.get("current") as Node).call("_render")
+	await _frames(12)
+	await _shot("65_achievements_sample")
+	Online.progress.achievements = {}
 

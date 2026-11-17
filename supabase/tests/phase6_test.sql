@@ -9,6 +9,8 @@ declare
   b  uuid := '00000000-0000-4000-8000-0000000006b1';
   c  uuid := '00000000-0000-4000-8000-0000000006c1';
   d  uuid := '00000000-0000-4000-8000-0000000006d1';
+  e  uuid := '00000000-0000-4000-8000-0000000006e1';
+  f  uuid := '00000000-0000-4000-8000-0000000006f1';
   cfg jsonb := (select value from public.app_config where key = 'progression');
   me text := current_user;
   rs jsonb := '{"id":"classic_v1"}';
@@ -26,7 +28,8 @@ declare
 begin
   insert into auth.users (id, aud, role, is_anonymous, created_at, updated_at) values
     (a, 'authenticated', 'authenticated', true, now(), now()), (b, 'authenticated', 'authenticated', true, now(), now()),
-    (c, 'authenticated', 'authenticated', true, now(), now()), (d, 'authenticated', 'authenticated', true, now(), now());
+    (c, 'authenticated', 'authenticated', true, now(), now()), (d, 'authenticated', 'authenticated', true, now(), now()),
+    (e, 'authenticated', 'authenticated', true, now(), now()), (f, 'authenticated', 'authenticated', true, now(), now());
   seats2 := format('[{"seat":0,"color":"red","user_id":"%s","rank":1,"rolls":30,"sixes":5,"captures":2,"finished":4},{"seat":1,"color":"yellow","user_id":"%s","rank":2,"rolls":28}]', a, b)::jsonb;
 
   ------------------------------------------------------------- 1. level curve
@@ -345,6 +348,97 @@ begin
   if not exists (select 1 from public.player_quests where user_id = a and metric = 'login_days' and progress = 1) then
     raise exception 'FAIL 9.13 login quest progress';
   end if; n := n + 1;
+
+
+  -------------------------------------------- 10. achievements (6.4)
+  set local role game_server;
+  v_j := game.record_match(gen_random_uuid(), 'quick', rs, format('[{"seat":0,"color":"red","user_id":"%s","rank":1},{"seat":1,"color":"yellow","user_id":"%s","rank":2}]', e, f)::jsonb,
+    now() - interval '7 minutes', now(), 'finished', '', 1, 200, 't');
+  execute format('set local role %I', me);
+  if not (v_j->'progress'->e::text->'achievements') @> '["first_match","first_win"]'::jsonb
+     or not (v_j->'progress'->f::text->'achievements') @> '["first_match"]'::jsonb
+     or (v_j->'progress'->f::text->'achievements') @> '["first_win"]'::jsonb then raise exception 'FAIL 10.1 first achievements %', v_j; end if; n := n + 1;
+  -- two more wins: streak 3 reached; then a loss resets the current streak, the best stays
+  set local role game_server;
+  for v_i in 1..2 loop
+    perform game.record_match(gen_random_uuid(), 'quick', rs, format('[{"seat":0,"color":"red","user_id":"%s","rank":1},{"seat":1,"color":"yellow","user_id":"%s","rank":2}]', e, f)::jsonb,
+      now() - interval '7 minutes', now(), 'finished', '', 1, 200, 't');
+  end loop;
+  perform game.record_match(gen_random_uuid(), 'quick', rs, format('[{"seat":0,"color":"red","user_id":"%s","rank":2},{"seat":1,"color":"yellow","user_id":"%s","rank":1}]', e, f)::jsonb,
+    now() - interval '7 minutes', now(), 'finished', '', 1, 200, 't');
+  execute format('set local role %I', me);
+  select win_streak * 100 + best_win_streak * 10 + quick_wins into v_i from public.player_counters where user_id = e;
+  if v_i <> 0 * 100 + 3 * 10 + 3 then raise exception 'FAIL 10.2 streak counters %', v_i; end if; n := n + 1;
+  if not exists (select 1 from public.player_achievements where user_id = e and achievement_id = 'streak_3') then raise exception 'FAIL 10.3 streak_3'; end if; n := n + 1;
+  -- a match cut short by a leave changes no counter; a private match only the social one
+  select to_jsonb(pc) - 'updated_at' into v_j from public.player_counters pc where user_id = e;
+  set local role game_server;
+  perform game.record_match(gen_random_uuid(), 'quick', rs, format('[{"seat":0,"color":"red","user_id":"%s","rank":1},{"seat":1,"color":"yellow","user_id":"%s","rank":2,"left":true}]', e, f)::jsonb,
+    now() - interval '20 seconds', now(), 'left', '', 1, 8, 't');
+  execute format('set local role %I', me);
+  if (select to_jsonb(pc) - 'updated_at' from public.player_counters pc where user_id = e) <> v_j then raise exception 'FAIL 10.4 short match changed counters'; end if; n := n + 1;
+  insert into public.friendships (user_low, user_high) values (least(e, f), greatest(e, f));
+  update public.player_counters set friend_matches = 9 where user_id = e;
+  set local role game_server;
+  v_j := game.record_match(gen_random_uuid(), 'private', rs, format('[{"seat":0,"color":"red","user_id":"%s","rank":1},{"seat":1,"color":"yellow","user_id":"%s","rank":2}]', e, f)::jsonb,
+    now() - interval '7 minutes', now(), 'finished', '', 1, 200, 't');
+  execute format('set local role %I', me);
+  select quick_matches * 100 + friend_matches into v_i from public.player_counters where user_id = e;
+  if v_i <> 4 * 100 + 10 or not (v_j->'progress'->e::text->'achievements') @> '["friends_10"]'::jsonb then
+    raise exception 'FAIL 10.5 private match: social only (%) %', v_i, v_j;
+  end if; n := n + 1;
+
+  -- claiming
+  perform set_config('request.jwt.claims', json_build_object('sub', e, 'role', 'authenticated')::text, true);
+  set local role authenticated;
+  v_j := public.my_achievements();
+  if jsonb_array_length(v_j->'achievements') <> jsonb_array_length((select value->'achievements' from public.app_config where key = 'achievements')) then
+    raise exception 'FAIL 10.6 list';
+  end if; n := n + 1;
+  if not exists (select 1 from jsonb_array_elements(v_j->'achievements') x where x->>'id' = 'matches_10' and (x->>'progress')::int = 4 and not (x->>'completed')::boolean) then
+    raise exception 'FAIL 10.7 progress of an open achievement';
+  end if; n := n + 1;
+  v_j := public.claim_achievement('friends_10');
+  if (v_j->>'gold')::int <> 300 or v_j->>'badge' <> 'social' then raise exception 'FAIL 10.8 claim %', v_j; end if; n := n + 1;
+  begin
+    perform public.claim_achievement('friends_10');
+    raise exception 'FAIL 10.9 claimed twice';
+  exception when others then if sqlerrm <> 'ALREADY_CLAIMED' then raise; end if; n := n + 1;
+  end;
+  begin
+    perform public.claim_achievement('matches_100');
+    raise exception 'FAIL 10.10 claimed an unreached achievement';
+  exception when others then if sqlerrm <> 'NOT_COMPLETED' then raise; end if; n := n + 1;
+  end;
+  begin
+    perform public.claim_achievement('no_such');
+    raise exception 'FAIL 10.11 unknown achievement';
+  exception when others then if sqlerrm <> 'ACHIEVEMENT_NOT_FOUND' then raise; end if; n := n + 1;
+  end;
+  -- badges on the profile: only unlocked ones
+  begin
+    perform public.set_profile_badge('champion');
+    raise exception 'FAIL 10.12 locked badge shown';
+  exception when others then if sqlerrm <> 'BADGE_LOCKED' then raise; end if; n := n + 1;
+  end;
+  v_j := public.set_profile_badge('social');
+  v_j := public.my_progress();
+  if v_j->>'badge_id' <> 'social' then raise exception 'FAIL 10.13 badge selected %', v_j; end if; n := n + 1;
+  begin
+    update public.player_counters set quick_wins = 999 where user_id = e;
+    raise exception 'FAIL 10.14 client changed counters';
+  exception when insufficient_privilege then n := n + 1;
+  end;
+  begin
+    insert into public.player_achievements (user_id, achievement_id) values (e, 'wins_50');
+    raise exception 'FAIL 10.15 client completed an achievement';
+  exception when insufficient_privilege then n := n + 1;
+  end;
+  execute format('set local role %I', me);
+  perform set_config('request.jwt.claims', json_build_object('sub', f, 'role', 'authenticated')::text, true);
+  set local role authenticated;
+  if public.get_player_profile(e)->>'badge_id' <> 'social' then raise exception 'FAIL 10.16 friend sees the badge'; end if; n := n + 1;
+  execute format('set local role %I', me);
 
   raise exception 'TESTS_PASSED %', n;
 end

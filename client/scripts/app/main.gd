@@ -61,6 +61,8 @@ func _show(direction: int) -> void:
 			screen = HomeScreen.new()
 		"quests":
 			screen = QuestsScreen.new()
+		"achievements":
+			screen = AchievementsScreen.new()
 		"store", "ranking":
 			screen = InfoScreen.new()
 			params = {"kind": entry["route"]}

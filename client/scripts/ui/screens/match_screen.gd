@@ -56,7 +56,8 @@ func _ready() -> void:
 		oc.recorded.connect(func(_id: String) -> void:
 			_show_toast(tr("ONLINE_RECORDED"))
 			Online.profile.loaded_at = 0   # profile reloads with the new stats
-			Online.progress.refresh_quests())   # quest progress from this match
+			Online.progress.refresh_quests()   # quest progress from this match
+			Online.progress.refresh_achievements())
 		oc.progress_received.connect(_on_progress)
 	var seats: Array = config.get("seats", [])
 	two_players = seats.size() == 2
@@ -687,6 +688,12 @@ func _render_xp() -> void:
 	var chip := UiKit.chip(tr("RESULT_XP") % xp if xp > 0 else tr("RESULT_NO_XP"), Color(UiPalette.MANGO_500, 0.25), UiPalette.MANGO_300)
 	chip.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	_xp_box.add_child(chip)
+	for id: Variant in _progress.get("achievements", []):
+		_show_toast(tr("ACH_UNLOCKED") % tr("ACH_" + String(id).to_upper()))
+	if not bool(_progress.get("counted", true)):
+		var note := UiKit.label(tr("RESULT_NOT_COUNTED"), "DimLabel", HORIZONTAL_ALIGNMENT_CENTER)
+		note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		_xp_box.add_child(note)
 	var before := int(_progress.get("level_before", 1))
 	var after := int(_progress.get("level_after", before))
 	if after > before and not _celebrated:

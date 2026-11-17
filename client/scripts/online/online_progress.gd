@@ -10,7 +10,9 @@ signal changed
 var api: OnlineApi
 var quests := {}            # my_quests(): {daily, weekly, unclaimed_old, daily_resets_at, weekly_resets_at, server_time}
 var claimable := 0
+var achievements_claimable := 0
 var login := {}             # daily_login_status(): {can_claim, next_day, streak, cycle, resets_at, ...}
+var achievements := {}      # my_achievements(): {achievements: [...], counters}
 var last_error := ""
 
 
@@ -54,6 +56,34 @@ func claim_login() -> Dictionary:
 	return r
 
 
+func refresh_achievements() -> bool:
+	var r := await api.call_rpc("my_achievements", {})
+	if not r["ok"]:
+		last_error = r["error"]
+		return false
+	achievements = r["data"]
+	_count()
+	changed.emit()
+	return true
+
+
+func claim_achievement(id: String) -> Dictionary:
+	var r := await api.call_rpc("claim_achievement", {"p_id": id})
+	if r["ok"] or r["error"] == "ALREADY_CLAIMED":
+		await refresh_achievements()
+		Online.profile.loaded_at = 0
+	return r
+
+
+## Shows an unlocked badge on the profile ("" = none).
+func set_badge(badge: String) -> Dictionary:
+	var r := await api.call_rpc("set_profile_badge", {"p_badge": badge if badge != "" else null})
+	if r["ok"]:
+		Online.profile.progress["badge_id"] = r["data"].get("badge_id")
+		changed.emit()
+	return r
+
+
 func _count() -> void:
 	var n := 0
 	for key: String in ["daily", "weekly", "unclaimed_old"]:
@@ -62,6 +92,11 @@ func _count() -> void:
 				n += 1
 	claimable = n
 	NavBar.dots["quests"] = n > 0
+	var ach := 0
+	for a: Dictionary in achievements.get("achievements", []):
+		if a.get("completed", false) and not a.get("claimed", false):
+			ach += 1
+	achievements_claimable = ach
 
 
 ## Quest title from its metric and target (texts live in the client, numbers on the server).

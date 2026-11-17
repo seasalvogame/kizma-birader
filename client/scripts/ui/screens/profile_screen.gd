@@ -84,9 +84,11 @@ func _render() -> void:
 		if not badges.is_empty():
 			var row := HFlowContainer.new()
 			row.add_theme_constant_override("h_separation", 8)
+			var shown := String(p.progress.get("badge_id", "")) if p.progress.get("badge_id") != null else ""
 			for b: String in badges:
-				row.add_child(UiKit.chip(tr("BADGE_" + b.to_upper()), Color(UiPalette.MANGO_500, 0.2), UiPalette.MANGO_700))
+				row.add_child(_badge_button(b, b == shown))
 			lv.add_child(row)
+			lv.add_child(UiKit.label(tr("BADGE_PICK_HINT"), "InkDimLabel"))
 	# --- online stats
 	var stats := _card(tr("PROFILE_ONLINE_STATS"))
 	if online:
@@ -182,9 +184,10 @@ func _render() -> void:
 	achievements.wide = true
 	achievements.icon_name = "medal"
 	achievements.title = tr("INFO_ACHIEVEMENTS_TITLE")
-	achievements.subtitle = tr("INFO_ACHIEVEMENTS_HEAD")
-	achievements.soon = true
-	achievements.pressed.connect(func() -> void: navigate.emit("info", {"kind": "achievements"}))
+	var waiting := Online.progress.achievements_claimable
+	achievements.subtitle = tr("ACH_CARD_READY") % waiting if waiting > 0 else tr("ACH_CARD_SUB")
+	achievements.badge = str(waiting) if waiting > 0 else ""
+	achievements.pressed.connect(func() -> void: navigate.emit("achievements", {}))
 	_sections.add_child(achievements)
 
 
@@ -302,3 +305,31 @@ static func _style_edit(e: LineEdit) -> void:
 		box.content_margin_left = 20
 		box.content_margin_right = 20
 		e.add_theme_stylebox_override(state, box)
+
+
+## A badge chip that can be tapped to show it on the profile (tap the shown one to hide it).
+func _badge_button(id: String, shown: bool) -> Button:
+	var b := Button.new()
+	b.flat = true
+	b.focus_mode = Control.FOCUS_NONE
+	b.mouse_filter = Control.MOUSE_FILTER_PASS
+	b.text = ("★ " if shown else "") + tr("BADGE_" + id.to_upper())
+	b.add_theme_font_override("font", UiTheme.body_font(800))
+	b.add_theme_font_size_override("font_size", UiTokens.LABEL)
+	for st: String in ["font_color", "font_hover_color", "font_pressed_color"]:
+		b.add_theme_color_override(st, UiPalette.INK_900 if shown else UiPalette.MANGO_700)
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = UiPalette.MANGO_500 if shown else Color(UiPalette.MANGO_500, 0.18)
+	sb.set_corner_radius_all(24)
+	sb.content_margin_left = 18
+	sb.content_margin_right = 18
+	sb.content_margin_top = 6
+	sb.content_margin_bottom = 6
+	for st: String in ["normal", "hover", "pressed"]:
+		b.add_theme_stylebox_override(st, sb)
+	b.pressed.connect(func() -> void:
+		var r := await Online.progress.set_badge("" if shown else id)
+		if is_inside_tree() and r["ok"]:
+			_render())
+	return b
+
