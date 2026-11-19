@@ -13,6 +13,7 @@ export type ClientMessage =
   | { t: "resync"; id: string; p: Record<string, never> }
   | { t: "action.roll"; id: string; p: { turnId: number } }
   | { t: "action.move"; id: string; p: { turnId: number; pawn: number } }
+  | { t: "action.emote"; id: string; p: { emoteId: string } }
   | { t: "action.leave"; id: string; p: Record<string, never> }
   | { t: "queue.join"; id: string; p: { mode: string; name: string } }
   | { t: "queue.leave"; id: string; p: Record<string, never> }
@@ -36,6 +37,7 @@ const FIELDS: Record<string, string[]> = {
   "resync": [],
   "action.roll": ["turnId"],
   "action.move": ["turnId", "pawn"],
+  "action.emote": ["emoteId"],
   "action.leave": [],
   "queue.join": ["mode", "name"],
   "queue.leave": [],
@@ -92,6 +94,7 @@ export function parseClientMessage(raw: string | ArrayBuffer): ClientMessage {
   if (t === "action.move" && !(Number.isInteger(p.pawn) && (p.pawn as number) >= 0 && (p.pawn as number) <= 3)) {
     throw new ProtocolError("INVALID_MESSAGE");
   }
+  if (t === "action.emote" && (typeof p.emoteId !== "string" || !/^[a-z_]{2,16}$/.test(p.emoteId))) throw new ProtocolError("INVALID_MESSAGE");
   if (t === "hello" && typeof p.token !== "string") throw new ProtocolError("INVALID_MESSAGE");
   if (t === "ping" && typeof p.clientTime !== "number") throw new ProtocolError("INVALID_MESSAGE");
   if (t === "queue.join" && (typeof p.mode !== "string" || typeof p.name !== "string" || (p.name as string).length > 64)) {

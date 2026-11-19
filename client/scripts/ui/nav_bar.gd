@@ -62,6 +62,14 @@ func _ready() -> void:
 		b.pressed.connect(func() -> void: tab_selected.emit(id))
 		buttons[id] = b
 		row.add_child(b)
+		if on:
+			var marker := Control.new()
+			marker.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			marker.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+			marker.draw.connect(func() -> void:
+				var w := marker.size.x
+				marker.draw_line(Vector2(w * 0.5 - 22, 7), Vector2(w * 0.5 + 22, 7), UiPalette.MANGO_300, 4.0, true))
+			b.add_child(marker)
 		if dots.get(id, false):
 			var dot := Control.new()
 			dot.mouse_filter = Control.MOUSE_FILTER_IGNORE

@@ -23,6 +23,8 @@ var two_players := false
 
 var _top_bar: Control
 var _menu_button: Button
+var _emote_button: Button
+var _emote_menu: PanelContainer
 var _mode_chip: Control
 var _hint: PanelContainer
 var _hint_label: Label
@@ -59,6 +61,7 @@ func _ready() -> void:
 			Online.progress.refresh_quests()   # quest progress from this match
 			Online.progress.refresh_achievements())
 		oc.progress_received.connect(_on_progress)
+		oc.emote_received.connect(_on_emote)
 	var seats: Array = config.get("seats", [])
 	two_players = seats.size() == 2
 	for i in seats.size():
@@ -79,15 +82,28 @@ func _ready() -> void:
 func _build() -> void:
 	var seats: Array = config["seats"]
 	var colors: Array = seats.map(func(s: Dictionary) -> String: return s["color"])
+	var own_loadout := {
+		"dice": Online.cosmetics.equipped("dice"), "pawns": Online.cosmetics.equipped("pawns"),
+		"board": Online.cosmetics.equipped("board"), "frame": Online.cosmetics.equipped("frame"),
+		"effect": Online.cosmetics.equipped("effect"), "name": Online.cosmetics.equipped("name")}
+	var seat_loadouts := []
+	for i in seats.size():
+		var loadout: Dictionary = seats[i].get("cosmetics", {})
+		# Practice / older server snapshots have no visual payload.  Only the
+		# local cache is a fallback for my own look; other seats stay classic.
+		if loadout.is_empty() and i == local_seat:
+			loadout = own_loadout
+		seat_loadouts.append(loadout)
 	board_view = BoardView.new()
 	board_view.show_symbols = bool(Settings.get_value("color_symbols"))
+	board_view.theme_id = String((seat_loadouts[local_seat] as Dictionary).get("board", "board_classic"))
 	board_view.setup(BoardGeometry.default_board(), colors, seats[local_seat]["color"])
 	board_view.pawn_tapped.connect(_on_pawn_tapped)
 	add_child(board_view)
 	for i in seats.size():
 		var c: String = seats[i]["color"]
 		for k in 4:
-			var p := PawnSprite.new(c, k)
+			var p := PawnSprite.new(c, k, String((seat_loadouts[i] as Dictionary).get("pawns", "pawns_classic")))
 			board_view.add_child(p)
 			pawns["%s:%d" % [c, k]] = p
 			board_view.pawns["%s:%d" % [c, k]] = p
@@ -96,21 +112,42 @@ func _build() -> void:
 	_menu_button = UiKit.icon_button("menu", tr("MATCH_MENU"))
 	_menu_button.pressed.connect(_open_menu)
 	_top_bar.add_child(_menu_button)
+	_emote_button = UiKit.icon_button("chat", tr("MATCH_EMOTES"))
+	_emote_button.visible = online
+	_emote_button.pressed.connect(func() -> void: _emote_menu.visible = not _emote_menu.visible)
+	_top_bar.add_child(_emote_button)
 	_mode_chip = UiKit.chip(tr("MATCH_MODE_2P_ONLINE") if online else (tr("MATCH_MODE_2P") if two_players else tr("MATCH_MODE_4P")))
 	_top_bar.add_child(_mode_chip)
+	_emote_menu = PanelContainer.new()
+	_emote_menu.add_theme_stylebox_override("panel", UiTheme.glass_box(28))
+	var choices := GridContainer.new()
+	choices.columns = 2
+	choices.add_theme_constant_override("h_separation", UiTokens.S1)
+	choices.add_theme_constant_override("v_separation", UiTokens.S1)
+	for phrase: String in Cosmetics.phrases(_my_emote_set()):
+		var choice := UiKit.button(tr("EMOTE_" + phrase.to_upper()), "secondary", "s")
+		choice.pressed.connect(func() -> void: _send_emote(phrase))
+		choices.add_child(choice)
+	_emote_menu.add_child(choices)
+	_emote_menu.visible = false
+	_emote_menu.z_index = 300
+	add_child(_emote_menu)
 	for i in seats.size():
 		var corner := _corner_of(seats[i]["color"])
 		var card := PlayerCard.new()
-		card.setup(i, seats[i]["color"], seats[i]["name"], seats[i]["kind"] == "bot", corner == 1 or corner == 2, i == local_seat)
+		card.setup(i, seats[i]["color"], seats[i]["name"], seats[i]["kind"] == "bot", corner == 1 or corner == 2, i == local_seat,
+			seat_loadouts[i])
 		add_child(card)
 		cards[i] = card
 		var small := DiceView.new()
+		small.skin = String((seat_loadouts[i] as Dictionary).get("dice", "dice_classic"))
 		small.custom_minimum_size = Vector2(72, 72)
 		small.size = Vector2(72, 72)
 		small.visible = false
 		add_child(small)
 		card_dice[i] = small
 	dice = DiceView.new()
+	dice.skin = String((seat_loadouts[local_seat] as Dictionary).get("dice", "dice_classic"))
 	dice.size = Vector2(UiTokens.DICE_PAD, UiTokens.DICE_PAD)
 	dice.tapped.connect(_on_dice_tapped)
 	add_child(dice)
@@ -151,8 +188,12 @@ func _layout() -> void:
 	_top_bar.size = Vector2(w - UiTokens.EDGE * 2, UiTokens.ICON_BUTTON)
 	_menu_button.position = Vector2.ZERO
 	_menu_button.size = Vector2(UiTokens.ICON_BUTTON, UiTokens.ICON_BUTTON)
+	_emote_button.position = Vector2(_top_bar.size.x - UiTokens.ICON_BUTTON, 0)
+	_emote_button.size = Vector2(UiTokens.ICON_BUTTON, UiTokens.ICON_BUTTON)
 	_mode_chip.reset_size()
 	_mode_chip.position = Vector2((_top_bar.size.x - _mode_chip.size.x) * 0.5, (UiTokens.ICON_BUTTON - _mode_chip.size.y) * 0.5)
+	_emote_menu.reset_size()
+	_emote_menu.position = Vector2(_top_bar.position.x + _top_bar.size.x - _emote_menu.size.x, _top_bar.position.y + UiTokens.ICON_BUTTON + UiTokens.S1)
 	var card_h := 112.0
 	var dice_size := 150.0 if _compact else float(UiTokens.DICE_PAD)
 	var hint_h := 0.0 if _compact else 76.0
@@ -266,7 +307,9 @@ func _sync(state: Dictionary) -> void:
 		var color: String = seats[seat]["color"]
 		for m: Dictionary in state["legal"]:
 			board_view.selectable.append({"color": color, "pawn": int(m["pawn"])})
-			board_view.targets.append({"color": color, "step": int(m["to"])})
+			# A finish lane has one destination per pawn; keep this identity with
+			# the visual target instead of drawing every ring at pawn zero's slot.
+			board_view.targets.append({"color": color, "pawn": int(m["pawn"]), "step": int(m["to"])})
 			(pawns["%s:%d" % [color, int(m["pawn"])]] as PawnSprite).selectable = true
 	board_view.queue_redraw()
 	var name: String = seats[seat]["name"]
@@ -308,6 +351,28 @@ func _on_pawn_tapped(color: String, pawn: int) -> void:
 		controller.human_move(seat, pawn)
 
 
+func _my_emote_set() -> String:
+	var seats: Array = config.get("seats", [])
+	if local_seat >= 0 and local_seat < seats.size():
+		var loadout: Dictionary = seats[local_seat].get("cosmetics", {})
+		if not loadout.is_empty():
+			return String(loadout.get("emotes", "emotes_classic"))
+	return Online.cosmetics.equipped("emotes")
+
+
+func _send_emote(phrase: String) -> void:
+	_emote_menu.visible = false
+	if controller is OnlineMatchController:
+		(controller as OnlineMatchController).send_emote(phrase)
+
+
+func _on_emote(seat: int, emote_id: String) -> void:
+	var seats: Array = config.get("seats", [])
+	if seat < 0 or seat >= seats.size() or emote_id == "":
+		return
+	_show_toast("%s: %s" % [String(seats[seat].get("name", "")), tr("EMOTE_" + emote_id.to_upper())])
+
+
 # --- Events -> animation -----------------------------------------------------------
 
 func _on_applied(events: Array, state: Dictionary) -> void:
@@ -334,6 +399,7 @@ func _animate(events: Array) -> void:
 		match String(e["type"]):
 			"dice_rolled":
 				var value := int(e["value"])
+				dice.skin = String((config["seats"][seat].get("cosmetics", {}) as Dictionary).get("dice", Online.cosmetics.equipped("dice") if seat == local_seat else "dice_classic"))
 				if seats[seat]["kind"] == "human" and not controller.state()["players"][seat]["autopilot"]:
 					await dice.roll(value, 0.55 * k)
 				else:
@@ -376,7 +442,7 @@ func _animate(events: Array) -> void:
 			"player_left":
 				for i in 4:
 					var sp: PawnSprite = pawns["%s:%d" % [seats[seat]["color"], i]]
-					create_tween().tween_property(sp, "modulate:a", 0.0, 0.3)
+					create_tween().tween_property(sp, "modulate:a", 0.0, UiTokens.duration(UiTokens.T_BASE))
 			"autopilot_changed":
 				if e["on"]:
 					_show_toast(tr("MATCH_TOAST_AUTOPILOT") % seats[seat]["name"])
@@ -399,7 +465,7 @@ func _animate_move(e: Dictionary, k: float) -> void:
 		sprite.pop()
 	else:
 		await sprite.hop_along(points, UiTokens.STEP_HOP_MS / 1000.0 * k)
-	board_view.trail = {"color": color, "from": int(e["from"]), "to": int(e["to"])}
+	board_view.trail = {"color": color, "pawn": int(e["pawn"]), "from": int(e["from"]), "to": int(e["to"])}
 	board_view.queue_redraw()
 
 
@@ -441,9 +507,9 @@ func _run_toasts() -> void:
 		_toast.reset_size()
 		_toast.position.x = (size.x - _toast.size.x) * 0.5
 		var t := create_tween()
-		t.tween_property(_toast, "modulate:a", 1.0, 0.16)
+		t.tween_property(_toast, "modulate:a", 1.0, UiTokens.duration(UiTokens.T_FAST))
 		t.tween_interval(1.3 if _toast_queue.is_empty() else 0.7)
-		t.tween_property(_toast, "modulate:a", 0.0, 0.2)
+		t.tween_property(_toast, "modulate:a", 0.0, UiTokens.duration(UiTokens.T_FAST))
 		await t.finished
 	_toast.visible = false
 	_toast_busy = false
@@ -541,7 +607,7 @@ func _place_sheet(sheet: PanelContainer) -> void:
 	if not Settings.get_value("reduced_motion"):
 		var final_y := sheet.position.y
 		sheet.position.y = size.y
-		create_tween().tween_property(sheet, "position:y", final_y, 0.24).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
+		create_tween().tween_property(sheet, "position:y", final_y, UiTokens.duration(UiTokens.T_BASE)).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
 
 
 func _close_overlay(resume: bool = true) -> void:
@@ -660,8 +726,8 @@ func _show_result(state: Dictionary) -> void:
 		col.scale = Vector2(0.92, 0.92)
 		col.pivot_offset = Vector2(col.size.x * 0.5, 300)
 		var t := create_tween().set_parallel()
-		t.tween_property(col, "modulate:a", 1.0, 0.24)
-		t.tween_property(col, "scale", Vector2.ONE, 0.3).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		t.tween_property(col, "modulate:a", 1.0, UiTokens.duration(UiTokens.T_BASE))
+		t.tween_property(col, "scale", Vector2.ONE, UiTokens.duration(UiTokens.T_SLOW)).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 
 ## 1-based place of a seat in a ranks array (0 = not ranked). Online states come from

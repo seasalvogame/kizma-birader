@@ -68,13 +68,17 @@ static func spacer(vertical: bool = true) -> Control:
 ## Rounded "chip" (tag) with a label: glass on night, or a colour.
 static func chip(text: String, bg: Color = Color(0, 0, 0, 0.3), fg: Color = UiPalette.ON_NIGHT) -> PanelContainer:
 	var p := PanelContainer.new()
+	p.custom_minimum_size = Vector2(0, UiTokens.CHIP_H)
 	var box := StyleBoxFlat.new()
 	box.bg_color = bg
-	box.set_corner_radius_all(24)
+	box.set_corner_radius_all(UiTokens.CHIP_H / 2)
+	box.set_border_width_all(2)
+	box.border_color = Color(fg, 0.16)
 	box.content_margin_left = 18
 	box.content_margin_right = 18
-	box.content_margin_top = 4
-	box.content_margin_bottom = 4
+	box.content_margin_top = 2
+	box.content_margin_bottom = 2
+	box.anti_aliasing = true
 	p.add_theme_stylebox_override("panel", box)
 	var l := label(text, "MicroLabel", HORIZONTAL_ALIGNMENT_CENTER)
 	l.add_theme_color_override("font_color", fg)

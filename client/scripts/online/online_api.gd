@@ -1,8 +1,9 @@
 class_name OnlineApi
 extends Node
 ## Supabase Data API (PostgREST) calls with the player's own JWT and the
-## publishable key. Reads are limited by RLS to the player's own data; the only
-## write is the update_my_profile RPC (own row, validated in the database).
+## publishable key. Reads are limited by RLS to the player's own data; writes
+## go only through narrowly scoped RPCs that validate the acting player in the
+## database (profile, and Phase 7 cosmetics).
 ## Result: {ok, status, data, error} — error is a short code for the UI.
 
 var session: OnlineSession

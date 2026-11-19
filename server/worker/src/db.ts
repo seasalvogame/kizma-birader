@@ -84,15 +84,23 @@ export async function recordMatch(env: DbEnv, r: MatchRecordInput): Promise<{ ap
 }
 
 /** Profile names of players (for the matchmaker); missing ids are simply absent. */
-export interface PlayerCard { name: string; tag: number; avatar: string }
+export interface PlayerCard { name: string; tag: number; avatar: string; cosmetics: Record<string, string>; emotes: string[] }
 
 /** Profile cards (name, tag, avatar) of up to 4 players. */
 export async function playerCards(env: DbEnv, ids: string[]): Promise<Map<string, PlayerCard>> {
   return withDb(env, async (sql) => {
     // array as a Postgres literal: without fetched types postgres.js cannot serialise uuid[] itself
     const uuids = ids.filter((id) => /^[0-9a-f-]{36}$/i.test(id));
-    const rows = await sql`select user_id, display_name, tag, avatar_id from game.player_names(${"{" + uuids.join(",") + "}"}::uuid[])`;
-    return new Map(rows.map((r) => [String(r.user_id), { name: String(r.display_name), tag: Number(r.tag), avatar: String(r.avatar_id) }]));
+    const rows = await sql`
+      select n.user_id, n.display_name, n.tag, n.avatar_id, coalesce(c.cosmetics, '{}'::jsonb) as cosmetics,
+             coalesce(c.emote_ids, '[]'::jsonb) as emote_ids
+        from game.player_names(${"{" + uuids.join(",") + "}"}::uuid[]) n
+        left join game.player_match_cosmetics(${"{" + uuids.join(",") + "}"}::uuid[]) c using (user_id)`;
+    return new Map(rows.map((r) => [String(r.user_id), {
+      name: String(r.display_name), tag: Number(r.tag), avatar: String(r.avatar_id),
+      cosmetics: (typeof r.cosmetics === "string" ? JSON.parse(r.cosmetics) : r.cosmetics ?? {}) as Record<string, string>,
+      emotes: (typeof r.emote_ids === "string" ? JSON.parse(r.emote_ids) : r.emote_ids ?? []) as string[],
+    }]));
   });
 }
 

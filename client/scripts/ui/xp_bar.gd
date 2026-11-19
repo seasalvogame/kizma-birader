@@ -8,6 +8,7 @@ var xp_in_level := 0
 var xp_for_next := 100
 var compact := false          # home screen: thinner, no texts below
 var _fill := 0.0
+var _progress_tween: Tween
 
 
 func _init() -> void:
@@ -24,10 +25,17 @@ func set_progress(p_level: int, in_level: int, for_next: int) -> void:
 
 
 func animate_to(target: float) -> void:
-	var tw := create_tween()
-	tw.tween_method(func(v: float) -> void:
+	var destination := clampf(target, 0.0, 1.0)
+	if _progress_tween != null:
+		_progress_tween.kill()
+	if Settings.get_value("reduced_motion"):
+		_fill = destination
+		queue_redraw()
+		return
+	_progress_tween = create_tween()
+	_progress_tween.tween_method(func(v: float) -> void:
 		_fill = v
-		queue_redraw(), _fill, clampf(target, 0.0, 1.0), 0.6).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+		queue_redraw(), _fill, destination, UiTokens.duration(UiTokens.T_BASE)).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 
 
 func _draw() -> void:

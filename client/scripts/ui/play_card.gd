@@ -42,6 +42,8 @@ func _draw() -> void:
 	var face := StyleBoxFlat.new()
 	face.bg_color = base
 	face.set_corner_radius_all(r)
+	face.set_border_width_all(3)
+	face.border_color = Color(light, 0.46)
 	draw_style_box(face, Rect2(0, y, size.x, h))
 	# soft top light: stacked rounded bands fading out towards the middle
 	var bands := 10

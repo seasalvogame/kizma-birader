@@ -13,9 +13,11 @@ var status_label: Label
 var _dots: Control
 var _finished := 0
 var _bot_chip: Control
+var _turn_tween: Tween
+var _turn_active := false
 
 
-func setup(p_seat: int, p_color: String, display_name: String, bot: bool, mirrored: bool, big: bool) -> void:
+func setup(p_seat: int, p_color: String, display_name: String, bot: bool, mirrored: bool, big: bool, cosmetics: Dictionary = {}) -> void:
 	seat = p_seat
 	color = p_color
 	add_theme_constant_override("separation", UiTokens.S2)
@@ -24,11 +26,15 @@ func setup(p_seat: int, p_color: String, display_name: String, bot: bool, mirror
 	var s := UiTokens.AVATAR_M if big else 92
 	avatar.custom_minimum_size = Vector2(s, s)
 	avatar.setup(display_name, color, bot)
+	if not bot:
+		avatar.set_cosmetics(String(cosmetics.get("frame", "frame_none")), String(cosmetics.get("effect", "effect_none")))
 	var text := UiKit.vbox(2)
 	text.alignment = BoxContainer.ALIGNMENT_CENTER
 	var name_row := UiKit.hbox(UiTokens.S1)
 	name_row.alignment = BoxContainer.ALIGNMENT_END if mirrored else BoxContainer.ALIGNMENT_BEGIN
 	name_label = UiKit.label(display_name, "H3Label")
+	if not bot:
+		Cosmetics.style_name(name_label, String(cosmetics.get("name", "name_plain")))
 	if big:
 		name_label.add_theme_font_size_override("font_size", UiTokens.H3 + 2)
 	# Long names shorten with an ellipsis instead of widening the card.
@@ -89,10 +95,19 @@ func set_status(text: String, warn: bool = false) -> void:
 func set_turn(active: bool, progress: float = -1.0, urgent: bool = false) -> void:
 	avatar.progress = progress if active else -1.0
 	avatar.urgent = urgent
-	var target := Vector2(1.08, 1.08) if active else Vector2.ONE
+	if active == _turn_active:
+		return
+	_turn_active = active
+	var target := Vector2(1.04, 1.04) if active else Vector2.ONE
 	avatar.pivot_offset = avatar.size * 0.5
+	if _turn_tween != null:
+		_turn_tween.kill()
+	if Settings.get_value("reduced_motion"):
+		avatar.scale = target
+		return
 	if avatar.scale != target:
-		create_tween().tween_property(avatar, "scale", target, 0.16)
+		_turn_tween = create_tween()
+		_turn_tween.tween_property(avatar, "scale", target, UiTokens.duration(UiTokens.T_FAST)).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 
 
 func set_out(rank: int, left: bool) -> void:

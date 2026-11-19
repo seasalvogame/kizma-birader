@@ -56,8 +56,14 @@ func handle_back() -> bool:
 
 
 func _process(delta: float) -> void:
-	_phase += delta
-	_dice.queue_redraw()
+	# The searching state remains explicit in copy and elapsed time.  The dice
+	# becomes a stable status mark when the player asked for reduced motion.
+	if not Settings.get_value("reduced_motion"):
+		_phase += delta
+		_dice.queue_redraw()
+	elif _phase != 0.0:
+		_phase = 0.0
+		_dice.queue_redraw()
 	if _searching:
 		var s := (Time.get_ticks_msec() - _started) / 1000
 		_elapsed.text = tr("ONLINE_ELAPSED") % ("%d:%02d" % [s / 60, s % 60])

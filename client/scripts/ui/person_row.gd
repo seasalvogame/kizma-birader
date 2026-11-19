@@ -27,6 +27,9 @@ func _init() -> void:
 
 func _ready() -> void:
 	_face.set_corner_radius_all(UiTokens.R_M)
+	_face.border_width_top = 2
+	_face.border_width_left = 2
+	_face.border_width_right = 2
 	_face.border_width_bottom = 6
 	_face.border_color = UiPalette.CREAM_300
 	var margin := MarginContainer.new()
@@ -90,6 +93,7 @@ func _draw() -> void:
 	var down := is_pressed() or get_draw_mode() == DRAW_PRESSED
 	_face.bg_color = UiPalette.CREAM_200 if down else UiPalette.CREAM_100
 	draw_style_box(_face, Rect2(Vector2.ZERO, size))
+	draw_line(Vector2(UiTokens.R_M, 3), Vector2(size.x - UiTokens.R_M, 3), Color(UiPalette.CREAM_HIGHLIGHT, 0.82), 2.0, true)
 
 
 static func status_color(s: String) -> Color:

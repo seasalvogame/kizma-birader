@@ -15,6 +15,9 @@ var progress := -1.0:   # 0..1 time left; < 0 = no timer ring
 		queue_redraw()
 var urgent := false
 var rank := 0           # > 0: finished, show the place
+var frame_id := "frame_none"
+var effect_id := "effect_none"
+var _cosmetic_phase := 0.0
 
 var _fill_top := Color("#ffb36b")
 var _fill_bottom := Color("#ff7a45")
@@ -48,10 +51,23 @@ func setup(name: String, color: String, bot: bool) -> void:
 	queue_redraw()
 
 
+func set_cosmetics(p_frame: String, p_effect: String) -> void:
+	frame_id = p_frame
+	effect_id = p_effect
+	queue_redraw()
+
+
+func _process(delta: float) -> void:
+	if (frame_id != "frame_none" or effect_id != "effect_none") and not Settings.get_value("reduced_motion"):
+		_cosmetic_phase += delta
+		queue_redraw()
+
+
 func _draw() -> void:
 	var c := size * 0.5
 	var r := minf(size.x, size.y) * 0.5 - 8.0
 	var a := 0.45 if dim else 1.0
+	Cosmetics.draw_effect(self, effect_id, c, r, _cosmetic_phase)
 	if progress >= 0.0:
 		draw_arc(c, r + 7, 0, TAU, 48, Color(1, 1, 1, 0.12), 7, true)
 		var col := UiPalette.DANGER_500 if urgent else UiPalette.MANGO_500
@@ -82,3 +98,4 @@ func _draw() -> void:
 		var txt := str(rank)
 		var w := font.get_string_size(txt, HORIZONTAL_ALIGNMENT_CENTER, -1, fs).x
 		draw_string(font, b + Vector2(-w * 0.5, fs * 0.36), txt, HORIZONTAL_ALIGNMENT_LEFT, -1, fs, Color("#4a2d00"))
+	Cosmetics.draw_frame(self, frame_id, c, r, _cosmetic_phase)

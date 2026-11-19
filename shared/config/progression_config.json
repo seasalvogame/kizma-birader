@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "xp": {
     "quick_2p": [
       40,
@@ -38,12 +38,32 @@
       {
         "kind": "badge",
         "id": "level_10"
+      },
+      {
+        "kind": "frame",
+        "id": "frame_star"
+      }
+    ],
+    "15": [
+      {
+        "kind": "dice",
+        "id": "dice_master"
+      }
+    ],
+    "20": [
+      {
+        "kind": "pawns",
+        "id": "pawns_star"
       }
     ],
     "25": [
       {
         "kind": "badge",
         "id": "level_25"
+      },
+      {
+        "kind": "board",
+        "id": "board_night"
       }
     ],
     "50": [

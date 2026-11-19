@@ -60,6 +60,7 @@ func _show_state(icon: String, text: String, action: String, spin: bool) -> void
 	_button.text = action
 	_button.visible = action != ""
 	_spin = spin
+	_phase = 0.0
 	_icon.rotation = 0.0
 	_icon.texture = _dice if spin else (UiTheme.icon(icon) if icon != "" else null)
 	_icon.visible = _icon.texture != null
@@ -67,6 +68,8 @@ func _show_state(icon: String, text: String, action: String, spin: bool) -> void
 
 
 func _process(delta: float) -> void:
-	if _spin and visible:
+	if _spin and visible and not Settings.get_value("reduced_motion"):
 		_phase += delta
 		_icon.rotation = _phase * 3.0
+	elif _icon.rotation != 0.0:
+		_icon.rotation = 0.0

@@ -9,7 +9,7 @@
 //   node test/social_room_test.mjs <supabase-project-ref> --remote https://...  (Cloudflare + Supabase)
 
 import { execFileSync, spawn } from "node:child_process";
-import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join as joinPath, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -39,9 +39,16 @@ const check = (cond, label) => {
 
 // ------------------------------------------------------------ server
 let devProc = null;
+// Do not use the repository's default .wrangler/state: local Durable Object
+// state must not leak from one social-room test process into the next.
+let devStateDir = null;
+function localStateDir() {
+  if (!devStateDir) devStateDir = mkdtempSync(joinPath(tmpdir(), "kb-wrangler-state-"));
+  return devStateDir;
+}
 async function startServer() {
   if (!REMOTE) {
-    devProc = spawn(npx, ["wrangler", "dev", "--port", String(PORT), "--ip", "127.0.0.1", "--var", "DB_DISABLED:true", "--var", "BOT_DELAY_MS:20"],
+    devProc = spawn(npx, ["wrangler", "dev", "--port", String(PORT), "--ip", "127.0.0.1", "--persist-to", localStateDir(), "--var", "DB_DISABLED:true", "--var", "BOT_DELAY_MS:20"],
       { cwd: workerDir, shell: WIN, stdio: "ignore" });
   }
   for (let i = 0; i < 180; i++) {
@@ -50,10 +57,22 @@ async function startServer() {
   }
   throw new Error("server not reachable");
 }
-function stopServer() {
-  if (!devProc) return;
-  if (WIN) { try { execFileSync("taskkill", ["/PID", String(devProc.pid), "/T", "/F"], { stdio: "ignore" }); } catch { /* gone */ } }
-  else devProc.kill("SIGTERM");
+async function stopServer() {
+  if (devProc) {
+    if (WIN) { try { execFileSync("taskkill", ["/PID", String(devProc.pid), "/T", "/F"], { stdio: "ignore" }); } catch { /* gone */ } }
+    else devProc.kill("SIGTERM");
+    devProc = null;
+    for (let i = 0; i < 40; i++) {
+      try { await fetch(`${BASE}/v1/health`); await sleep(250); } catch { break; }
+    }
+  }
+  if (devStateDir) {
+    const stateDir = devStateDir;
+    devStateDir = null;
+    rmSync(stateDir, { recursive: true, force: true, maxRetries: 10, retryDelay: 200 });
+    if (existsSync(stateDir)) throw new Error(`local Durable Object state was not removed: ${stateDir}`);
+    console.log("cleanup: local Durable Object state removed");
+  }
 }
 
 // ---------------------------------------------------------- supabase
@@ -368,6 +387,6 @@ try {
   console.log(`SOCIAL_ROOM_PASSED ${passed}`);
 } finally {
   for (const c of clients) c.close();
-  stopServer();
+  await stopServer();
   try { cleanup(); } catch (e) { console.log("cleanup failed:", e.message); }
 }

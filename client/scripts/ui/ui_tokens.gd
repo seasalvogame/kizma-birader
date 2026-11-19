@@ -24,7 +24,9 @@ const R_XL := 56
 const TOUCH_MIN := 88
 const BUTTON_L := 112
 const BUTTON_XL := 128
-const BUTTON_S := 80
+# Small actions are still full touch targets. Their visual label can be
+# compact, but the hit area must not fall below the 44 pt mobile minimum.
+const BUTTON_S := TOUCH_MIN
 const ICON_BUTTON := 88
 const AVATAR_L := 128
 const AVATAR_M := 104
@@ -45,6 +47,10 @@ const LABEL := 26
 const CAPTION := 24
 const MICRO := 21
 
+# Informational pills are not necessarily tappable, but a stable minimum
+# height gives rewards, rarity and status labels a cleaner shared rhythm.
+const CHIP_H := 52
+
 # Motion (ms; scaled by Settings.anim_scale())
 const T_INSTANT := 90
 const T_FAST := 160
@@ -54,3 +60,9 @@ const T_CELEBRATE := 900
 const STEP_HOP_MS := 90
 const DICE_MIN_MS := 350
 const DICE_MAX_MS := 850
+
+
+## Resolves a design-token duration once so the player's fast-animation
+## preference reaches navigation, feedback, and game-object motion alike.
+static func duration(ms: float) -> float:
+	return ms / 1000.0 * Settings.anim_scale()

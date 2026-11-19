@@ -10,7 +10,7 @@
 
 import { DurableObject } from "cloudflare:workers";
 import { verifySupabaseJwt } from "./auth.js";
-import { dbConfigured, playerNames } from "./db.js";
+import { dbConfigured, playerCards } from "./db.js";
 import type { Env, SeatInfo } from "./match_room.js";
 import { ClientMessage, parseClientMessage, ProtocolError } from "./protocol.js";
 
@@ -113,13 +113,15 @@ export class Matchmaker extends DurableObject<Env> {
       const colors = pick(PAIRS);
       const players = pick([[p1, p2], [p2, p1]] as const);
       // Names from the players' profiles (database), not from the client; client names only as a fallback.
-      let names = new Map<string, string>();
+      let cards = new Map<string, { name: string; cosmetics: Record<string, string>; emotes: string[] }>();
       if (dbConfigured(this.env)) {
-        try { names = await playerNames(this.env, [p1.a!.userId!, p2.a!.userId!]); } catch { /* fallback */ }
+        try { cards = await playerCards(this.env, [p1.a!.userId!, p2.a!.userId!]); } catch { /* fallback */ }
       }
       const seats: SeatInfo[] = colors.map((color, seat) => ({
         seat, color, user_id: players[seat]!.a!.userId!, is_bot: false,
-        name: names.get(players[seat]!.a!.userId!) ?? players[seat]!.a!.name ?? "Oyuncu",
+        name: cards.get(players[seat]!.a!.userId!)?.name ?? players[seat]!.a!.name ?? "Oyuncu",
+        cosmetics: cards.get(players[seat]!.a!.userId!)?.cosmetics ?? {},
+        emotes: cards.get(players[seat]!.a!.userId!)?.emotes ?? ["hello", "gg", "go", "wow"],
       }));
       const id = this.env.MATCH_ROOM.newUniqueId();
       const res = await this.env.MATCH_ROOM.get(id).fetch("https://match/init", {

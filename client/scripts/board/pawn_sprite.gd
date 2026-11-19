@@ -1,11 +1,13 @@
 class_name PawnSprite
 extends Node2D
-## One pawn (UI_UX_DESIGN_SYSTEM §7.2): the colour's SVG sprite, a pulsing
-## halo when selectable, and the movement animations (hop cell by cell,
-## fly home when captured, shrink into the goal). Position = the cell centre.
+## One pawn (UI_UX_DESIGN_SYSTEM §7.2): a cosmetic sprite, a readable player
+## symbol, a pulsing halo when selectable, and the movement animations (hop
+## cell by cell, fly home when captured, shrink into the goal). Position =
+## the cell centre.
 
 var color := "red"
 var index := 0
+var skin := "pawns_classic"
 var step := -1
 var cell_size := 44.0:
 	set(v):
@@ -19,29 +21,40 @@ var selectable := false:
 		_update_halo()
 
 var _sprite: Sprite2D
+var _mark: Node2D
 var _halo_phase := 0.0
 var _halo_tween: Tween
 var _goal_scale := 1.0
 
 
-func _init(p_color: String = "red", p_index: int = 0) -> void:
+func _init(p_color: String = "red", p_index: int = 0, p_skin: String = "pawns_classic") -> void:
 	color = p_color
 	index = p_index
+	skin = p_skin
 
 
 func _ready() -> void:
 	_sprite = Sprite2D.new()
-	_sprite.texture = load("res://assets/pawns/pawn_%s.svg" % color)
+	_sprite.texture = Cosmetics.pawn_texture(skin, color)
+	_sprite.z_index = 1
 	add_child(_sprite)
+	_mark = Node2D.new()
+	_mark.z_index = 2
+	_mark.draw.connect(_draw_mark)
+	add_child(_mark)
 	_apply_scale()
 
 
 func _apply_scale() -> void:
 	if _sprite == null:
 		return
-	# The SVG is 128 px for a 128 px "cell" with margins: one cell = 100 SVG units.
-	var s := cell_size / 100.0 * _goal_scale
+	# Both the 128 px SVG cosmetics and the 512 px painted PNGs are framed to
+	# the same visual footprint, so texture resolution never changes gameplay.
+	var source_size := maxf(_sprite.texture.get_size().x, _sprite.texture.get_size().y)
+	var s := cell_size * 1.28 / maxf(source_size, 1.0) * _goal_scale
 	_sprite.scale = Vector2(s, s)
+	if _mark != null:
+		_mark.queue_redraw()
 	queue_redraw()
 
 
@@ -59,6 +72,27 @@ func _draw() -> void:
 	draw_arc(Vector2(0, cell_size * 0.05), cell_size * 0.56, 0, TAU, 40, Color(1, 1, 1, 0.95), cell_size * 0.08, true)
 
 
+## A compact medallion keeps the player symbol recognisable even with a
+## detailed PNG skin; colour is never the only cue on the board.
+func _draw_mark() -> void:
+	var r := cell_size * 0.18 * _goal_scale
+	if r <= 0.0:
+		return
+	var p := Vector2(0, cell_size * 0.02 * _goal_scale)
+	_mark.draw_circle(p, r, Color(UiPalette.CREAM_50, 0.94))
+	_mark.draw_arc(p, r, 0, TAU, 28, UiPalette.player(color, "dark"), maxf(1.5, cell_size * 0.045), true)
+	var symbol_r := r * 0.54
+	match String(UiPalette.PLAYER[color]["symbol"]):
+		"triangle":
+			_mark.draw_colored_polygon(PackedVector2Array([p + Vector2(0, -symbol_r), p + Vector2(symbol_r * 0.95, symbol_r * 0.7), p + Vector2(-symbol_r * 0.95, symbol_r * 0.7)]), UiPalette.player(color, "dark"))
+		"circle":
+			_mark.draw_circle(p, symbol_r * 0.82, UiPalette.player(color, "dark"))
+		"square":
+			_mark.draw_rect(Rect2(p - Vector2(symbol_r, symbol_r) * 0.72, Vector2(symbol_r, symbol_r) * 1.44), UiPalette.player(color, "dark"))
+		_:
+			_mark.draw_colored_polygon(PackedVector2Array([p + Vector2(0, -symbol_r), p + Vector2(symbol_r, 0), p + Vector2(0, symbol_r), p + Vector2(-symbol_r, 0)]), UiPalette.player(color, "dark"))
+
+
 func _update_halo() -> void:
 	if _halo_tween != null:
 		_halo_tween.kill()
@@ -73,6 +107,10 @@ func _update_halo() -> void:
 
 ## Hops through `points` (one per cell), ~90 ms per cell.
 func hop_along(points: Array[Vector2], per_step: float) -> void:
+	if Settings.get_value("reduced_motion"):
+		if not points.is_empty():
+			position = points.back()
+		return
 	var t := create_tween()
 	var prev := position
 	for p: Vector2 in points:
@@ -87,6 +125,9 @@ func _hop(k: float, a: Vector2, b: Vector2) -> void:
 
 ## Flies home on an arc (captured).
 func fly_to(target: Vector2, duration: float) -> void:
+	if Settings.get_value("reduced_motion"):
+		position = target
+		return
 	var from := position
 	var t := create_tween()
 	t.tween_method(func(k: float) -> void:
@@ -96,6 +137,9 @@ func fly_to(target: Vector2, duration: float) -> void:
 
 
 func pop() -> void:
+	if Settings.get_value("reduced_motion"):
+		scale = Vector2.ONE
+		return
 	var t := create_tween()
 	t.tween_property(self, "scale", Vector2(1.25, 1.25), 0.09)
 	t.tween_property(self, "scale", Vector2.ONE, 0.16).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)

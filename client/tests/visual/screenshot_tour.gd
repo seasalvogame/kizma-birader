@@ -78,6 +78,17 @@ func _ready() -> void:
 	screen.controller.human_roll(0)
 	await _wait(1.5)
 	await _shot("05_match_4p_select")
+	# A non-zero pawn index in the finish lane proves that the target ring uses
+	# the selected pawn's own goal slot (rather than always drawing pawn zero).
+	var finish_target := screen.controller.state().duplicate(true)
+	finish_target["pawns"]["red"] = [56, 56, 55, -1]
+	finish_target["turn"] = {"seat": 0, "phase": "move", "dice": 1, "sixes": 0, "turn_id": 41}
+	finish_target["legal"] = [{"pawn": 2, "to": 56}]
+	finish_target["version"] = 81
+	screen.controller.session.state = finish_target
+	screen._sync(finish_target)
+	await _frames(5)
+	await _shot("05b_finish_target")
 	screen._open_menu()
 	await _wait(0.6)
 	await _shot("06_menu")

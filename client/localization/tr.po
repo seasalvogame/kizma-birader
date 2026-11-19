@@ -75,6 +75,9 @@ msgstr "BOT"
 msgid "MATCH_MENU"
 msgstr "Menü"
 
+msgid "MATCH_EMOTES"
+msgstr "İfadeler"
+
 msgid "MATCH_MODE_2P"
 msgstr "2 Kişi · Klasik · Pratik"
 
@@ -1497,6 +1500,21 @@ msgstr "Koleksiyon yükleniyor…"
 msgid "COLLECTION_EMPTY"
 msgstr "Bu kategoride henüz ürünün yok."
 
+msgid "STORE_TITLE"
+msgstr "Kozmetik Mağazası"
+
+msgid "STORE_SUBTITLE"
+msgstr "Görünümünü değiştir; oyun dengesi aynı kalır."
+
+msgid "STORE_LOADING"
+msgstr "Mağaza yükleniyor…"
+
+msgid "STORE_ALL"
+msgstr "Tümü"
+
+msgid "STORE_EMPTY"
+msgstr "Bu bölümde satın alınacak yeni ürün yok."
+
 msgid "COS_DETAIL_TITLE"
 msgstr "Ürün"
 
@@ -1505,6 +1523,30 @@ msgstr "Bu ürün bulunamadı."
 
 msgid "COS_OWNED"
 msgstr "Sende var"
+
+msgid "COS_EQUIP"
+msgstr "KUŞAN"
+
+msgid "COS_EQUIPPED"
+msgstr "KUŞANILDI"
+
+msgid "COS_BUY_FOR"
+msgstr "%d %s KARŞILIĞI AL"
+
+msgid "COS_ERR_FUNDS"
+msgstr "Yeterli bakiyen yok."
+
+msgid "COS_ERR_OWNED"
+msgstr "Bu ürün zaten sende var."
+
+msgid "COS_ERR_DEBT"
+msgstr "Açık borç varken mağaza kullanılamaz."
+
+msgid "COS_ERR_CLOSED"
+msgstr "Mağaza şu anda kapalı."
+
+msgid "COS_ERR_NOT_OWNED"
+msgstr "Önce bu ürünü edinmelisin."
 
 msgid "COS_NO_EFFECT"
 msgstr "Kozmetikler yalnızca görünümü değiştirir; zar, hamle ve kazanma şansı aynı kalır."

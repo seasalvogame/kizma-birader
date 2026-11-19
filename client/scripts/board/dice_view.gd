@@ -7,6 +7,13 @@ extends Control
 signal tapped
 
 var value := 6
+var skin := "dice_classic":
+	set(v):
+		skin = v
+		_faces.clear()
+		if is_node_ready():
+			_load_faces()
+		queue_redraw()
 var active := false:
 	set(v):
 		active = v
@@ -21,11 +28,15 @@ var _pulse_tween: Tween
 
 
 func _ready() -> void:
-	for i in range(1, 7):
-		_faces.append(load("res://assets/dice/dice_%d.svg" % i))
+	_load_faces()
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	pivot_offset = size * 0.5
 	resized.connect(func() -> void: pivot_offset = size * 0.5)
+
+
+func _load_faces() -> void:
+	for i in range(1, 7):
+		_faces.append(Cosmetics.dice_face(skin, i))
 
 
 func set_active(on: bool) -> void:
@@ -54,15 +65,26 @@ func _draw() -> void:
 		box.shadow_size = int(20 + 10 * p)
 		box.anti_aliasing = true
 		draw_style_box(box, r)
-	var face_size := size * 0.72
+	# An inactive die remains readable but is no longer mistaken for the next
+	# action.  Bright paper and the mango pad belong exclusively to "roll now".
+	var face_size := size * (0.72 if active else 0.62)
+	var face_tint := Color.WHITE if active else Color(0.72, 0.67, 0.78, 0.82)
 	var center := size * 0.5
 	draw_set_transform(center, _spin, Vector2.ONE)
-	draw_texture_rect(_faces[clampi(value, 1, 6) - 1], Rect2(-face_size * 0.5, face_size), false)
+	draw_texture_rect(_faces[clampi(value, 1, 6) - 1], Rect2(-face_size * 0.5, face_size), false, face_tint)
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 
 
 ## Spins with random faces, then shows `result`. Duration in seconds.
 func roll(result: int, duration: float) -> void:
+	# A confirmed outcome still appears, but Reduce Motion never spins, wobbles,
+	# or bounces the die.  Callers can keep awaiting this function unchanged.
+	if Settings.get_value("reduced_motion"):
+		value = result
+		_spin = 0.0
+		_rolling = false
+		queue_redraw()
+		return
 	_rolling = true
 	var t := create_tween()
 	var rng := RandomNumberGenerator.new()

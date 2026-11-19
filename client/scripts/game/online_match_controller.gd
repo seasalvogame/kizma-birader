@@ -18,6 +18,7 @@ signal fatal(code: String)
 signal recorded(match_id: String)
 ## XP / level gained by this player in the recorded match.
 signal progress_received(progress: Dictionary)
+signal emote_received(seat: int, emote_id: String)
 
 var conn: OnlineMatchConnection
 var local_seat := 0
@@ -46,6 +47,7 @@ func start(config: Dictionary, _dice: DiceSource = null) -> bool:
 	conn.fatal.connect(func(code: String) -> void: fatal.emit(code))
 	conn.recorded.connect(func(id: String) -> void: recorded.emit(id))
 	conn.progress_received.connect(func(pr: Dictionary) -> void: progress_received.emit(pr))
+	conn.emote_received.connect(func(seat: int, emote_id: String) -> void: emote_received.emit(seat, emote_id))
 	_busy = false
 	_schedule()
 	return true
@@ -85,6 +87,13 @@ func leave(_seat: int) -> Dictionary:
 	if conn != null:
 		conn.send_action("action.leave", {})
 	return {"ok": true}
+
+
+func send_emote(emote_id: String) -> Dictionary:
+	if conn == null:
+		return {"ok": false, "error": "OFFLINE"}
+	var id := conn.send_action("action.emote", {"emoteId": emote_id})
+	return {"ok": id != "", "pending": id != ""}
 
 
 func view_done() -> void:

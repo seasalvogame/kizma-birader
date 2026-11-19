@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-19T00:00:00+03:00",
+  "title": "Design System: Kızma Birader",
+  "extensions": {
+    "colorMeta": {
+      "night-deep": {"role": "neutral", "displayName": "Table Edge", "canonical": "#140e2b", "tonalRamp": ["#140e2b", "#1d1438", "#2a1d52", "#3a2a6b", "#5b4c88", "#8f83b5", "#c6bedc", "#f6efff"]},
+      "paper": {"role": "neutral", "displayName": "Warm Paper", "canonical": "#fffaf2", "tonalRamp": ["#2a1f3d", "#4b3f62", "#7a6d91", "#b9add6", "#e8d3b4", "#f5e6cf", "#fff3e2", "#fffaf2"]},
+      "mango": {"role": "primary", "displayName": "Mango Signal", "canonical": "#ff9a1f", "tonalRamp": ["#3d1c00", "#7a3d00", "#c25f00", "#ff9a1f", "#ffc35a", "#ffe0a1", "#fff0d0", "#fffaf2"]}
+    },
+    "typographyMeta": {
+      "display": {"displayName": "Playful Display", "purpose": "Outcomes, game modes, and pivotal in-game counts."},
+      "body": {"displayName": "Friendly Utility", "purpose": "Instructions, player context, and all supporting copy."}
+    },
+    "shadows": [
+      {"name": "paper-lift", "value": "0 9px 16px rgba(10,4,30,0.42)", "purpose": "Paper card elevation from the night table."},
+      {"name": "glass-lift", "value": "0 4px 8px rgba(6,3,20,0.26)", "purpose": "Subtle separation for night-context panels."}
+    ],
+    "motion": [
+      {"name": "press", "value": "90ms", "purpose": "Tactile press sink."},
+      {"name": "transition", "value": "240ms cubic-out", "purpose": "Route and panel entry when reduced motion is off."},
+      {"name": "celebrate", "value": "900ms", "purpose": "Skippable positive game outcome only."}
+    ],
+    "breakpoints": [
+      {"name": "portrait-compact", "value": "height / width < 1.9", "purpose": "Preserve board scale by hiding the auxiliary turn hint."}
+    ]
+  },
+  "components": [],
+  "narrative": {
+    "northStar": "The Lacquered Evening Table",
+    "overview": "A composed physical game night on deep plum, warm paper, and controlled lamp light.",
+    "keyCharacteristics": ["Sparse night field", "Tactile paper and glass", "Scarce mango action", "Readable physical game objects"],
+    "rules": [{"name": "Scarce Accent Rule", "body": "Mango is reserved for the next important action.", "section": "colors"}, {"name": "One-Shout Rule", "body": "Each viewport has one display focal point.", "section": "typography"}],
+    "dos": ["Do preserve symbol cues for player identity.", "Do verify via real Godot captures."],
+    "donts": ["Don't use uncontrolled glow.", "Don't compromise board readability for decoration."]
+  }
+}

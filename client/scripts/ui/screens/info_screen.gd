@@ -1,13 +1,12 @@
 class_name InfoScreen
 extends AppScreen
 ## Honest "coming soon" screen for features that need the online backend
-## (friends, store, quests, ranking, achievements, online match, private
+## (friends, quests, ranking, achievements, online match, private
 ## room). It says what the feature will be and what can be played now; it
 ## never shows fake data. Main tabs keep the bottom bar.
 
 const KINDS := {
 	"friends": {"icon": "friends", "tab": "friends"},
-	"store": {"icon": "bag", "tab": "store"},
 	"quests": {"icon": "quest", "tab": "quests"},
 	"ranking": {"icon": "podium", "tab": "ranking"},
 	"achievements": {"icon": "medal", "tab": ""},

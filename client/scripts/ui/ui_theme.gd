@@ -140,11 +140,16 @@ static func card_box(radius: int = UiTokens.R_XL, sheet: bool = false) -> StyleB
 	var b := StyleBoxFlat.new()
 	b.bg_color = UiPalette.CREAM_50
 	b.set_corner_radius_all(radius)
+	# A light rim separates a card from the night surface without making it
+	# metallic. The heavier warm lower edge keeps the tactile card language.
+	b.border_width_top = 2
+	b.border_width_left = 2
+	b.border_width_right = 2
 	b.border_width_bottom = 12
 	b.border_color = UiPalette.CREAM_300
-	b.shadow_color = Color(0.04, 0.016, 0.12, 0.45)
-	b.shadow_size = 30
-	b.shadow_offset = Vector2(0, 16)
+	b.shadow_color = UiPalette.CREAM_SHADOW
+	b.shadow_size = 32
+	b.shadow_offset = Vector2(0, 18)
 	b.set_content_margin_all(UiTokens.S4)
 	b.content_margin_bottom = UiTokens.S4 + 12
 	b.anti_aliasing = true
@@ -163,6 +168,9 @@ static func glass_box(radius: int = UiTokens.R_L) -> StyleBoxFlat:
 	b.set_border_width_all(3)
 	b.set_corner_radius_all(radius)
 	b.set_content_margin_all(UiTokens.S3)
+	b.shadow_color = UiPalette.GLASS_SHADOW
+	b.shadow_size = 16
+	b.shadow_offset = Vector2(0, 8)
 	b.anti_aliasing = true
 	return b
 

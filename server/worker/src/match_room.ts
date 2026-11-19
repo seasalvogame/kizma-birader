@@ -44,6 +44,10 @@ export interface SeatInfo {
   user_id: string | null;
   is_bot: boolean;
   name: string;
+  /** Server-verified purely visual choices, fixed for this match. */
+  cosmetics?: Record<string, string>;
+  /** Phrases allowed by the same server-verified emote set. */
+  emotes?: string[];
 }
 
 interface StoredResult { ok: boolean; error?: string; seq: number }
@@ -62,6 +66,7 @@ interface MatchRecord {
   ended_at?: number;
   db?: { status: "pending" | "done" | "skipped"; attempts: number; error?: string; progress?: Record<string, PlayerProgress> };
   counts?: Record<number, SeatCounts>;   // per seat, for quests and achievements (Phase 6)
+  emote_times?: Record<number, number[]>; // server rate-limit window (epoch ms), persisted across hibernation
   room?: string;               // private room code (the room becomes a lobby again at game over)
 }
 
@@ -196,6 +201,36 @@ export class MatchRoom extends DurableObject<Env> {
     const previous = seen[msg.id];
     if (previous) {
       this.send(ws, { t: previous.ok ? "ok" : "error", re: msg.id, p: { duplicate: true, seq: previous.seq, ...(previous.error ? { code: previous.error } : {}) } });
+      return;
+    }
+    if (msg.t === "action.emote") {
+      const allowed = m.seats[seat]?.emotes ?? ["hello", "gg", "go", "wow"];
+      if (!allowed.includes(msg.p.emoteId)) {
+        seen[msg.id] = { ok: false, error: "EMOTE_NOT_ALLOWED", seq: m.seq };
+        const ids = Object.keys(seen);
+        if (ids.length > SEEN_PER_SEAT) delete seen[ids[0]!];
+        await this.save();
+        this.send(ws, { t: "error", re: msg.id, p: { code: "EMOTE_NOT_ALLOWED" } });
+        return;
+      }
+      const now = Date.now();
+      const times = ((m.emote_times ??= {})[seat] ??= []).filter((t) => now - t < 10_000);
+      if (times.length >= 3) {
+        seen[msg.id] = { ok: false, error: "RATE_LIMITED", seq: m.seq };
+        const ids = Object.keys(seen);
+        if (ids.length > SEEN_PER_SEAT) delete seen[ids[0]!];
+        await this.save();
+        this.send(ws, { t: "error", re: msg.id, p: { code: "RATE_LIMITED", retryAfterMs: 10_000 - (now - times[0]!) } });
+        return;
+      }
+      times.push(now);
+      (m.emote_times ??= {})[seat] = times;
+      seen[msg.id] = { ok: true, seq: m.seq };
+      const ids = Object.keys(seen);
+      if (ids.length > SEEN_PER_SEAT) delete seen[ids[0]!];
+      await this.save();
+      this.send(ws, { t: "ok", re: msg.id, p: { seq: m.seq } });
+      this.broadcastEmote(seat, msg.p.emoteId);
       return;
     }
     let action: Action;
@@ -389,6 +424,13 @@ export class MatchRoom extends DurableObject<Env> {
     for (const ws of this.ctx.getWebSockets()) {
       const a = ws.deserializeAttachment() as Attachment | null;
       if (a?.authed) this.send(ws, msg);
+    }
+  }
+
+  private broadcastEmote(seat: number, emoteId: string): void {
+    for (const ws of this.ctx.getWebSockets()) {
+      const a = ws.deserializeAttachment() as Attachment | null;
+      if (a?.authed) this.send(ws, { t: "emote", p: { seat, emoteId } });
     }
   }
 

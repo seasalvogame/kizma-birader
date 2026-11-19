@@ -15,6 +15,7 @@ var board: BoardGeometry
 var turns := 0
 var colors_in_game: Array[String] = []
 var show_symbols := true
+var theme_id := "board_classic"
 ## Selectable pawns: [{color, pawn}] ; targets: [{color, step}] ; trail: {color, from, to}
 var selectable: Array = []
 var targets: Array = []
@@ -92,8 +93,13 @@ func _draw() -> void:
 		return
 	var c := cell_size()
 	var rect := board_rect()
-	_draw_round_rect(rect.grow(10), c * 0.9 + 10, Color(1, 1, 1, 0.08))
-	_draw_round_rect(rect, c * 0.9, UiPalette.BOARD)
+	var palette := Cosmetics.board_palette(theme_id)
+	# A warm tabletop rim gives the board a clear physical boundary while all
+	# grid geometry, paths and tap positions remain exactly as before.
+	_draw_round_rect(rect.grow(c * 0.26), c * 1.08, Color(UiPalette.NIGHT_900, 0.44))
+	_draw_round_rect(rect.grow(c * 0.14), c * 1.0, Color(1, 1, 1, 0.10))
+	_draw_round_rect(rect, c * 0.9, palette["board"])
+	_draw_round_rect(rect.grow(-c * 0.10), c * 0.78, Color(UiPalette.CREAM_HIGHLIGHT, 0.20))
 	for color: String in BoardGeometry.COLORS:
 		_draw_yard(color)
 	var starts := {}
@@ -108,19 +114,19 @@ func _draw() -> void:
 			_draw_round_rect(r.grow(-c * 0.04), c * 0.18, UiPalette.player(color))
 			_draw_start_arrow(i, r)
 		else:
-			_draw_round_rect(r, c * 0.2, UiPalette.CELL_EDGE)
-			_draw_round_rect(r.grow(-c * 0.03), c * 0.18, UiPalette.CELL)
+			_draw_round_rect(r, c * 0.2, palette["edge"])
+			_draw_round_rect(r.grow(-c * 0.03), c * 0.18, palette["cell"])
 			if board.star_indices.has(i):
-				_draw_star(r.get_center(), c * 0.36)
+				_draw_star(r.get_center(), c * 0.36, palette["star"], palette["star_edge"])
 	for color: String in BoardGeometry.COLORS:
 		for cell: Vector2i in board.home_columns[color]:
 			var r := cell_rect(cell).grow(-c * 0.06)
 			_draw_round_rect(r, c * 0.2, UiPalette.player(color, "dark"))
 			_draw_round_rect(r.grow(-c * 0.04), c * 0.18, UiPalette.player(color))
-	_draw_goal()
+	_draw_goal(palette)
 	_draw_trail()
 	for t: Dictionary in targets:
-		var p := pawn_position(t["color"], int(t["step"]), 0)
+		var p := pawn_position(t["color"], int(t["step"]), int(t.get("pawn", 0)))
 		var col := UiPalette.player(t["color"])
 		draw_arc(p, c * 0.36, 0, TAU, 32, col, c * 0.09, true)
 		draw_circle(p, c * 0.12, col)
@@ -161,7 +167,7 @@ func _draw_start_arrow(track_index: int, r: Rect2) -> void:
 	draw_colored_polygon(PackedVector2Array([tip, back + n * c * 0.22, back - n * c * 0.22]), Color(1, 1, 1, 0.9))
 
 
-func _draw_goal() -> void:
+func _draw_goal(palette: Dictionary) -> void:
 	var c := cell_size()
 	var m := grid_point(Vector2(7.5, 7.5))
 	var corners := {
@@ -172,21 +178,22 @@ func _draw_goal() -> void:
 		var a := grid_point(corners[color][0])
 		var b := grid_point(corners[color][1])
 		draw_colored_polygon(PackedVector2Array([a, b, m]), UiPalette.player(color))
-		draw_polyline(PackedVector2Array([a, b, m, a]), UiPalette.BOARD, c * 0.08, true)
-	draw_circle(m, c * 0.55, UiPalette.BOARD)
-	_draw_star(m, c * 0.42)
+		draw_polyline(PackedVector2Array([a, b, m, a]), palette["board"], c * 0.08, true)
+	draw_circle(m, c * 0.55, palette["board"])
+	_draw_star(m, c * 0.42, palette["star"], palette["star_edge"])
 
 
 func _draw_trail() -> void:
 	if trail.is_empty():
 		return
 	var color: String = trail["color"]
+	var pawn := int(trail.get("pawn", 0))
 	var from := maxi(int(trail["from"]), 0)
 	var to := int(trail["to"])
 	var c := cell_size()
 	var pts := PackedVector2Array()
 	for st in range(from, to + 1):
-		pts.append(pawn_position(color, st, 0))
+		pts.append(pawn_position(color, st, pawn))
 	for i in pts.size() - 1:
 		var a := pts[i]
 		var b := pts[i + 1]
@@ -195,15 +202,15 @@ func _draw_trail() -> void:
 			draw_circle(a.lerp(b, (k + 0.5) / steps), c * 0.06, Color(UiPalette.player(color), 0.75))
 
 
-func _draw_star(center: Vector2, r: float) -> void:
+func _draw_star(center: Vector2, r: float, color: Color = UiPalette.STAR, edge: Color = UiPalette.STAR_EDGE) -> void:
 	var pts := PackedVector2Array()
 	for k in 10:
 		var rr := r if k % 2 == 0 else r * 0.46
 		var a := -PI / 2 + k * PI / 5
 		pts.append(center + Vector2(cos(a), sin(a)) * rr)
-	draw_colored_polygon(pts, UiPalette.STAR)
+	draw_colored_polygon(pts, color)
 	pts.append(pts[0])
-	draw_polyline(pts, UiPalette.STAR_EDGE, maxf(1.0, r * 0.1), true)
+	draw_polyline(pts, edge, maxf(1.0, r * 0.1), true)
 
 
 func _draw_round_rect(rect: Rect2, radius: float, color: Color) -> void:

@@ -145,6 +145,32 @@ func test_taps_on_the_dice_and_a_pawn_play_the_turn() -> void:
 	vp.queue_free()
 
 
+func test_finish_target_keeps_the_selected_pawn_slot() -> void:
+	var vp := SubViewport.new()
+	vp.size = Vector2i(720, 1560)
+	tree.root.add_child(vp)
+	var holder := Control.new()
+	holder.theme = UiTheme.theme()
+	holder.size = Vector2(720, 1560)
+	vp.add_child(holder)
+	var seats := [{"color": "red", "kind": "human", "role": "you", "name": "Sen"}, {"color": "yellow", "kind": "bot", "role": "bot", "name": "Bot 1"}]
+	var screen := MatchScreen.new()
+	screen.config = {"players": 2, "seats": seats, "first_seat": 0, "dice": DiceSource.scripted([1, 1, 1, 1])}
+	screen.size = Vector2(720, 1560)
+	holder.add_child(screen)
+	await tree.process_frame
+	await tree.process_frame
+	var state := screen.controller.state().duplicate(true)
+	state["pawns"]["red"] = [56, 56, 55, -1]
+	state["turn"] = {"seat": 0, "phase": "move", "dice": 1, "sixes": 0, "turn_id": 12}
+	state["legal"] = [{"pawn": 2, "to": 56}]
+	screen.controller.session.state = state
+	screen._sync(state)
+	assert_eq(int(screen.board_view.targets[0]["pawn"]), 2, "finish target retains the selected pawn")
+	assert_true(screen.board_view.pawn_position("red", 56, 2) != screen.board_view.pawn_position("red", 56, 0), "finish slots differ by pawn")
+	vp.queue_free()
+
+
 func _click(vp: SubViewport, at: Vector2) -> void:
 	for pressed: bool in [true, false]:
 		var e := InputEventMouseButton.new()

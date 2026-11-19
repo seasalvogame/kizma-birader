@@ -36,12 +36,14 @@ func _draw() -> void:
 		for i in 36:
 			var k := 1.0 - i / 36.0
 			draw_circle(c, r * k, Color(UiPalette.GLOW.r, UiPalette.GLOW.g, UiPalette.GLOW.b, 0.0085))
-	# Fixed pseudo-random star field (same on every run).
+	# Fixed, deliberately sparse star field (same on every run).  The board and
+	# content should read as the illuminated objects; stars are a signature, not
+	# visual noise across every menu and state.
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 20261116
-	var count := int(size.x * size.y / 9000.0)
+	var count := int(size.x * size.y / 22000.0)
 	for i in count:
 		var p := Vector2(rng.randf() * size.x, rng.randf() * size.y)
 		var warm := rng.randf() < 0.3
-		var a := rng.randf_range(0.25, 0.7)
-		draw_circle(p, rng.randf_range(1.2, 2.6), Color(1.0, 0.91, 0.69, a) if warm else Color(1, 1, 1, a))
+		var a := rng.randf_range(0.18, 0.48)
+		draw_circle(p, rng.randf_range(1.0, 2.1), Color(1.0, 0.91, 0.69, a) if warm else Color(1, 1, 1, a))

@@ -70,8 +70,7 @@ func _show(direction: int) -> void:
 		"ranking":
 			screen = LeaderboardScreen.new()
 		"store":
-			screen = InfoScreen.new()
-			params = {"kind": entry["route"]}
+			screen = StoreScreen.new()
 		"friends":
 			screen = FriendsScreen.new()
 		"search":
@@ -196,5 +195,5 @@ func _swap(screen: Control, direction: int) -> void:
 		screen.modulate.a = 0.0
 		screen.position.x = 28 * direction
 		var t := screen.create_tween().set_parallel()
-		t.tween_property(screen, "modulate:a", 1.0, UiTokens.T_BASE / 1000.0)
-		t.tween_property(screen, "position:x", 0.0, UiTokens.T_BASE / 1000.0).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
+		t.tween_property(screen, "modulate:a", 1.0, UiTokens.duration(UiTokens.T_BASE))
+		t.tween_property(screen, "position:x", 0.0, UiTokens.duration(UiTokens.T_BASE)).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)

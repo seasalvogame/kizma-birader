@@ -103,7 +103,10 @@ export class PrivateRoom extends DurableObject<Env> {
 
   private async card(userId: string): Promise<{ name: string; tag: number; avatar: string }> {
     if (dbConfigured(this.env)) {
-      try { const c = (await playerCards(this.env, [userId])).get(userId); if (c) return c; } catch { /* default */ }
+      try {
+        const c = (await playerCards(this.env, [userId])).get(userId);
+        if (c) return { name: c.name, tag: c.tag, avatar: c.avatar };
+      } catch { /* default */ }
     }
     return { name: "Oyuncu", tag: 0, avatar: "default" };
   }
@@ -241,7 +244,16 @@ export class PrivateRoom extends DurableObject<Env> {
   // ---------------------------------------------------------------------- lobby
   private async startMatch(r: Room): Promise<void> {
     const ordered = [...r.members].sort((a, b) => COLORS.indexOf(a.color) - COLORS.indexOf(b.color));
-    const seats: SeatInfo[] = ordered.map((m, seat) => ({ seat, color: m.color, user_id: m.userId, is_bot: false, name: m.name }));
+    let fresh = new Map<string, { name: string; cosmetics: Record<string, string>; emotes: string[] }>();
+    if (dbConfigured(this.env)) {
+      try { fresh = await playerCards(this.env, ordered.map((m) => m.userId)); } catch { /* keep lobby card */ }
+    }
+    const seats: SeatInfo[] = ordered.map((m, seat) => ({
+      seat, color: m.color, user_id: m.userId, is_bot: false,
+      name: fresh.get(m.userId)?.name ?? m.name,
+      cosmetics: fresh.get(m.userId)?.cosmetics ?? {},
+      emotes: fresh.get(m.userId)?.emotes ?? ["hello", "gg", "go", "wow"],
+    }));
     const id = this.env.MATCH_ROOM.newUniqueId();
     const res = await this.env.MATCH_ROOM.get(id).fetch("https://match/init", {
       method: "POST", body: JSON.stringify({ id: id.toString(), mode: "private", seats, room: r.code }),

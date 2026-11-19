@@ -48,7 +48,13 @@ static func pawn_texture(skin: String, color: String) -> Texture2D:
 	var key := "%s:%s" % [skin, color]
 	if not _pawn_cache.has(key):
 		var path := "res://assets/pawns/pawn_%s.svg" % color
-		if skin != "" and skin != "pawns_classic":
+		# The default set is a high-resolution PNG painting. SVG cosmetics remain
+		# available as-is, and a missing PNG safely falls back to the old classic.
+		if skin == "pawns_classic":
+			var atelier := "res://assets/pawns/atelier_png/pawn_%s_atelier.png" % color
+			if ResourceLoader.exists(atelier):
+				path = atelier
+		elif skin != "":
 			path = "res://assets/cosmetics/pawns/%s/pawn_%s.svg" % [skin.trim_prefix("pawns_"), color]
 		_pawn_cache[key] = load(path) if ResourceLoader.exists(path) else load("res://assets/pawns/pawn_%s.svg" % color)
 	return _pawn_cache[key]

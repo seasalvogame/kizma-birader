@@ -37,8 +37,13 @@ for (const [key, path] of Object.entries(CONFIGS)) {
   const file = JSON.parse(readFileSync(join(repo, path), "utf8"));
   if (mode === "--apply") {
     const lit = JSON.stringify(file).replace(/'/g, "''");
-    query(`insert into public.app_config (key, value, is_public) values ('${key}', '${lit}'::jsonb, true)
-      on conflict (key) do update set value = excluded.value, version = public.app_config.version + 1, updated_at = now();`, true);
+    // Cosmetics include unpublished items and their release plan.  The client sees
+    // the filtered catalog only through public.cosmetics_catalog(), never this
+    // app_config row.  Keep that invariant when synchronising configuration.
+    const isPublic = key !== "cosmetics";
+    query(`insert into public.app_config (key, value, is_public) values ('${key}', '${lit}'::jsonb, ${isPublic})
+      on conflict (key) do update set value = excluded.value, is_public = excluded.is_public,
+        version = public.app_config.version + 1, updated_at = now();`, true);
     console.log(`applied ${path} -> app_config '${key}'`);
   } else {
     const [row] = query(`select value from public.app_config where key = '${key}';`, false);

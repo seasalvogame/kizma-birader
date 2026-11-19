@@ -31,6 +31,7 @@ func load_cache() -> void:
 
 
 func refresh() -> bool:
+	last_error = ""
 	var c := await api.call_rpc("cosmetics_catalog", {})
 	var i := await api.call_rpc("my_inventory", {})
 	if not (c["ok"] and i["ok"]):
@@ -44,6 +45,7 @@ func refresh() -> bool:
 
 
 func refresh_inventory() -> bool:
+	last_error = ""
 	var i := await api.call_rpc("my_inventory", {})
 	if not i["ok"]:
 		last_error = i["error"]
@@ -81,6 +83,45 @@ func equipped(category: String) -> String:
 	var l: Dictionary = inventory.get("loadout", {})
 	var v: Variant = l.get(category)
 	return String(v) if v != null and String(v) != "" else String(Cosmetics.DEFAULTS.get(category, ""))
+
+
+## The client sends only an id. The database checks publication, sale state,
+## current server price, debt, balance and ownership in one transaction.
+func purchase(id: String) -> Dictionary:
+	var r := await api.call_rpc("purchase_cosmetic", {"p_item": id})
+	if not r["ok"]:
+		last_error = r["error"]
+		return r
+	var refreshed := await refresh_inventory()
+	if not refreshed:
+		# A confirmed server purchase is safe to reflect locally; this is only a
+		# display cache and the next refresh remains authoritative.
+		var x := item(id)
+		var owned_rows: Array = inventory.get("owned", [])
+		if not owned(id) and not x.is_empty():
+			owned_rows.append({"id": id, "category": x.get("category", ""), "source": "store"})
+			inventory["owned"] = owned_rows
+			_save()
+			changed.emit()
+	return r
+
+
+## Only an owned item in one of the server-approved loadout categories can be
+## equipped. Badges keep using the existing Phase 6 badge selection path.
+func equip(id: String) -> Dictionary:
+	var r := await api.call_rpc("equip_cosmetic", {"p_item": id})
+	if not r["ok"]:
+		last_error = r["error"]
+		return r
+	var refreshed := await refresh_inventory()
+	if not refreshed:
+		var loadout: Dictionary = inventory.get("loadout", {})
+		var response: Dictionary = r.get("data", {})
+		loadout[String(response.get("category", ""))] = id
+		inventory["loadout"] = loadout
+		_save()
+		changed.emit()
+	return r
 
 
 func _save() -> void:

@@ -1,5 +1,10 @@
-; Kızma Birader — Godot 4 client (docs/TECHNICAL_ARCHITECTURE.md §3).
-; Portrait only. Reference canvas 720 x 1560 px (360 x 780 pt at 2x).
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
 
 config_version=5
 
@@ -11,9 +16,9 @@ config/version="0.7.0"
 run/main_scene="res://scenes/main.tscn"
 config/quit_on_go_back=false
 config/features=PackedStringArray("4.7", "GL Compatibility")
-config/icon="res://icon.svg"
 boot_splash/bg_color=Color(0.0784, 0.0549, 0.1686, 1)
 boot_splash/show_image=false
+config/icon="res://icon.svg"
 
 [autoload]
 
@@ -37,7 +42,6 @@ pointing/emulate_touch_from_mouse=true
 [internationalization]
 
 locale/translations=PackedStringArray("res://localization/tr.po", "res://localization/en.po")
-locale/fallback="en"
 
 [rendering]
 
@@ -45,4 +49,3 @@ renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
 textures/vram_compression/import_etc2_astc=true
 environment/defaults/default_clear_color=Color(0.0784, 0.0549, 0.1686, 1)
-2d/snap/snap_2d_transforms_to_pixel=false

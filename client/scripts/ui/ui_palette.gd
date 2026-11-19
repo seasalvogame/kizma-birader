@@ -13,6 +13,10 @@ const CREAM_50 := Color("#fffaf2")
 const CREAM_100 := Color("#fff3e2")
 const CREAM_200 := Color("#f5e6cf")
 const CREAM_300 := Color("#e8d3b4")
+## Highlights and edges are kept separate so cream surfaces remain warm rather
+## than turning into generic white cards on bright mobile displays.
+const CREAM_HIGHLIGHT := Color("#fffdf8")
+const CREAM_SHADOW := Color(0.04, 0.016, 0.12, 0.42)
 const INK_900 := Color("#2a1f3d")
 const INK_700 := Color("#4b3f62")
 const INK_500 := Color("#7a6d91")
@@ -20,6 +24,7 @@ const ON_NIGHT := Color("#f6efff")
 const ON_NIGHT_DIM := Color("#b9add6")
 const GLASS := Color(1, 1, 1, 0.07)
 const GLASS_EDGE := Color(1, 1, 1, 0.12)
+const GLASS_SHADOW := Color(0.025, 0.012, 0.08, 0.26)
 
 const MANGO_300 := Color("#ffc35a")
 const MANGO_500 := Color("#ff9a1f")

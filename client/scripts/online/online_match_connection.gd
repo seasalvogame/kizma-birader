@@ -7,6 +7,7 @@ extends Node
 
 signal snapshot_received(p: Dictionary)         # {matchId, yourSeat, seats, state, deadline, serverTime}
 signal events_received(p: Dictionary)           # {events, state, deadline, ...}
+signal emote_received(seat: int, emote_id: String)
 signal connection_changed(connected: bool)
 signal fatal(code: String)                      # the match cannot continue on this device
 signal action_refused(code: String)
@@ -90,6 +91,8 @@ func _on_message(m: Dictionary) -> void:
 				return
 			last_seq = seq
 			events_received.emit(p)
+		"emote":
+			emote_received.emit(int(p.get("seat", -1)), String(p.get("emoteId", "")))
 		"match.recorded":
 			recorded.emit(String(p.get("matchId", "")))
 			if p.get("progress") is Dictionary:

@@ -61,8 +61,10 @@ func _render() -> void:
 	avatar.setup(p.display_name(), "yellow", false)
 	avatar.ring_color = UiPalette.CREAM_50
 	avatar.set_fill(int(Settings.get_value("profile_avatar")))
+	avatar.set_cosmetics(Online.cosmetics.equipped("frame"), Online.cosmetics.equipped("effect"))
 	top.add_child(avatar)
 	var name_line := UiKit.label(p.display_name() + (" #%d" % p.tag() if p.tag() > 0 else ""), "H2Label", HORIZONTAL_ALIGNMENT_CENTER)
+	Cosmetics.style_name(name_line, Online.cosmetics.equipped("name"))
 	top.add_child(name_line)
 	var chip := UiKit.chip(_account_text(), Color(UiPalette.MINT_500, 0.2) if not Online.session.is_anonymous else Color(0, 0, 0, 0.3),
 		UiPalette.MINT_500 if not Online.session.is_anonymous else UiPalette.ON_NIGHT_DIM)

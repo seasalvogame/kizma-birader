@@ -123,7 +123,7 @@
 
 | Tür | Yük | Not |
 |---|---|---|
-| `match.snapshot` | Tam durum: `{ matchId, stateVersion, seq, ruleset, players: [{seat, color, userId?, name, avatar, level, isBot, status, finishedRank?}], pawns: {color: [step × 4]}, turn: {turnId, seat, phase: "roll"\|"move", dice?, legalMoves?, deadline, consecutiveSixes}, startedAt, serverTime }` | Bağlanma, geri dönüş ve `resync` |
+| `match.snapshot` | Tam durum: `{ matchId, stateVersion, seq, ruleset, players: [{seat, color, userId?, name, avatar, level, isBot, status, finishedRank?, cosmetics}], pawns: {color: [step × 4]}, turn: {turnId, seat, phase: "roll"\|"move", dice?, legalMoves?, deadline, consecutiveSixes}, startedAt, serverTime }` | Bağlanma, geri dönüş ve `resync`; `cosmetics` yalnızca sunucunun doğruladığı görsel yüklemedir |
 | `match.started` | `{ firstSeat }` | |
 | `turn.start` | `{ turnId, seat, phase: "roll", deadline }` | |
 | `dice.rolled` | `{ turnId, seat, value, legalMoves: [{pawn, from, to, captures: [{color, pawn}], finishes}], deadline }` | `legalMoves` boşsa sıra kısa bir gecikmeyle geçer |

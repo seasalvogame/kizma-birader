@@ -94,12 +94,14 @@ func _ready() -> void:
 	Settings.vibrate(60)
 	if not Settings.get_value("reduced_motion"):
 		_card.modulate.a = 0.0
-		_card.scale = Vector2(0.6, 0.6)
+		# The reward arrives from an already-present physical scale rather than
+		# popping in from nothing; opacity keeps the moment celebratory.
+		_card.scale = Vector2(0.94, 0.94)
 		await get_tree().process_frame
 		_card.pivot_offset = _card.size * 0.5
 		var tw := create_tween().set_parallel()
-		tw.tween_property(_card, "modulate:a", 1.0, 0.2)
-		tw.tween_property(_card, "scale", Vector2.ONE, 0.45).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		tw.tween_property(_card, "modulate:a", 1.0, UiTokens.duration(UiTokens.T_FAST))
+		tw.tween_property(_card, "scale", Vector2.ONE, UiTokens.duration(UiTokens.T_SLOW)).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	if auto_close > 0:
 		get_tree().create_timer(auto_close).timeout.connect(close)
 
@@ -129,5 +131,5 @@ func close() -> void:
 		queue_free()
 		return
 	var tw := create_tween()
-	tw.tween_property(self, "modulate:a", 0.0, 0.18)
+	tw.tween_property(self, "modulate:a", 0.0, UiTokens.duration(UiTokens.T_FAST))
 	tw.tween_callback(queue_free)

@@ -302,5 +302,26 @@ func test_cosmetics_screens_open_offline() -> void:
 	main.call("go", "cosmetic", {"id": "dice_star"})
 	await _frames(3)
 	assert_eq((main.get("current") as Node).get_script().get_global_name(), "CosmeticDetailScreen", "item details open")
+	assert_eq(CosmeticDetailScreen._error_text("INSUFFICIENT_FUNDS"), tr("COS_ERR_FUNDS"), "store insufficient-funds error is actionable")
+	assert_eq(CosmeticDetailScreen._error_text("NOT_OWNED"), tr("COS_ERR_NOT_OWNED"), "equip ownership error is actionable")
+	main.call("go", "store")
+	await _frames(3)
+	assert_eq((main.get("current") as Node).get_script().get_global_name(), "StoreScreen", "store opens")
+	assert_true((main.get("current").get("status") as StatusCard).visible, "store shows a loading / offline state")
+	# Own cached data is only a fallback. An online snapshot supplies every
+	# player's server-verified visual loadout and never changes rules or colours.
+	var old_inventory := Online.cosmetics.inventory
+	Online.cosmetics.inventory = {"loadout": {"dice": "dice_star", "pawns": "pawns_gem", "board": "board_mint", "frame": "frame_gold", "effect": "effect_sparkle", "name": "name_gold"}}
+	var seats := [{"color": "red", "role": "you", "kind": "human", "name": "A"}, {"color": "yellow", "role": "remote", "kind": "human", "name": "B", "cosmetics": {"dice": "dice_aurora", "pawns": "pawns_crown", "board": "board_sunset", "frame": "frame_royal", "effect": "effect_aurora", "name": "name_gold", "emotes": "emotes_star"}}]
+	main.call("show_match", {"players": 2, "seats": seats, "dice": DiceSource.seeded(5)})
+	await _frames(3)
+	var match_screen: MatchScreen = main.get("current")
+	assert_eq(match_screen.dice.skin, "dice_star", "own dice skin is applied")
+	assert_eq(match_screen.board_view.theme_id, "board_mint", "own board theme is applied")
+	assert_eq((match_screen.pawns["red:0"] as PawnSprite).skin, "pawns_gem", "own pawn skin is applied")
+	assert_eq((match_screen.pawns["yellow:0"] as PawnSprite).skin, "pawns_crown", "remote pawn skin comes from the server snapshot")
+	assert_eq((match_screen.card_dice[1] as DiceView).skin, "dice_aurora", "remote dice skin comes from the server snapshot")
+	match_screen.controller.stop()
+	Online.cosmetics.inventory = old_inventory
 	vp.queue_free()
 	await _frames(1)

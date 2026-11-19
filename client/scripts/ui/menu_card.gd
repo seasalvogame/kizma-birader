@@ -13,6 +13,10 @@ var wide := false
 var tint := Color.WHITE        # icon colour
 
 var _face := StyleBoxFlat.new()
+var _edge := StyleBoxFlat.new()
+var _margin: MarginContainer
+
+const DEPTH := 8
 
 
 func _init() -> void:
@@ -24,8 +28,8 @@ func _init() -> void:
 
 func _ready() -> void:
 	_build()
-	button_down.connect(queue_redraw)
-	button_up.connect(queue_redraw)
+	button_down.connect(func() -> void: _set_pressed(true))
+	button_up.connect(func() -> void: _set_pressed(false))
 
 
 ## Rebuilds the card after title / subtitle / badge changed (e.g. a live counter).
@@ -44,14 +48,17 @@ func _build() -> void:
 	_face.border_color = UiPalette.GLASS_EDGE
 	_face.set_border_width_all(3)
 	_face.set_corner_radius_all(UiTokens.R_L)
-	var margin := MarginContainer.new()
-	margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_edge.bg_color = Color(UiPalette.NIGHT_900, 0.44)
+	_edge.set_corner_radius_all(UiTokens.R_L)
+	_margin = MarginContainer.new()
+	_margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_margin.offset_bottom = -DEPTH
+	_margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	for side: String in ["left", "right"]:
-		margin.add_theme_constant_override("margin_" + side, 30)
+		_margin.add_theme_constant_override("margin_" + side, 30)
 	for side: String in ["top", "bottom"]:
-		margin.add_theme_constant_override("margin_" + side, 24)
-	add_child(margin)
+		_margin.add_theme_constant_override("margin_" + side, 24)
+	add_child(_margin)
 	var texts := UiKit.vbox(2)
 	texts.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	texts.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -91,7 +98,7 @@ func _build() -> void:
 		chev.modulate = Color(1, 1, 1, 0.5)
 		chev.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		row.add_child(chev)
-		margin.add_child(row)
+		_margin.add_child(row)
 	else:
 		var col := UiKit.vbox(UiTokens.S1)
 		col.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -105,7 +112,7 @@ func _build() -> void:
 			top.add_child(chip)
 		col.add_child(top)
 		col.add_child(texts)
-		margin.add_child(col)
+		_margin.add_child(col)
 
 
 func _chip() -> PanelContainer:
@@ -116,5 +123,14 @@ func _chip() -> PanelContainer:
 
 func _draw() -> void:
 	var down := is_pressed() or get_draw_mode() == DRAW_PRESSED
+	var sink := DEPTH if down else 0
 	_face.bg_color = Color(1, 1, 1, 0.12) if down else UiPalette.GLASS
-	draw_style_box(_face, Rect2(Vector2.ZERO, size))
+	draw_style_box(_edge, Rect2(0, DEPTH, size.x, size.y - DEPTH))
+	draw_style_box(_face, Rect2(0, sink, size.x, size.y - DEPTH))
+
+
+func _set_pressed(down: bool) -> void:
+	if is_instance_valid(_margin):
+		_margin.offset_top = DEPTH if down else 0
+		_margin.offset_bottom = 0 if down else -DEPTH
+	queue_redraw()

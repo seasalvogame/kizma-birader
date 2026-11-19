@@ -75,6 +75,9 @@ msgstr "BOT"
 msgid "MATCH_MENU"
 msgstr "Menu"
 
+msgid "MATCH_EMOTES"
+msgstr "Emotes"
+
 msgid "MATCH_MODE_2P"
 msgstr "2 Players · Classic · Practice"
 
@@ -1497,6 +1500,21 @@ msgstr "Loading your collection…"
 msgid "COLLECTION_EMPTY"
 msgstr "No items in this category yet."
 
+msgid "STORE_TITLE"
+msgstr "Cosmetics Store"
+
+msgid "STORE_SUBTITLE"
+msgstr "Change your look; game balance stays the same."
+
+msgid "STORE_LOADING"
+msgstr "Loading the store…"
+
+msgid "STORE_ALL"
+msgstr "All"
+
+msgid "STORE_EMPTY"
+msgstr "No new items to buy in this section."
+
 msgid "COS_DETAIL_TITLE"
 msgstr "Item"
 
@@ -1505,6 +1523,30 @@ msgstr "Item not found."
 
 msgid "COS_OWNED"
 msgstr "Owned"
+
+msgid "COS_EQUIP"
+msgstr "EQUIP"
+
+msgid "COS_EQUIPPED"
+msgstr "EQUIPPED"
+
+msgid "COS_BUY_FOR"
+msgstr "BUY FOR %d %s"
+
+msgid "COS_ERR_FUNDS"
+msgstr "You do not have enough balance."
+
+msgid "COS_ERR_OWNED"
+msgstr "You already own this item."
+
+msgid "COS_ERR_DEBT"
+msgstr "The store is unavailable while you have an open debt."
+
+msgid "COS_ERR_CLOSED"
+msgstr "The store is currently closed."
+
+msgid "COS_ERR_NOT_OWNED"
+msgstr "You need to own this item first."
 
 msgid "COS_NO_EFFECT"
 msgstr "Cosmetics only change the look; dice, moves and chances stay the same."

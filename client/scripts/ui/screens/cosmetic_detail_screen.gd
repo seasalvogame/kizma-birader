@@ -5,6 +5,8 @@ extends AppScreen
 
 var item_id := ""
 var _box: VBoxContainer
+var _busy := false
+var _action_error := ""
 
 
 func _title() -> String:
@@ -54,7 +56,67 @@ func _render() -> void:
 	else:
 		col.add_child(wrapped(UiKit.label(how_to_get(x), "InkBodyLabel", HORIZONTAL_ALIGNMENT_CENTER)))
 	col.add_child(wrapped(UiKit.label(tr("COS_NO_EFFECT"), "InkDimLabel", HORIZONTAL_ALIGNMENT_CENTER)))
+	_add_action(col, x, owned)
 	_box.add_child(panel)
+	if _action_error != "":
+		_box.add_child(wrapped(UiKit.label(_action_error, "InkDimLabel", HORIZONTAL_ALIGNMENT_CENTER)))
+
+
+func _add_action(col: VBoxContainer, x: Dictionary, owned: bool) -> void:
+	var category := String(x.get("category", ""))
+	if owned and category != "badge":
+		var equipped := Online.cosmetics.equipped(category) == item_id
+		var equip := UiKit.button(tr("COS_EQUIPPED") if equipped else tr("COS_EQUIP"), "secondary" if equipped else "primary")
+		equip.mouse_filter = Control.MOUSE_FILTER_PASS
+		equip.disabled = equipped or _busy
+		equip.pressed.connect(func() -> void: await _equip())
+		col.add_child(equip)
+		return
+	if not owned and x.get("purchasable", false) and x.get("price") != null and bool(Online.cosmetics.catalog.get("store_enabled", false)):
+		var buy := UiKit.button(tr("COS_BUY_FOR") % [int(x["price"]), tr("CURRENCY_" + String(x.get("currency", "gold")).to_upper())], "primary")
+		buy.mouse_filter = Control.MOUSE_FILTER_PASS
+		buy.disabled = _busy
+		buy.pressed.connect(func() -> void: await _buy())
+		col.add_child(buy)
+
+
+func _buy() -> void:
+	if _busy:
+		return
+	_busy = true
+	var r := await Online.cosmetics.purchase(item_id)
+	_busy = false
+	if not is_inside_tree():
+		return
+	_action_error = "" if r["ok"] else _error_text(String(r["error"]))
+	_render()
+
+
+func _equip() -> void:
+	if _busy:
+		return
+	_busy = true
+	var r := await Online.cosmetics.equip(item_id)
+	_busy = false
+	if not is_inside_tree():
+		return
+	_action_error = "" if r["ok"] else _error_text(String(r["error"]))
+	_render()
+
+
+static func _error_text(code: String) -> String:
+	match code:
+		"INSUFFICIENT_FUNDS":
+			return TranslationServer.translate("COS_ERR_FUNDS")
+		"ALREADY_OWNED":
+			return TranslationServer.translate("COS_ERR_OWNED")
+		"DEBT_OPEN":
+			return TranslationServer.translate("COS_ERR_DEBT")
+		"STORE_CLOSED":
+			return TranslationServer.translate("COS_ERR_CLOSED")
+		"NOT_OWNED":
+			return TranslationServer.translate("COS_ERR_NOT_OWNED")
+	return TranslationServer.translate("ONLINE_ERR_SERVER")
 
 
 ## "Mağazada 1.200 Altın", "Seviye 15 ödülü", both, or "yakında".
