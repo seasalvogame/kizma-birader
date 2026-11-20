@@ -12,6 +12,7 @@ var card_4p: PlayCard
 var _invites: MenuCard
 var _login: MenuCard
 static var _login_offered := false     # the login panel opens by itself once per app session
+const WalletBarView := preload("res://scripts/ui/wallet_bar.gd")
 
 
 func _nav_tab() -> String:
@@ -20,6 +21,9 @@ func _nav_tab() -> String:
 
 func _build() -> void:
 	content.add_child(_top_row())
+	var wallet: Control = WalletBarView.new()
+	wallet.size_flags_horizontal = Control.SIZE_SHRINK_END
+	content.add_child(wallet)
 	var cards := UiKit.hbox(UiTokens.S3)
 	card_2p = _play_card(2, "SETUP_TWO_PLAYERS", Color("#3a7bf7"), Color("#7aa6ff"), Color("#1f4fb8"), 6)
 	card_4p = _play_card(4, "SETUP_FOUR_PLAYERS", Color("#e5484d"), Color("#ff8a8d"), Color("#a8262b"), 4)

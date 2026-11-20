@@ -15,11 +15,13 @@ var _finished := 0
 var _bot_chip: Control
 var _turn_tween: Tween
 var _turn_active := false
+var _display_name := ""
 
 
 func setup(p_seat: int, p_color: String, display_name: String, bot: bool, mirrored: bool, big: bool, cosmetics: Dictionary = {}) -> void:
 	seat = p_seat
 	color = p_color
+	_display_name = display_name
 	add_theme_constant_override("separation", UiTokens.S2)
 	alignment = BoxContainer.ALIGNMENT_END if mirrored else BoxContainer.ALIGNMENT_BEGIN
 	avatar = Avatar.new()
@@ -70,6 +72,22 @@ func setup(p_seat: int, p_color: String, display_name: String, bot: bool, mirror
 	else:
 		add_child(avatar)
 		add_child(text)
+
+
+## Reapplies this human player's presentation without changing the card's
+## player identity, turn timer, layout or match status.  Name styles can add
+## prefix glyphs, so restore the server display name before styling again.
+func apply_cosmetics(cosmetics: Dictionary) -> void:
+	if avatar == null or avatar.is_bot:
+		return
+	avatar.set_cosmetics(String(cosmetics.get("frame", "frame_none")), String(cosmetics.get("effect", "effect_none")))
+	if name_label == null:
+		return
+	name_label.text = _display_name
+	name_label.remove_theme_color_override("font_color")
+	name_label.remove_theme_color_override("font_outline_color")
+	name_label.remove_theme_constant_override("outline_size")
+	Cosmetics.style_name(name_label, String(cosmetics.get("name", "name_plain")))
 
 
 func set_finished_pawns(count: int) -> void:

@@ -8,6 +8,7 @@ var status: StatusCard
 var _tabs: HFlowContainer
 var _grid: GridContainer
 var _category := ""
+const WalletBarView := preload("res://scripts/ui/wallet_bar.gd")
 
 
 func _title() -> String:
@@ -16,6 +17,10 @@ func _title() -> String:
 
 func _nav_tab() -> String:
 	return "store"
+
+
+func _header_extra() -> Control:
+	return WalletBarView.new()
 
 
 func _build() -> void:
@@ -69,11 +74,17 @@ func _render() -> void:
 			_tabs.add_child(b)
 	for c: Node in _grid.get_children():
 		c.queue_free()
+	# Keep bought cosmetics visible here as well: the player can see at a glance
+	# whether an offer is still actionable, already in their collection, or the
+	# currently equipped look. Prices still come only from the server catalog.
 	var rows := Online.cosmetics.items(_category).filter(func(x: Dictionary) -> bool:
-		return bool(x.get("purchasable", false)) and not Online.cosmetics.owned(String(x["id"])))
+		return bool(x.get("purchasable", false)))
 	if rows.is_empty() and not Online.cosmetics.catalog.is_empty():
 		_grid.add_child(wrapped(UiKit.label(tr("STORE_EMPTY"), "DimLabel")))
 		return
 	for x: Dictionary in rows:
-		var bottom := tr("COS_HOW_BUY") % [int(x.get("price", 0)), tr("CURRENCY_" + String(x.get("currency", "gold")).to_upper())]
-		_grid.add_child(CollectionScreen.tile(x, false, func() -> void: navigate.emit("cosmetic", {"id": x["id"]}), bottom))
+		var owned := Online.cosmetics.owned(String(x["id"]))
+		# The tile already carries a green owned/equipped state chip. Do not repeat
+		# it as a second cramped line below the preview.
+		var bottom := "" if owned else tr("COS_HOW_BUY") % [int(x.get("price", 0)), tr("CURRENCY_" + String(x.get("currency", "gold")).to_upper())]
+		_grid.add_child(CollectionScreen.tile(x, owned, func() -> void: navigate.emit("cosmetic", {"id": x["id"]}), bottom))

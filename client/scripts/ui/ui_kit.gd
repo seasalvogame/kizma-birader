@@ -2,6 +2,8 @@ class_name UiKit
 extends RefCounted
 ## Small builders for the design system (keeps screens short and consistent).
 
+const TACTILE_BUTTON := preload("res://scripts/ui/tactile_button.gd")
+
 
 static func label(text: String, variation: String = "BodyLabel", align: HorizontalAlignment = HORIZONTAL_ALIGNMENT_LEFT) -> Label:
 	var l := Label.new()
@@ -14,7 +16,9 @@ static func label(text: String, variation: String = "BodyLabel", align: Horizont
 
 ## kind: primary | secondary | berry | mint | ghost ; size: s | l | xl
 static func button(text: String, kind: String = "primary", size: String = "l") -> Button:
-	var b := Button.new()
+	# Do not rely on Godot's editor-owned global-class cache in exported or
+	# headless builds: the shared button script is explicitly preloaded.
+	var b: Button = TACTILE_BUTTON.new()
 	b.text = text
 	b.theme_type_variation = kind.capitalize() + "Button"
 	var h := UiTokens.BUTTON_L
@@ -28,18 +32,18 @@ static func button(text: String, kind: String = "primary", size: String = "l") -
 			font = UiTokens.BUTTON_TEXT_XL
 	b.custom_minimum_size = Vector2(0, h)
 	b.add_theme_font_size_override("font_size", font)
-	b.focus_mode = Control.FOCUS_NONE
+	b.focus_mode = Control.FOCUS_ALL
 	return b
 
 
 static func icon_button(icon_name: String, tooltip: String = "") -> Button:
-	var b := Button.new()
+	var b: Button = TACTILE_BUTTON.new()
 	b.theme_type_variation = "IconButton"
 	b.icon = UiTheme.icon(icon_name)
 	b.expand_icon = true
 	b.custom_minimum_size = Vector2(UiTokens.ICON_BUTTON, UiTokens.ICON_BUTTON)
 	b.tooltip_text = tooltip
-	b.focus_mode = Control.FOCUS_NONE
+	b.focus_mode = Control.FOCUS_ALL
 	b.add_theme_constant_override("icon_max_width", 44)
 	return b
 

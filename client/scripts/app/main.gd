@@ -6,10 +6,13 @@ extends Node
 ## the shared theme.
 
 const TABS := ["home", "friends", "store", "quests", "ranking"]
+const BootScreenView := preload("res://scripts/ui/boot_screen.gd")
 
 var ui: Control
 var current: Control
 var stack: Array[Dictionary] = []   # [{route, params}]
+var _boot: Control
+var _hold_boot_for_capture := false  # development screenshot tour only
 
 
 func _ready() -> void:
@@ -21,8 +24,56 @@ func _ready() -> void:
 	for arg: String in OS.get_cmdline_user_args():
 		if arg == "--no-ui":
 			return
-	go("home")
+		if arg == "--ui-capture-boot":
+			_hold_boot_for_capture = true
+	_show_boot(_hold_boot_for_capture)
+
+
+## The first visible surface follows the actual account/data preparation path.
+## Guest/offline play remains immediate, but a signed-in session is never shown
+## half prepared behind an empty home screen.
+func _show_boot(hold_for_capture: bool = false) -> void:
+	_boot = BootScreenView.new()
+	_boot.retry_requested.connect(_begin_boot)
+	ui.add_child(_boot)
+	if not hold_for_capture:
+		_begin_boot()
+
+
+func _begin_boot() -> void:
+	if not is_instance_valid(_boot):
+		return
+	_boot.set_loading(tr("BOOT_LOADING"))
+	_boot.set_buttons_enabled(false)
+	await get_tree().process_frame
+	var needs_remote := Online.session.has_account() and OnlineConfig.supabase_url() != ""
+	if needs_remote:
+		_boot.set_loading(tr("BOOT_ACCOUNT"))
+		var profile_ok := await Online.profile.refresh()
+		if not is_instance_valid(_boot):
+			return
+		_boot.set_loading(tr("BOOT_COLLECTION"))
+		var cosmetics_ok := await Online.cosmetics.refresh()
+		if not profile_ok and not cosmetics_ok:
+			_boot.show_error(tr("BOOT_OFFLINE"), tr("ONLINE_RETRY"), tr("BOOT_CONTINUE"))
+			_boot.set_buttons_enabled(true)
+			return
 	Online.start_social()   # friends' status and invites (only if this device already has an account)
+	if is_instance_valid(_boot):
+		_boot.queue_free()
+		_boot = null
+	go("home")
+
+
+## Explicit hand-off from the boot surface.  It is intentionally separate
+## from the normal ready path so a user can continue with the cached/offline
+## client when their account refresh cannot reach the server.
+func continue_offline() -> void:
+	if is_instance_valid(_boot):
+		_boot.queue_free()
+	_boot = null
+	Online.start_social()
+	go("home")
 
 
 func route() -> String:

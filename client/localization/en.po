@@ -489,6 +489,24 @@ msgstr "Waiting %s"
 msgid "ONLINE_RETRY"
 msgstr "Try again"
 
+msgid "BOOT_LOADING"
+msgstr "Preparing the table…"
+
+msgid "BOOT_SUBTITLE"
+msgstr "Welcome to the table"
+
+msgid "BOOT_ACCOUNT"
+msgstr "Preparing your account…"
+
+msgid "BOOT_COLLECTION"
+msgstr "Preparing your collection…"
+
+msgid "BOOT_OFFLINE"
+msgstr "Could not connect. Check your internet and try again."
+
+msgid "BOOT_CONTINUE"
+msgstr "CONTINUE OFFLINE"
+
 msgid "ONLINE_INFO"
 msgstr "2-player classic match. The server assigns opposite colours. The result goes to your match history and stats; no rewards and no ranking."
 

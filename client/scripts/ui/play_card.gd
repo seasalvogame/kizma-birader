@@ -12,6 +12,7 @@ var light := Color("#6f9dff")
 var dark := Color("#1f4fb8")
 var dice_value := 6
 var _dice: Texture2D
+var _motion: Tween
 
 const EDGE := 14
 
@@ -26,8 +27,8 @@ func _init() -> void:
 
 func _ready() -> void:
 	_dice = load("res://assets/dice/dice_%d.svg" % dice_value)
-	button_down.connect(queue_redraw)
-	button_up.connect(queue_redraw)
+	button_down.connect(func() -> void: _set_pressed(true))
+	button_up.connect(func() -> void: _set_pressed(false))
 
 
 func _draw() -> void:
@@ -80,3 +81,16 @@ func _draw() -> void:
 	draw_string(pill_font, pr.position + Vector2(32, 54), pill, HORIZONTAL_ALIGNMENT_LEFT, -1, UiTokens.BUTTON_TEXT_S, UiPalette.INK_900)
 	var tri := pr.position + Vector2(32 + tw + 18, 40)
 	draw_colored_polygon(PackedVector2Array([tri + Vector2(0, -10), tri + Vector2(14, 0), tri + Vector2(0, 10)]), UiPalette.INK_900)
+
+
+func _set_pressed(down: bool) -> void:
+	if _motion != null:
+		_motion.kill()
+	var target := Vector2(0.978, 0.978) if down else Vector2.ONE
+	if Settings.get_value("reduced_motion"):
+		scale = target
+	else:
+		pivot_offset = size * 0.5
+		_motion = create_tween()
+		_motion.tween_property(self, "scale", target, UiTokens.duration(UiTokens.T_INSTANT if down else UiTokens.T_FAST)).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	queue_redraw()

@@ -95,6 +95,23 @@ func test_home_and_tabs_fit_phone_screens() -> void:
 			assert_true(screen_rect.encloses(r), "%s: %s visible (%s)" % [sz, c.get_class(), r])
 		for b: Button in home.nav_bar.buttons.values():
 			assert_true(b.size.y >= UiTokens.TOUCH_MIN, "%s: nav button touch height %s" % [sz, b.size.y])
+			assert_eq(b.focus_mode, Control.FOCUS_ALL, "%s: nav button accepts keyboard/gamepad focus" % sz)
+		var nav_buttons: Array[Button] = []
+		for tab: Array in NavBar.TABS:
+			nav_buttons.append(home.nav_bar.buttons[tab[0]] as Button)
+		for index: int in nav_buttons.size():
+			var button: Button = nav_buttons[index]
+			var left: Button = nav_buttons[(index - 1 + nav_buttons.size()) % nav_buttons.size()]
+			var right: Button = nav_buttons[(index + 1) % nav_buttons.size()]
+			assert_eq(button.focus_neighbor_left, button.get_path_to(left), "%s: nav left focus wraps" % sz)
+			assert_eq(button.focus_neighbor_right, button.get_path_to(right), "%s: nav right focus wraps" % sz)
+		assert_eq(vp.gui_get_focus_owner(), home.nav_bar.buttons["home"], "%s: current tab receives initial focus" % sz)
+		var right_key := InputEventKey.new()
+		right_key.keycode = KEY_RIGHT
+		right_key.pressed = true
+		vp.push_input(right_key)
+		await _frames(1)
+		assert_eq(vp.gui_get_focus_owner(), home.nav_bar.buttons["friends"], "%s: right input reaches the next tab" % sz)
 		assert_true(home.card_2p.size.y >= 300, "%s: play card height" % sz)
 		vp.queue_free()
 		await _frames(1)

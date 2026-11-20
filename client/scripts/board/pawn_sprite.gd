@@ -25,6 +25,8 @@ var _mark: Node2D
 var _halo_phase := 0.0
 var _halo_tween: Tween
 var _goal_scale := 1.0
+var _stack_scale := 1.0
+var _stack_count := 1
 
 
 func _init(p_color: String = "red", p_index: int = 0, p_skin: String = "pawns_classic") -> void:
@@ -51,7 +53,7 @@ func _apply_scale() -> void:
 	# Both the 128 px SVG cosmetics and the 512 px painted PNGs are framed to
 	# the same visual footprint, so texture resolution never changes gameplay.
 	var source_size := maxf(_sprite.texture.get_size().x, _sprite.texture.get_size().y)
-	var s := cell_size * 1.28 / maxf(source_size, 1.0) * _goal_scale
+	var s := cell_size * 1.28 / maxf(source_size, 1.0) * _goal_scale * _stack_scale
 	_sprite.scale = Vector2(s, s)
 	if _mark != null:
 		_mark.queue_redraw()
@@ -61,6 +63,31 @@ func _apply_scale() -> void:
 func set_finished_look(finished: bool) -> void:
 	_goal_scale = 0.7 if finished else 1.0
 	_apply_scale()
+
+
+## Updates only the visual texture.  Position, step, hit target and every
+## game-rule value stay untouched, allowing an equipped pawn look to appear
+## during an active match without waiting for the next match instance.
+func set_skin(value: String) -> void:
+	skin = value if value != "" else "pawns_classic"
+	if _sprite != null:
+		_sprite.texture = Cosmetics.pawn_texture(skin, color)
+		_apply_scale()
+
+
+## Same-cell clustering is visual-only.  It never changes the pawn's path,
+## input target, or server/local rule position.
+func set_stack_count(count: int) -> void:
+	_stack_count = clampi(count, 1, 4)
+	# At three pieces the previous 0.41 scale grazed a cell edge once the
+	# triangular offset was applied.  0.40 keeps a measurable visual gutter.
+	_stack_scale = [1.0, 0.48, 0.40, 0.36][_stack_count - 1]
+	_apply_scale()
+
+
+func visual_half_extent() -> float:
+	# The artwork is framed at 1.28 cells wide in _apply_scale().
+	return cell_size * 0.64 * _goal_scale * _stack_scale
 
 
 func _draw() -> void:

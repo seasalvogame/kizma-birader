@@ -15,6 +15,7 @@ var tint := Color.WHITE        # icon colour
 var _face := StyleBoxFlat.new()
 var _edge := StyleBoxFlat.new()
 var _margin: MarginContainer
+var _motion: Tween
 
 const DEPTH := 8
 
@@ -133,4 +134,13 @@ func _set_pressed(down: bool) -> void:
 	if is_instance_valid(_margin):
 		_margin.offset_top = DEPTH if down else 0
 		_margin.offset_bottom = 0 if down else -DEPTH
+	if _motion != null:
+		_motion.kill()
+	var target := Vector2(0.985, 0.985) if down else Vector2.ONE
+	if Settings.get_value("reduced_motion"):
+		scale = target
+	else:
+		pivot_offset = size * 0.5
+		_motion = create_tween()
+		_motion.tween_property(self, "scale", target, UiTokens.duration(UiTokens.T_INSTANT if down else UiTokens.T_FAST)).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	queue_redraw()

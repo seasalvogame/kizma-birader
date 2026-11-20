@@ -151,6 +151,9 @@ func _build() -> void:
 	dice.size = Vector2(UiTokens.DICE_PAD, UiTokens.DICE_PAD)
 	dice.tapped.connect(_on_dice_tapped)
 	add_child(dice)
+	# A successful equip changes every local visual owner immediately. Match
+	# rules, positions and server-authoritative dice results remain untouched.
+	Online.cosmetics.changed.connect(_refresh_local_cosmetics)
 	_hint = PanelContainer.new()
 	_hint.add_theme_stylebox_override("panel", UiTheme.glass_box(36))
 	_hint_label = UiKit.label("", "BodyLabel", HORIZONTAL_ALIGNMENT_CENTER)
@@ -257,17 +260,61 @@ func _place_all(state: Dictionary) -> void:
 			if st >= 0 and st < 56:
 				stacks[key] = stacks.get(key, []) + [sprite]
 			sprite.position = pos
-	# Pawns on the same cell sit side by side (UI_UX_DESIGN_SYSTEM §7.2).
+	# Pawns sharing a board cell use compact, symmetric layouts. The artwork's
+	# scaled bounds remain inside the cell instead of spilling into neighbours.
 	for key: String in stacks:
 		var list: Array = stacks[key]
-		if list.size() < 2:
-			continue
+		var offsets := _stack_offsets(list.size())
 		for i in list.size():
 			var s: PawnSprite = list[i]
-			s.position += Vector2((i - (list.size() - 1) * 0.5) * board_view.cell_size() * 0.32, -i * board_view.cell_size() * 0.08)
+			s.set_stack_count(list.size())
+			s.position += offsets[i] * board_view.cell_size()
+	# Reset pieces that are in yards, corridors, or alone after a prior stack.
+	for key: String in pawns:
+		var p: PawnSprite = pawns[key]
+		var in_stack := false
+		for list: Array in stacks.values():
+			if p in list:
+				in_stack = true
+				break
+		if not in_stack:
+			p.set_stack_count(1)
 	for key: String in pawns:
 		var s: PawnSprite = pawns[key]
 		s.z_index = clampi(int(s.position.y / maxf(board_view.size.y, 1.0) * 900.0), 0, 900)
+
+
+func _stack_offsets(count: int) -> Array[Vector2]:
+	match count:
+		2:
+			return [Vector2(-0.18, 0.0), Vector2(0.18, 0.0)]
+		3:
+			return [Vector2(-0.18, -0.16), Vector2(0.18, -0.16), Vector2(0.0, 0.18)]
+		4:
+			return [Vector2(-0.17, -0.17), Vector2(0.17, -0.17), Vector2(-0.17, 0.17), Vector2(0.17, 0.17)]
+	return [Vector2.ZERO]
+
+
+func _refresh_local_cosmetics() -> void:
+	if not is_instance_valid(dice) or not is_instance_valid(board_view):
+		return
+	var loadout := {
+		"dice": Online.cosmetics.equipped("dice"),
+		"pawns": Online.cosmetics.equipped("pawns"),
+		"board": Online.cosmetics.equipped("board"),
+		"frame": Online.cosmetics.equipped("frame"),
+		"effect": Online.cosmetics.equipped("effect"),
+		"name": Online.cosmetics.equipped("name"),
+	}
+	dice.skin = String(loadout["dice"])
+	if card_dice.has(local_seat):
+		(card_dice[local_seat] as DiceView).skin = String(loadout["dice"])
+	board_view.set_theme_id(String(loadout["board"]))
+	var local_color := String(config["seats"][local_seat]["color"])
+	for i in 4:
+		(pawns["%s:%d" % [local_color, i]] as PawnSprite).set_skin(String(loadout["pawns"]))
+	if cards.has(local_seat):
+		(cards[local_seat] as PlayerCard).apply_cosmetics(loadout)
 
 
 func _sync(state: Dictionary) -> void:

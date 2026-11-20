@@ -6,6 +6,7 @@ extends Node
 var shots := ""
 var main: Node
 var online := false   # -- --online: really talk to the servers (creates a guest account)
+var capture_boot := false
 
 
 func _ready() -> void:
@@ -14,6 +15,8 @@ func _ready() -> void:
 			shots = arg.trim_prefix("--shots=")
 		elif arg == "--online":
 			online = true
+		elif arg == "--ui-capture-boot":
+			capture_boot = true
 		elif arg.begins_with("--locale="):
 			Settings.set_value("locale", arg.trim_prefix("--locale="))
 	if shots == "":
@@ -25,6 +28,11 @@ func _ready() -> void:
 	Settings.set_value("reduced_motion", true)
 	main = (load("res://scenes/main.tscn") as PackedScene).instantiate()
 	add_child(main)
+	if capture_boot:
+		await _frames(3)
+		await _shot("00_boot_loading")
+		main.call("_begin_boot")
+		await _frames(4)
 	Settings.set_value("profile_name", "Ayşe")
 	main.call("go", "home")
 	await _frames(20)
@@ -75,6 +83,18 @@ func _ready() -> void:
 	screen._sync(s)
 	await _frames(5)
 	await _shot("04_match_4p_roll")
+	# Deliberately render a four-pawn same-cell inspection state.  This is a
+	# visual-regression fixture only; no match rule permits the screenshot tool
+	# to alter a live session.  It documents the compact 2×2 containment layout.
+	var stack_state := s.duplicate(true)
+	# The red entry cell is visually clear of the other three sample paths,
+	# making the 2×2 cluster easy to inspect in the capture itself.
+	stack_state["pawns"]["red"] = [0, 0, 0, 0]
+	screen._sync(stack_state)
+	await _frames(5)
+	await _shot("04b_match_stack_4")
+	screen._sync(s)
+	await _frames(3)
 	screen.controller.human_roll(0)
 	await _wait(1.5)
 	await _shot("05_match_4p_select")
@@ -89,6 +109,19 @@ func _ready() -> void:
 	screen._sync(finish_target)
 	await _frames(5)
 	await _shot("05b_finish_target")
+	# The same `changed` signal emitted after a successful server equip must
+	# repaint the live match immediately.  This fixture changes only the local
+	# visual cache; it does not produce a roll, move, purchase, or network call.
+	var saved_loadout: Dictionary = Online.cosmetics.inventory.duplicate(true)
+	Online.cosmetics.inventory = {"loadout": {
+		"dice": "dice_night", "pawns": "pawns_gem", "board": "board_mint",
+		"frame": "frame_gold", "effect": "effect_sparkle", "name": "name_star"}}
+	Online.cosmetics.changed.emit()
+	await _frames(5)
+	await _shot("05c_match_live_cosmetic_refresh")
+	Online.cosmetics.inventory = saved_loadout
+	Online.cosmetics.changed.emit()
+	await _frames(2)
 	screen._open_menu()
 	await _wait(0.6)
 	await _shot("06_menu")
@@ -350,11 +383,19 @@ func _phase7_screens() -> void:
 	Online.cosmetics.inventory = {"owned": [own.call("dice_classic", "dice", "default"), own.call("dice_mango", "dice", "store"),
 		own.call("dice_master", "dice", "level:15"), own.call("pawns_classic", "pawns", "default"), own.call("board_classic", "board", "default")],
 		"loadout": {"dice": "dice_mango"}}
+	# Screenshot fixture only: these are explicit server-shaped balances so the
+	# visual tour documents the real wallet component without fabricating values
+	# in application UI.
+	Online.profile.wallet = {"coins": 14520, "gems": 380}
 	main.call("go", "collection", {"category": "dice"})
 	await _frames(3)
 	(main.get("current") as Node).get("status").clear()
 	await _frames(12)
 	await _shot("70_collection_sample")
+	main.call("go", "store")
+	await _frames(12)
+	(main.get("current") as Node).get("status").clear()
+	await _shot("70a_store_wallet_sample")
 	main.call("go", "cosmetic", {"id": "dice_star"})
 	await _frames(12)
 	await _shot("71_cosmetic_detail_sample")
@@ -362,4 +403,5 @@ func _phase7_screens() -> void:
 		await call("_phase7_more")
 	Online.cosmetics.catalog = {}
 	Online.cosmetics.inventory = {}
+	Online.profile.wallet = {}
 

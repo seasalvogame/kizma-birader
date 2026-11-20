@@ -15,6 +15,9 @@ var profile := {}          # {user_id, display_name, tag, avatar_id, level}
 var stats := {}            # player_stats row
 var recent: Array = []     # last matches (see HISTORY_SELECT)
 var progress := {}         # my_progress(): {level, xp, xp_in_level, xp_for_next, max_level, next_level_gold, badges}
+# Wallet rows are read through the existing RLS policy; values are never
+# invented locally.  An empty dictionary means that a balance is unavailable.
+var wallet := {}           # wallets row: {coins, gems}
 var loaded_at := 0         # unix seconds of the last successful load (0 = never)
 var last_error := ""
 var cache_path := "user://online_profile_cache.json"
@@ -29,6 +32,7 @@ func reset() -> void:
 	profile = {}
 	stats = {}
 	recent = []
+	wallet = {}
 	loaded_at = 0
 
 
@@ -45,6 +49,7 @@ func refresh(recent_limit: int = 5) -> bool:
 	var s := await api.get_json("player_stats?select=*&user_id=eq." + uid)
 	var h := await history(recent_limit)
 	var g := await api.call_rpc("my_progress", {})
+	var w := await api.get_json("wallets?select=coins,gems&user_id=eq." + uid)
 	if not (p["ok"] and s["ok"] and h["ok"]) or (p["data"] as Array).is_empty():
 		last_error = p["error"] if not p["ok"] else ("SERVER" if p["ok"] and (p["data"] as Array).is_empty() else s["error"])
 		return false
@@ -53,12 +58,27 @@ func refresh(recent_limit: int = 5) -> bool:
 	recent = h["data"]
 	if g["ok"] and g["data"] is Dictionary:
 		progress = g["data"]
+	if w["ok"] and w["data"] is Array and not (w["data"] as Array).is_empty():
+		wallet = (w["data"] as Array)[0]
 	loaded_at = int(Time.get_unix_time_from_system())
 	await _adopt_local_name()
 	_mirror_to_settings()
 	_save_cache()
 	changed.emit()
 	return true
+
+
+## Reflects the balance returned by an already-confirmed server transaction.
+## It never calculates a price or adjusts a balance on its own.
+func set_wallet_balance(currency: String, balance: Variant) -> void:
+	if not (balance is int or balance is float):
+		return
+	var key := "coins" if currency == "gold" else "gems" if currency == "gems" else ""
+	if key == "":
+		return
+	wallet[key] = maxi(0, int(balance))
+	_save_cache()
+	changed.emit()
 
 
 ## Finished online matches of the player, newest first; `before` = ended_at of the last row shown.
@@ -134,7 +154,7 @@ func _mirror_to_settings() -> void:
 func _save_cache() -> void:
 	var f := FileAccess.open(cache_path, FileAccess.WRITE)
 	if f != null:
-		f.store_string(JSON.stringify({"user_id": session.user_id, "profile": profile, "stats": stats, "recent": recent, "progress": progress, "loaded_at": loaded_at}))
+		f.store_string(JSON.stringify({"user_id": session.user_id, "profile": profile, "stats": stats, "recent": recent, "progress": progress, "wallet": wallet, "loaded_at": loaded_at}))
 
 
 func _load_cache() -> void:
@@ -147,5 +167,6 @@ func _load_cache() -> void:
 		stats = d.get("stats", {})
 		recent = d.get("recent", [])
 		progress = d.get("progress", {})
+		wallet = d.get("wallet", {})
 		loaded_at = int(d.get("loaded_at", 0))
 		_mirror_to_settings()

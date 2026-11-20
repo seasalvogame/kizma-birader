@@ -6,11 +6,16 @@ extends AppScreen
 var item_id := ""
 var _box: VBoxContainer
 var _busy := false
+const WalletBarView := preload("res://scripts/ui/wallet_bar.gd")
 var _action_error := ""
 
 
 func _title() -> String:
 	return tr("COS_DETAIL_TITLE")
+
+
+func _header_extra() -> Control:
+	return WalletBarView.new()
 
 
 func _build() -> void:

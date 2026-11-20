@@ -86,21 +86,28 @@ func roll(result: int, duration: float) -> void:
 		queue_redraw()
 		return
 	_rolling = true
+	var total := clampf(duration, 0.35, 0.85)
+	# Preparation makes the throw intentional; the intermediate faces are only
+	# animation frames. `result` remains the sole final value supplied by the
+	# controller/server event.
+	var prepare := minf(0.09, total * 0.18)
+	var tumble := maxf(0.18, total - prepare - 0.14)
 	var t := create_tween()
-	var rng := RandomNumberGenerator.new()
+	t.tween_property(self, "scale", Vector2(0.92, 0.92), prepare).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	t.tween_method(func(k: float) -> void:
-		_spin = sin(k * TAU * 2.0) * 0.35 * (1.0 - k)
-		if int(k * 10) != int((k - 0.02) * 10):
-			value = rng.randi_range(1, 6)
-		queue_redraw(), 0.0, 1.0, duration)
+		_spin = sin(k * TAU * 3.0) * (0.62 - k * 0.38)
+		var frame := clampi(int(k * 9.0), 0, 8)
+		value = ((result + frame * 3 - 1) % 6) + 1
+		queue_redraw(), 0.0, 1.0, tumble).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	t.tween_property(self, "scale", Vector2(1.08, 1.08), 0.07).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	await t.finished
 	value = result
 	_spin = 0.0
 	_rolling = false
 	queue_redraw()
 	var bounce := create_tween()
-	bounce.tween_property(self, "scale", Vector2(1.12, 1.12), 0.08)
-	bounce.tween_property(self, "scale", Vector2.ONE, 0.14).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	bounce.tween_property(self, "scale", Vector2(0.97, 0.97), 0.055)
+	bounce.tween_property(self, "scale", Vector2.ONE, 0.12).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 
 func _gui_input(event: InputEvent) -> void:

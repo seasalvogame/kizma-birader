@@ -37,11 +37,15 @@ func _ready() -> void:
 	add_theme_stylebox_override("panel", box)
 	var row := UiKit.hbox(0)
 	add_child(row)
+	var ordered_buttons: Array[Button] = []
 	for t: Array in TABS:
 		var id: String = t[0]
 		var b := Button.new()
 		b.flat = true
-		b.focus_mode = Control.FOCUS_NONE
+		# Bottom tabs are a primary navigation path on hardware keyboards and
+		# gamepads too. Keep their touch presentation, but make focus entry and
+		# left/right traversal explicit instead of leaving navigation to geometry.
+		b.focus_mode = Control.FOCUS_ALL
 		b.text = tr(t[2])
 		b.icon = UiTheme.icon(t[1])
 		b.expand_icon = true
@@ -53,6 +57,13 @@ func _ready() -> void:
 		b.custom_minimum_size = Vector2(0, 112)
 		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		b.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		var focus := StyleBoxFlat.new()
+		focus.bg_color = Color(1, 1, 1, 0.05)
+		focus.border_color = UiPalette.MANGO_300
+		focus.set_border_width_all(3)
+		focus.set_corner_radius_all(UiTokens.R_S)
+		focus.anti_aliasing = true
+		b.add_theme_stylebox_override("focus", focus)
 		var on := id == current
 		var col := UiPalette.MANGO_300 if on else UiPalette.ON_NIGHT_DIM
 		for state: String in ["font_color", "font_hover_color", "font_pressed_color", "font_focus_color"]:
@@ -61,6 +72,7 @@ func _ready() -> void:
 			b.add_theme_color_override(state, col)
 		b.pressed.connect(func() -> void: tab_selected.emit(id))
 		buttons[id] = b
+		ordered_buttons.append(b)
 		row.add_child(b)
 		if on:
 			var marker := Control.new()
@@ -77,3 +89,20 @@ func _ready() -> void:
 			dot.draw.connect(func() -> void:
 				dot.draw_circle(Vector2(dot.size.x * 0.5 + 30, 14), 10, UiPalette.MANGO_500))
 			b.add_child(dot)
+	_configure_focus(ordered_buttons)
+
+
+func _configure_focus(ordered_buttons: Array[Button]) -> void:
+	if ordered_buttons.is_empty():
+		return
+	for index: int in ordered_buttons.size():
+		var button: Button = ordered_buttons[index]
+		var left: Button = ordered_buttons[(index - 1 + ordered_buttons.size()) % ordered_buttons.size()]
+		var right: Button = ordered_buttons[(index + 1) % ordered_buttons.size()]
+		button.focus_neighbor_left = button.get_path_to(left)
+		button.focus_neighbor_right = button.get_path_to(right)
+		button.focus_previous = button.get_path_to(left)
+		button.focus_next = button.get_path_to(right)
+	var selected: Button = buttons.get(current) as Button
+	if selected != null:
+		selected.call_deferred("grab_focus")

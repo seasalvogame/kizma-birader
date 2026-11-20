@@ -489,6 +489,24 @@ msgstr "Bekleme süresi %s"
 msgid "ONLINE_RETRY"
 msgstr "Tekrar dene"
 
+msgid "BOOT_LOADING"
+msgstr "Masa hazırlanıyor…"
+
+msgid "BOOT_SUBTITLE"
+msgstr "Masaya hoş geldin"
+
+msgid "BOOT_ACCOUNT"
+msgstr "Hesabın hazırlanıyor…"
+
+msgid "BOOT_COLLECTION"
+msgstr "Koleksiyonun hazırlanıyor…"
+
+msgid "BOOT_OFFLINE"
+msgstr "Bağlantı kurulamadı. İnterneti kontrol edip tekrar deneyebilirsin."
+
+msgid "BOOT_CONTINUE"
+msgstr "ÇEVRİMDIŞI DEVAM ET"
+
 msgid "ONLINE_INFO"
 msgstr "2 kişilik klasik maç. Renkleri sunucu karşılıklı olarak atar. Sonuç maç geçmişine ve istatistiklerine kaydedilir; ödül ve sıralama yok."
 

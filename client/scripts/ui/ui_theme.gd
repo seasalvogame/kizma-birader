@@ -9,6 +9,7 @@ extends RefCounted
 
 const BALOO := "res://assets/fonts/Baloo2.ttf"
 const NUNITO := "res://assets/fonts/Nunito-Variable.ttf"
+const MAIN_THEME := "res://theme/main_theme.tres"
 
 static var _theme: Theme
 static var _fonts := {}
@@ -17,7 +18,10 @@ static var _fonts := {}
 static func theme() -> Theme:
 	if _theme != null:
 		return _theme
-	var t := Theme.new()
+	# The .tres is the durable project-level Theme entry point; this generator
+	# fills its live Godot resources from the single token system at startup.
+	var template := load(MAIN_THEME) as Theme
+	var t := template.duplicate(true) as Theme if template != null else Theme.new()
 	t.default_font = body_font()
 	t.default_font_size = UiTokens.BODY
 	t.set_color("font_color", "Label", UiPalette.ON_NIGHT)
@@ -36,6 +40,7 @@ static func theme() -> Theme:
 	for kind: String in ["primary", "secondary", "berry", "mint", "ghost"]:
 		_button(t, kind.capitalize() + "Button", kind)
 	_icon_button(t)
+	_line_edit(t)
 	t.set_stylebox("panel", "CreamCard", card_box())
 	t.set_type_variation("CreamCard", "PanelContainer")
 	t.set_stylebox("panel", "GlassPanel", glass_box())
@@ -82,7 +87,7 @@ static func _button(t: Theme, name: String, kind: String) -> void:
 	var pressed := _button_box(kind, true)
 	t.set_stylebox("normal", name, normal)
 	t.set_stylebox("hover", name, normal)
-	t.set_stylebox("focus", name, StyleBoxEmpty.new())
+	t.set_stylebox("focus", name, normal)
 	t.set_stylebox("pressed", name, pressed)
 	t.set_stylebox("hover_pressed", name, pressed)
 	var disabled := normal.duplicate() as StyleBoxTexture
@@ -129,10 +134,33 @@ static func _icon_button(t: Theme) -> void:
 	var pressed := glass_box(30)
 	pressed.bg_color = Color(1, 1, 1, 0.16)
 	for state: String in ["normal", "hover", "focus"]:
-		t.set_stylebox(state, "IconButton", normal if state != "focus" else StyleBoxEmpty.new())
+		t.set_stylebox(state, "IconButton", normal)
 	t.set_stylebox("pressed", "IconButton", pressed)
 	t.set_stylebox("hover_pressed", "IconButton", pressed)
 	t.set_constant("icon_max_width", "IconButton", 44)
+
+
+## The default reaches account, player-search and private-room fields while a
+## true screen-specific exception can still override it locally.
+static func _line_edit(t: Theme) -> void:
+	t.set_font("font", "LineEdit", body_font(800))
+	t.set_font_size("font_size", "LineEdit", UiTokens.BODY)
+	t.set_color("font_color", "LineEdit", UiPalette.INK_900)
+	t.set_color("font_placeholder_color", "LineEdit", UiPalette.INK_500)
+	t.set_color("font_uneditable_color", "LineEdit", UiPalette.INK_500)
+	t.set_color("caret_color", "LineEdit", UiPalette.MANGO_700)
+	for state: String in ["normal", "focus", "read_only"]:
+		var box := StyleBoxFlat.new()
+		box.bg_color = UiPalette.CREAM_50 if state != "read_only" else UiPalette.CREAM_200
+		box.border_color = UiPalette.MANGO_500 if state == "focus" else UiPalette.CREAM_300
+		box.set_border_width_all(3)
+		box.set_corner_radius_all(UiTokens.R_S)
+		box.shadow_color = Color(UiPalette.CREAM_SHADOW, 0.24) if state == "focus" else Color.TRANSPARENT
+		box.shadow_size = 12 if state == "focus" else 0
+		box.shadow_offset = Vector2(0, 5)
+		box.content_margin_left = 20
+		box.content_margin_right = 20
+		t.set_stylebox(state, "LineEdit", box)
 
 
 ## Cream card: flat cream, 6 pt (12 px) cream-300 bottom edge, soft shadow.

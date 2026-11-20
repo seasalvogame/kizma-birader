@@ -35,6 +35,13 @@ func setup(p_board: BoardGeometry, p_colors: Array, local_color: String) -> void
 	_layout()
 
 
+## A board cosmetic is presentation only, so a confirmed loadout update can
+## repaint the live board without rebuilding its geometry, input map or state.
+func set_theme_id(value: String) -> void:
+	theme_id = value if Cosmetics.BOARDS.has(value) else "board_classic"
+	queue_redraw()
+
+
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	resized.connect(_layout)

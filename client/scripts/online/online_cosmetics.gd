@@ -92,6 +92,11 @@ func purchase(id: String) -> Dictionary:
 	if not r["ok"]:
 		last_error = r["error"]
 		return r
+	# purchase_cosmetic returns the authoritative remaining balance.  Keep the
+	# visible wallet in sync without recreating the transaction client-side.
+	var receipt: Dictionary = r.get("data", {})
+	if receipt.has("currency") and receipt.has("balance") and Online.profile != null:
+		Online.profile.set_wallet_balance(String(receipt["currency"]), receipt["balance"])
 	var refreshed := await refresh_inventory()
 	if not refreshed:
 		# A confirmed server purchase is safe to reflect locally; this is only a

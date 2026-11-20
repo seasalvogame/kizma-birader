@@ -12,7 +12,7 @@ config_version=5
 
 config/name="Kızma Birader"
 config/description="Online Kızma Birader (Ludo) — playable offline build (Phase 3.3)."
-config/version="0.7.0"
+config/version="0.7.1"
 run/main_scene="res://scenes/main.tscn"
 config/quit_on_go_back=false
 config/features=PackedStringArray("4.7", "GL Compatibility")

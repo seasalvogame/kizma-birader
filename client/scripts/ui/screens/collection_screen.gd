@@ -7,10 +7,15 @@ var status: StatusCard
 var _tabs: HFlowContainer
 var _grid: GridContainer
 var _category := "dice"
+const WalletBarView := preload("res://scripts/ui/wallet_bar.gd")
 
 
 func _title() -> String:
 	return tr("COLLECTION_TITLE")
+
+
+func _header_extra() -> Control:
+	return WalletBarView.new()
 
 
 func _build() -> void:
@@ -73,11 +78,11 @@ func _render() -> void:
 
 ## A cosmetic tile (collection and store): preview, name, rarity, and a bottom line.
 static func tile(x: Dictionary, owned: bool, on_press: Callable, bottom: String = "") -> Button:
-	var b := Button.new()
-	b.focus_mode = Control.FOCUS_NONE
+	var b: Button = preload("res://scripts/ui/tactile_button.gd").new()
+	b.focus_mode = Control.FOCUS_ALL
 	b.mouse_filter = Control.MOUSE_FILTER_PASS
 	b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	b.custom_minimum_size = Vector2(0, 330)
+	b.custom_minimum_size = Vector2(0, 350)
 	var face := StyleBoxFlat.new()
 	face.bg_color = UiPalette.CREAM_100
 	face.set_corner_radius_all(UiTokens.R_M)
@@ -98,15 +103,24 @@ static func tile(x: Dictionary, owned: bool, on_press: Callable, bottom: String 
 	prev.custom_minimum_size = Vector2(0, 170)
 	col.add_child(prev)
 	var n := UiKit.label(Cosmetics.item_name(String(x["id"])), "InkH3Label", HORIZONTAL_ALIGNMENT_CENTER)
-	n.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	n.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	n.custom_minimum_size = Vector2(0, 44)
 	n.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	col.add_child(n)
 	var chip := CosmeticPreview.rarity_chip(String(x.get("rarity", "common")))
 	chip.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	chip.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	col.add_child(chip)
+	if owned:
+		var state := UiKit.chip(TranslationServer.translate("COS_EQUIPPED") if Online.cosmetics.equipped(String(x.get("category", ""))) == String(x.get("id", "")) else TranslationServer.translate("COS_OWNED"),
+			Color(UiPalette.MINT_500, 0.23), UiPalette.INK_900)
+		state.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+		state.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		col.add_child(state)
 	if bottom != "":
 		var l := UiKit.label(bottom, "InkDimLabel", HORIZONTAL_ALIGNMENT_CENTER)
+		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		l.custom_minimum_size = Vector2(0, 38)
 		l.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		col.add_child(l)
 	b.pressed.connect(on_press)

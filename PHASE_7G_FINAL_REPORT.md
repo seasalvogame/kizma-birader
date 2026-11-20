@@ -2,8 +2,8 @@
 
 **Tarih:** 19 Kasım 2026
 **Kapsam:** Akşam Masası mobil görsel sistemi, gerçek Godot görsel turu ve regresyon doğrulaması.
-**Commit:** Yerel Faz 7/Faz 7G commit'i oluşturuldu (`feat: deliver phase 7 social, cosmetics, and visual refresh`).
-**Push:** Yapılmadı; depoda tanımlı Git remote yok.
+**Commit:** İlk Faz 7/Faz 7G teslimi yerelde commit'lendi (`feat: deliver phase 7 social, cosmetics, and visual refresh`). Bu raporun sonundaki radikal geçiş iyileştirmeleri kullanıcının son talimatı uyarınca **bilerek commit'siz** bırakıldı.
+**Push:** Yapılmadı; depoda tanımlı Git remote yok ve son talimat commit/push yapılmamasıdır.
 **Deploy / remote migration:** Yapılmadı.
 
 ## Sonuç
@@ -186,3 +186,51 @@ Tam Godot runner, ortamın tek komut için 30 sn canlı çıktı sınırında ö
 - TalkBack/cihaz titreşimi ve düşük uç Android GPU profil testi bu bilgisayarda yoktur. Sembol medalyonu, 44 pt hedefler ve Reduce Motion kod yolu mevcuttur; fiziksel cihaz erişilebilirlik doğrulaması sonraki donanım geçişidir.
 
 Commit oluşturuldu; bu depoda tanımlı remote olmadığından push yapılamadı. Worker deploy, Supabase migration/deploy veya gerçek oyuncu verisi işlemi yapılmadı. Mevcut Faz 7 değişiklikleri geri alınmadı ya da üzerine yazılmadı.
+
+## Radikal görsel geçiş — son çalışma ağacı doğrulaması
+
+Kullanıcının sonradan verdiği kapsamlı görsel yenileme talebi için, yukarıdaki
+teslimin ardından sistem düzeyindeki etkileşim ve form tutarlılığı da
+uygulandı. Bu ek değişiklikler çalışma ağacındadır; açık talimat nedeniyle
+commit veya push yapılmamıştır.
+
+- `client/theme/main_theme.tres`, projenin tek kalıcı Theme giriş noktasıdır.
+  `UiTheme.theme()` bu kaynağı kopyalayıp mevcut token üreticisiyle doldurur;
+  bu nedenle çalışma zamanı tema mimarisi veya ekranların mevcut kurulumu
+  bozulmaz.
+- `TactileButton`, ortak birincil/ikincil/ghost ve ikon eylemlerine basma,
+  fare-over ve klavye-odak tepkisi ekler. Ölçek animasyonu `fast_animations`
+  ile uyumludur; Reduce Motion'da anlık sonuca geçer. Headless/export
+  koşumları için betik `UiKit` tarafından açıkça preload edilir.
+- Krem yüzeyli standart `LineEdit` alanları artık ortak odak, placeholder,
+  caret ve salt-okunur durum dilini kullanır. Ekrana özel istisnalar korunur.
+- Ana menü/oyun kartları da aynı kısa, kesilebilir basılma tepkisini alır;
+  kurallar, hamle koordinatları, ağ ve ekonomi akışları değiştirilmedi.
+
+### Yeni gerçek render kanıtı
+
+Bu geçişten sonra Compatibility renderer (OpenGL 3.3 / Intel UHD 620) ile
+540×1170 çözünürlükte tekrar tur alındı:
+
+- [Radikal geçiş turu — 43 gerçek Godot viewport PNG'si](/C:/KizmaBirader/artifacts/phase7g/radical-pass/)
+- [Önceki final (sol) / radikal geçiş (sağ) — 43 yan yana karşılaştırma](/C:/KizmaBirader/artifacts/phase7g/comparisons-radical-pass/)
+- [Ana menü](/C:/KizmaBirader/artifacts/phase7g/radical-pass/00a_home.png), [4 kişilik tahta ve PNG piyonlar](/C:/KizmaBirader/artifacts/phase7g/radical-pass/03_match_4p_start.png), [kozmetik ürün](/C:/KizmaBirader/artifacts/phase7g/radical-pass/71_cosmetic_detail_sample.png), [görevler](/C:/KizmaBirader/artifacts/phase7g/radical-pass/62_quests_sample.png)
+
+Karşılaştırmalar uygulama ekran görüntüsü diye sunulmaz: solda önceki gerçek
+renderer çıktısı, sağda bu geçişin gerçek renderer çıktısı bulunur.
+
+### Son test / Android kanıtı
+
+| Kontrol | Sonuç |
+|---|---|
+| Tam Godot test paketi | **39/39 geçti, 0 hata**, 74,9 sn |
+| Godot UI gezinme | **9/9 geçti**, 5,2 sn |
+| Godot tahta / piyon yerleşimi | **7/7 geçti**, 2,3 sn |
+| TypeScript oyun motoru | **8 dosya, 85/85 geçti**, 11,92 sn |
+| Game engine + Worker typecheck | Geçti |
+| `git diff --check` | Geçti (yalnız CRLF çalışma ağacı uyarıları) |
+| Android Debug export | Başarılı: [KizmaBirader-0.7.0-radical-pass-debug.apk](/C:/KizmaBirader/build/android/KizmaBirader-0.7.0-radical-pass-debug.apk), 30.825.531 bayt |
+
+Android export Godot tarafından debug imzasıyla üretildi ve export adımı
+tarafından doğrulandı. Bağlı cihaz/emülatör olmadığından kurulum veya fiziksel
+Android erişilebilirlik testi yapılmadı.

@@ -171,6 +171,57 @@ func test_finish_target_keeps_the_selected_pawn_slot() -> void:
 	vp.queue_free()
 
 
+func test_same_cell_pawns_stay_inside_their_cell_and_equipped_cosmetics_refresh() -> void:
+	var vp := SubViewport.new()
+	vp.size = Vector2i(720, 1560)
+	tree.root.add_child(vp)
+	var holder := Control.new()
+	holder.theme = UiTheme.theme()
+	holder.size = Vector2(720, 1560)
+	vp.add_child(holder)
+	var seats := [
+		{"color": "red", "kind": "human", "role": "you", "name": "Sen"},
+		{"color": "green", "kind": "bot", "role": "bot", "name": "Bot 1"},
+		{"color": "yellow", "kind": "bot", "role": "bot", "name": "Bot 2"},
+		{"color": "blue", "kind": "bot", "role": "bot", "name": "Bot 3"},
+	]
+	var screen := MatchScreen.new()
+	screen.config = {"players": 4, "seats": seats, "first_seat": 0, "dice": DiceSource.scripted([1, 1, 1, 1])}
+	screen.size = Vector2(720, 1560)
+	holder.add_child(screen)
+	await tree.process_frame
+	await tree.process_frame
+	for count: int in [2, 3, 4]:
+		var state := screen.controller.state().duplicate(true)
+		state["pawns"]["red"] = [-1, -1, -1, -1]
+		for i in count:
+			state["pawns"]["red"][i] = 10
+		screen.controller.session.state = state
+		screen._sync(state)
+		var centre := screen.board_view.pawn_position("red", 10, 0)
+		var cell := screen.board_view.cell_size()
+		for i in count:
+			var pawn: PawnSprite = screen.pawns["red:%d" % i]
+			assert_eq(pawn.get("_stack_count"), count, "%d-pawn stack is scaled" % count)
+			assert_true(pawn.position.distance_to(centre) + pawn.visual_half_extent() <= cell * 0.5,
+				"%d-pawn stack remains inside its board cell" % count)
+	var old_inventory: Dictionary = Online.cosmetics.inventory.duplicate(true)
+	Online.cosmetics.inventory = {"owned": [], "loadout": {
+		"dice": "dice_night", "pawns": "pawns_gem", "board": "board_mint",
+		"frame": "frame_gold", "effect": "effect_sparkle", "name": "name_star"}}
+	Online.cosmetics.changed.emit()
+	await tree.process_frame
+	assert_eq(screen.dice.skin, "dice_night", "equipped dice applies to an active match immediately")
+	assert_eq(screen.board_view.theme_id, "board_mint", "equipped board applies to an active match immediately")
+	for i in 4:
+		assert_eq((screen.pawns["red:%d" % i] as PawnSprite).skin, "pawns_gem", "equipped pawn skin %d applies immediately" % i)
+	assert_eq((screen.cards[0] as PlayerCard).avatar.frame_id, "frame_gold", "equipped frame applies to the live player card")
+	assert_eq((screen.cards[0] as PlayerCard).avatar.effect_id, "effect_sparkle", "equipped effect applies to the live player card")
+	assert_eq((screen.cards[0] as PlayerCard).name_label.text, "★ Sen ★", "equipped name style applies without rebuilding the card")
+	Online.cosmetics.inventory = old_inventory
+	vp.queue_free()
+
+
 func _click(vp: SubViewport, at: Vector2) -> void:
 	for pressed: bool in [true, false]:
 		var e := InputEventMouseButton.new()
